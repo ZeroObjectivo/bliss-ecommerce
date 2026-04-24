@@ -1,0 +1,11 @@
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.log
+
+/bliss_ecommerce/
+/database/bliss_ecommerce_seed.sql
+
+/public/uploads/profiles/*
+!/public/uploads/profiles/.gitkeep

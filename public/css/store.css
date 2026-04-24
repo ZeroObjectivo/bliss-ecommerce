@@ -1,0 +1,183 @@
+/* Consistent with the project's SaaS/Minimalist/Glassmorphism design */
+.store-page {
+    padding-top: var(--spacing-10);
+    padding-bottom: var(--spacing-10);
+    /* Subtle gradient matching body background */
+    background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+    min-height: calc(100vh - 200px);
+}
+
+.store-hero {
+    text-align: center;
+    margin-bottom: var(--spacing-8);
+    position: relative;
+}
+
+.store-hero .hero-badge {
+    background: var(--primary-color);
+    color: white;
+    padding: 6px 16px;
+    border-radius: var(--radius-full);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    display: inline-block;
+    margin-bottom: var(--spacing-2);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.store-hero .hero-title {
+    font-size: clamp(3rem, 8vw, 5rem);
+    font-weight: 900;
+    letter-spacing: -0.04em;
+    line-height: 0.95;
+    color: #000000 !important;
+    margin: 0;
+    /* Reset homepage gradient styles */
+    background: none !important;
+    -webkit-background-clip: initial !important;
+    -webkit-text-fill-color: initial !important;
+    background-clip: initial !important;
+}
+
+.store-hero .hero-subtitle {
+    font-size: 1.25rem;
+    color: #1a1a1a; /* Very dark grey for best legibility */
+    max-width: 650px;
+    margin: var(--spacing-4) auto 0;
+    line-height: 1.5;
+    font-weight: 500;
+}
+
+.store-grid {
+    display: grid;
+    grid-template-columns: 400px 1fr;
+    gap: var(--spacing-6);
+    align-items: start;
+}
+
+.store-info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3);
+}
+
+/* Reusable Glass Card - matching the project's glassmorphism style but light-themed */
+.glass-card {
+    background: rgba(255, 255, 255, 0.8); /* Slightly more opaque for readability */
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-4);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.glass-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+}
+
+.info-card h3 {
+    font-size: 1.1rem;
+    font-weight: 800;
+    margin-bottom: var(--spacing-2);
+    color: #000000;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.info-card h3 svg {
+    color: var(--accent-color);
+}
+
+.info-card p {
+    color: #2d2d2d;
+    margin-bottom: 4px;
+    line-height: 1.6;
+    font-size: 1rem;
+}
+
+.info-card strong {
+    color: #000000;
+}
+
+.hours-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-1);
+    color: #2d2d2d;
+    font-size: 1rem;
+}
+
+.hours-row .day {
+    font-weight: 700;
+    color: #000000;
+}
+
+.store-services ul {
+    list-style: none;
+    padding: 0;
+    margin-top: var(--spacing-2);
+}
+
+.store-services li {
+    padding-left: 28px;
+    position: relative;
+    margin-bottom: var(--spacing-2);
+    color: #2d2d2d;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    font-weight: 500;
+}
+
+.store-services li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    width: 18px;
+    height: 18px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%233b82f6' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E");
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+.store-services .btn {
+    width: 100%;
+    margin-top: var(--spacing-4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.map-container {
+    height: 700px;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    position: sticky;
+    top: 120px;
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+@media (max-width: 1024px) {
+    .store-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .map-container {
+        position: static;
+        height: 500px;
+        order: -1;
+    }
+    
+    .store-hero .hero-title {
+        font-size: 3rem;
+    }
+}

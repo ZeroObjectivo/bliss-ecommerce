@@ -1,0 +1,72 @@
+/* --- Auth Pages --- */
+.auth-page {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 70vh;
+    padding: var(--spacing-4);
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 400px;
+    padding: var(--spacing-6);
+    text-align: center;
+}
+
+.auth-card h2 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: var(--spacing-2);
+}
+
+.auth-card p {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    margin-bottom: var(--spacing-4);
+}
+
+.form-group {
+    text-align: left;
+    margin-bottom: var(--spacing-4);
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: var(--spacing-1);
+}
+
+.form-group input {
+    width: 100%;
+    padding: 10px var(--spacing-2);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-sm);
+    background: rgba(255, 255, 255, 0.5);
+    font-family: inherit;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+}
+
+.form-group input:focus {
+    outline: none;
+    background: white;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.w-100 {
+    width: 100%;
+}
+
+.auth-footer {
+    margin-top: var(--spacing-4);
+    font-size: 0.9rem;
+}
+
+.auth-footer a {
+    color: var(--primary-color);
+    font-weight: 600;
+    text-decoration: underline;
+}

@@ -1,0 +1,94 @@
+<?php
+class OrderModel {
+    private $db;
+
+    public function __construct() {
+        $this->db = new Database();
+    }
+
+    public function getAllOrders() {
+        $this->db->query("SELECT orders.*, users.name as user_name, users.email as user_email FROM orders JOIN users ON orders.user_id = users.id ORDER BY created_at DESC");
+        return $this->db->resultSet();
+    }
+
+    public function getArchivedOrders() {
+        $this->db->query("SELECT orders.*, users.name as user_name, users.email as user_email FROM orders JOIN users ON orders.user_id = users.id WHERE is_archived = 1 ORDER BY created_at DESC");
+        return $this->db->resultSet();
+    }
+
+    public function archiveOrder($id) {
+        $this->db->query("UPDATE orders SET is_archived = 1 WHERE id = :id");
+        $this->db->bind(':id', $id);
+        return $this->db->execute();
+    }
+
+    public function unarchiveOrder($id) {
+        $this->db->query("UPDATE orders SET is_archived = 0 WHERE id = :id");
+        $this->db->bind(':id', $id);
+        return $this->db->execute();
+    }
+
+    public function getOrderById($id) {
+        $this->db->query("SELECT orders.*, users.name as user_name, users.email as user_email FROM orders JOIN users ON orders.user_id = users.id WHERE orders.id = :id");
+        $this->db->bind(':id', $id);
+        return $this->db->single();
+    }
+
+    public function getOrderItems($order_id) {
+        $this->db->query("SELECT order_items.*, products.name, products.image_main FROM order_items JOIN products ON order_items.product_id = products.id WHERE order_id = :id");
+        $this->db->bind(':id', $order_id);
+        return $this->db->resultSet();
+    }
+
+    public function updateStatus($order_id, $status) {
+        $this->db->query("UPDATE orders SET status = :status WHERE id = :id");
+        $this->db->bind(':status', $status);
+        $this->db->bind(':id', $order_id);
+        return $this->db->execute();
+    }
+
+    public function createOrder($user_id, $total_price) {
+        $this->db->query("INSERT INTO orders (user_id, total_price, status) VALUES (:user_id, :total_price, 'pending')");
+        $this->db->bind(':user_id', $user_id);
+        $this->db->bind(':total_price', $total_price);
+        $this->db->execute();
+        return $this->db->lastInsertId();
+    }
+
+    public function createOrderFull($data) {
+        $this->db->query("INSERT INTO orders (user_id, total_price, shipping_method, payment_method, shipping_address, status) 
+                          VALUES (:user_id, :total_price, :shipping_method, :payment_method, :shipping_address, 'pending')");
+        
+        $this->db->bind(':user_id', $data['user_id']);
+        $this->db->bind(':total_price', $data['total_price']);
+        $this->db->bind(':shipping_method', $data['shipping_method']);
+        $this->db->bind(':payment_method', $data['payment_method']);
+        $this->db->bind(':shipping_address', $data['shipping_address']);
+        
+        $this->db->execute();
+        return $this->db->lastInsertId();
+    }
+
+    public function addOrderItem($order_id, $product_id, $size, $quantity, $price) {
+        $this->db->query("INSERT INTO order_items (order_id, product_id, size, quantity, price) VALUES (:order_id, :product_id, :size, :quantity, :price)");
+        $this->db->bind(':order_id', $order_id);
+        $this->db->bind(':product_id', $product_id);
+        $this->db->bind(':size', $size);
+        $this->db->bind(':quantity', $quantity);
+        $this->db->bind(':price', $price);
+        return $this->db->execute();
+    }
+
+    public function getOrdersByUser($user_id) {
+        $this->db->query("SELECT * FROM orders WHERE user_id = :user_id ORDER BY created_at DESC");
+        $this->db->bind(':user_id', $user_id);
+        return $this->db->resultSet();
+    }
+
+    public function deleteAllOrders() {
+        // order_items will be deleted automatically if foreign key has ON DELETE CASCADE
+        // According to setup.php, it does.
+        $this->db->query("DELETE FROM orders");
+        return $this->db->execute();
+    }
+}

@@ -1,0 +1,17 @@
+/* Filter Links Styling */
+.filter-link {
+    display: block;
+    padding: 6px 0;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    transition: all 0.2s;
+}
+
+.filter-link:hover {
+    color: var(--primary-color);
+}
+
+.filter-link.active {
+    color: var(--primary-color);
+    font-weight: 700;
+}
