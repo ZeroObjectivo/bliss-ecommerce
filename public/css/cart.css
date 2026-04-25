@@ -186,3 +186,105 @@
     font-weight: 800;
     margin-bottom: var(--spacing-6);
 }
+
+/* --- Responsive Adjustments for Cart Page --- */
+
+/* Mobile: Single column layout */
+@media (max-width: 768px) {
+    .cart-page {
+        padding: var(--spacing-4) 0 var(--spacing-6); /* Reduced padding */
+    }
+
+    .cart-title {
+        font-size: 2rem; /* Reduced title font size */
+        margin-bottom: var(--spacing-4);
+    }
+
+    .empty-cart {
+        padding: var(--spacing-6) var(--spacing-4); /* Adjusted padding */
+    }
+    .empty-cart p {
+        font-size: 1.1rem; /* Reduced font size */
+    }
+
+    .cart-layout {
+        grid-template-columns: 1fr; /* Stack cart items and summary */
+        gap: var(--spacing-4); /* Gap between stacked sections */
+    }
+
+    .cart-item img {
+        width: 90px; /* Slightly smaller image */
+        height: 90px;
+    }
+
+    .cart-item-details h3 {
+        font-size: 1.1rem; /* Smaller font for item title */
+    }
+
+    .cart-item-actions {
+        margin-top: var(--spacing-2); /* Adjust margin */
+        flex-wrap: wrap; /* Allow actions to wrap if needed */
+    }
+
+    .cart-summary {
+        position: static; /* Remove sticky positioning on mobile */
+        margin-top: var(--spacing-4); /* Add space above summary */
+        padding: var(--spacing-3); /* Adjusted padding */
+    }
+    .cart-summary h3 {
+        font-size: 1.3rem; /* Smaller summary title */
+    }
+    .summary-row {
+        font-size: 1rem;
+    }
+    .summary-total {
+        font-size: 1.3rem; /* Smaller total font size */
+    }
+}
+
+/* Tablet: 2 columns, default layout might be suitable, but let's check gaps and image sizes */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .cart-page {
+        padding: var(--spacing-6) 0 var(--spacing-8); /* Slightly reduced bottom padding */
+    }
+
+    .cart-layout {
+        /* The default 2fr 1fr is a 2-column layout, fulfilling the requirement. */
+        /* Adjusted gap for tablet */
+        gap: var(--spacing-4); /* Slightly reduced gap for tablet */
+    }
+
+    .cart-item img {
+        width: 100px; /* Slightly smaller image than desktop, larger than mobile */
+        height: 100px;
+    }
+
+    .cart-item-details h3 {
+        font-size: 1.15rem; /* Slightly larger than mobile */
+    }
+
+    .cart-item-price {
+        font-size: 1.15rem; /* Slightly larger than mobile */
+    }
+
+    .cart-summary {
+        padding: var(--spacing-3); /* Adjusted padding for tablet */
+    }
+    .cart-summary h3 {
+        font-size: 1.4rem; /* Slightly larger summary title */
+    }
+    .summary-row {
+        font-size: 1.05rem;
+    }
+    .summary-total {
+        font-size: 1.4rem; /* Slightly larger total font size */
+    }
+}
+
+/* Desktop: Unchanged, default styles apply */
+/* Default styles: */
+/* .cart-layout { grid-template-columns: 2fr 1fr; } */
+/* .cart-item img { width: 120px; height: 120px; } */
+/* .cart-title { font-size: 2.5rem; } */
+/* .cart-summary h3 { font-size: 1.5rem; } */
+/* .summary-total { font-size: 1.5rem; } */

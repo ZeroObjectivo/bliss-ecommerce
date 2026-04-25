@@ -18,6 +18,10 @@
     <link rel="stylesheet" href="/php/Webdev/public/css/contact.css">
     <link rel="stylesheet" href="/php/Webdev/public/css/shipping_returns.css">
 </head>
+
+<script
+     src="/php/Webdev/public/js/mobile-menu.js"></script>
+
 <body>
 
 <!-- Sub Header (Top Bar) -->
@@ -85,6 +89,12 @@
         <div class="logo">
             <a href="/php/Webdev/public/">BLISS</a>
         </div>
+
+ <button class="mobile-nav-toggle"
+      aria-label="Toggle navigation">
+             <span class="mobile-nav-toggle-icon"></span>
+            </button>
+
         <nav class="nav-links">
             <a href="/php/Webdev/public/">New & Featured</a>
             <a href="/php/Webdev/public/catalog">Catalog</a>

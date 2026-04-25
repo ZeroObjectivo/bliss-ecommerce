@@ -547,3 +547,138 @@ input.admin-filter-control {
     from { opacity: 0; transform: translateX(-50%) translateY(-20px); }
     to { opacity: 1; transform: translateX(-50%) translateY(0); }
 }
+
+/* --- Responsive Adjustments for Admin Layout --- */
+
+/* Mobile: 1 column layout, sidebar hidden */
+@media (max-width: 768px) {
+    .admin-layout {
+        flex-direction: column; /* Stack sidebar and main content */
+    }
+
+    .admin-sidebar {
+        position: static; /* Remove fixed positioning */
+        width: 100%; /* Full width */
+        height: auto;
+        border-right: none;
+        border-bottom: 1px solid var(--admin-border);
+        transform: translateX(-100%); /* Initially hide sidebar */
+        transition: transform 0.3s ease;
+        z-index: 101; /* Above main content */
+    }
+
+    .admin-sidebar.open { /* Assuming a class to toggle visibility */
+        transform: translateX(0);
+    }
+
+    .admin-main {
+        margin-left: 0; /* Remove margin-left */
+        width: 100%; /* Take full width */
+    }
+
+    .admin-topbar {
+        padding: 0 var(--spacing-3);
+        justify-content: center; /* Center content if no title on mobile */
+        height: 60px; /* Slightly smaller height */
+    }
+    .admin-topbar h1 {
+        font-size: 1rem;
+    }
+    .btn-storefront {
+        display: none; /* Hide storefront button on mobile if too cluttered */
+    }
+
+    .admin-content {
+        padding: var(--spacing-3); /* Reduced padding */
+    }
+
+    .overview-grid {
+        grid-template-columns: 1fr; /* Force single column for overview cards */
+        gap: var(--spacing-3);
+    }
+
+    .admin-form {
+        max-width: 100%; /* Allow form to take full width */
+    }
+
+    .form-group-admin input,
+    .form-group-admin select,
+    .form-group-admin textarea {
+        font-size: 0.85rem; /* Smaller font for form inputs */
+    }
+
+    .admin-table {
+        font-size: 0.8rem; /* Smaller table font */
+    }
+    .admin-table th, .admin-table td {
+        padding: 10px var(--spacing-2); /* Reduced padding */
+    }
+    .table-image {
+        width: 36px; /* Smaller images in tables */
+        height: 36px;
+    }
+
+    .sidebar-brand {
+        height: 60px; /* Smaller brand height */
+    }
+    .sidebar-brand h2 {
+        font-size: 1.1rem;
+    }
+    .sidebar-nav {
+        padding: var(--spacing-2);
+    }
+    .sidebar-nav a {
+        padding: 10px 12px;
+        font-size: 0.85rem;
+    }
+    .sidebar-footer {
+        padding: var(--spacing-2);
+    }
+    .user-info span {
+        font-size: 0.8rem;
+    }
+    .user-info small {
+        font-size: 0.7rem;
+    }
+}
+
+/* Tablet: 2 columns, sidebar visible */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .admin-main {
+        margin-left: 200px; /* Slightly narrower sidebar for tablet */
+    }
+
+    .admin-sidebar {
+        width: 200px; /* Reduced sidebar width */
+    }
+
+    .admin-content {
+        padding: var(--spacing-3); /* Adjusted padding */
+    }
+
+    .overview-grid {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Adjusted min width for cards */
+    }
+    
+    .admin-table th, .admin-table td {
+        padding: 12px var(--spacing-2); /* Reduced padding */
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr; /* Single column for form fields */
+    }
+    
+    .admin-form {
+        max-width: 100%; /* Allow form to take full width */
+    }
+}
+
+/* Desktop: Unchanged, default styles apply */
+/* Default styles: */
+/* .admin-sidebar { width: 260px; } */
+/* .admin-main { margin-left: 260px; } */
+/* .overview-grid { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); } */
+/* .form-grid { grid-template-columns: 1fr 1fr; } */
+/* .admin-table th, .admin-table td { padding: 16px var(--spacing-3); } */
+/* .admin-form { max-width: 700px; } */
+    

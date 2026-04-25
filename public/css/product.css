@@ -146,3 +146,125 @@
     justify-content: center;
     align-items: center;
 }
+
+/* --- Responsive Adjustments for Product Detail Page --- */
+
+/* Mobile: Stack elements for 1-column layout */
+@media (max-width: 768px) {
+    .product-hero {
+        height: 40vh; /* Slightly reduced height for mobile hero */
+        border-radius: 0 0 var(--radius-md) var(--radius-md); /* Smaller radius */
+    }
+
+    .product-info-container {
+        padding: 0 var(--spacing-3); /* Add horizontal padding */
+    }
+
+    .product-header {
+        flex-direction: column; /* Stack title and price */
+        align-items: flex-start;
+        gap: var(--spacing-2);
+    }
+
+    .product-title {
+        font-size: 2.5rem; /* Reduced font size */
+        max-width: 100%; /* Allow title to take full width when stacked */
+    }
+
+    .product-price {
+        font-size: 1.75rem; /* Reduced font size */
+        margin-top: var(--spacing-2); /* Add space above price */
+    }
+
+    .product-description {
+        font-size: 1rem; /* Smaller font size */
+    }
+
+    .size-grid {
+        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); /* Allow more buttons per row if space permits */
+        gap: var(--spacing-1);
+    }
+
+    .size-btn {
+        padding: 12px 0; /* Reduced padding */
+        font-size: 0.9rem;
+    }
+
+    .product-actions {
+        flex-direction: column; /* Stack buttons */
+        align-items: stretch; /* Make buttons full width */
+    }
+
+    .add-to-cart-form {
+        width: 100%; /* Ensure form takes full width */
+    }
+
+    .btn-large {
+        font-size: 1rem; /* Smaller font */
+        padding: 15px; /* Reduced padding */
+    }
+
+    .btn-icon-large {
+        width: 50px; /* Smaller icon button */
+        height: 50px;
+        margin-top: var(--spacing-2); /* Space above icon button when stacked */
+        align-self: center; /* Center the icon button if stacked */
+    }
+}
+
+/* Tablet: Elements side-by-side where appropriate */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .product-hero {
+        height: 50vh; /* Slightly reduced height for tablet hero */
+    }
+
+    .product-info-container {
+        padding: 0 var(--spacing-4); /* Add horizontal padding */
+    }
+
+    .product-header {
+        flex-direction: row; /* Title and price side-by-side */
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: var(--spacing-3);
+    }
+
+    .product-title {
+        font-size: 3rem; /* Restore larger font */
+        max-width: 60%; /* Allow title more space */
+    }
+
+    .product-price {
+        font-size: 1.8rem; /* Restore larger font */
+    }
+
+    .size-grid {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); /* Default minmax */
+    }
+
+    .product-actions {
+        flex-direction: row; /* Buttons side-by-side */
+        align-items: center;
+    }
+
+    .add-to-cart-form {
+        flex-grow: 1; /* Allow form to grow */
+    }
+    
+    .btn-icon-large {
+        /* Ensure icon button has space and is not constrained by flex-grow of form */
+        flex-shrink: 0; 
+    }
+}
+
+/* Desktop: Unchanged, default styles apply */
+/* The default styles already handle desktop as described */
+/* .product-hero { height: 65vh; } */
+/* .product-info-container { max-width: 800px; } */
+/* .product-header { display: flex; justify-content: space-between; align-items: flex-end; } */
+/* .product-title { font-size: 3.5rem; max-width: 70%; } */
+/* .product-price { font-size: 2rem; } */
+/* .size-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); } */
+/* .product-actions { display: flex; } */
+/* .btn-large { width: 100%; } */
+/* .btn-icon-large { width: 60px; height: 60px; } */

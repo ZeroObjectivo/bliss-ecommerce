@@ -88,7 +88,6 @@
     transform: none;
     box-shadow: none;
 }
-}
 
 /* --- Catalog Page --- */
 .catalog-page {
@@ -281,3 +280,87 @@
     text-align: center;
     color: var(--text-secondary);
 }
+
+/* --- Responsive Adjustments for Catalog --- */
+
+/* Mobile: 1 column, sidebar hidden */
+@media (max-width: 768px) {
+    .catalog-page {
+        padding: var(--spacing-4) 0; /* Reduced padding for mobile */
+    }
+
+    .catalog-container {
+        grid-template-columns: 1fr; /* Stack elements, sidebar hidden */
+        gap: var(--spacing-4); /* Gap for stacked elements */
+    }
+
+    .catalog-sidebar {
+        display: none; /* Hide sidebar on mobile */
+    }
+
+    /* Adjust header to stack elements */
+    .catalog-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-2);
+    }
+    .sort-by select {
+        width: 100%; /* Make sort dropdown full width */
+    }
+
+    /* Product Grid: 1 column */
+    .product-grid {
+        grid-template-columns: 1fr; /* Single column for products */
+        padding: 0 var(--spacing-2); /* Add padding to product grid if needed */
+    }
+
+    /* Search Results Dropdown: Make width responsive */
+    .search-results-dropdown {
+        width: calc(100% - var(--spacing-4)); /* Take full width minus padding, capped by container */
+        max-width: 300px; /* Keep a max-width */
+        right: var(--spacing-2); /* Align with padding */
+        margin-top: 10px; /* Adjust margin */
+    }
+    .search-result-item img {
+        width: 40px; /* Slightly smaller image on mobile */
+        height: 40px;
+    }
+    .search-result-item div {
+        flex-grow: 1; /* Allow text to take available space */
+    }
+    .search-result-item h4 {
+        font-size: 0.9rem; /* Smaller font */
+    }
+}
+
+/* Tablet: 2 columns for products, sidebar visible */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .catalog-container {
+        /* Adjusted sidebar width for tablet, while maintaining 2 columns */
+        grid-template-columns: 180px 1fr; /* Smaller sidebar for tablet */
+        gap: var(--spacing-6); /* Adjusted gap */
+    }
+
+    .catalog-sidebar {
+        /* Ensure sidebar is visible */
+        display: flex;
+        top: 80px; /* Adjust sticky position if header changes */
+    }
+
+    /* Product Grid: 2 columns */
+    .product-grid {
+        grid-template-columns: repeat(2, 1fr); /* 2 columns for products */
+        gap: var(--spacing-4);
+    }
+
+    /* Adjust dropdown width for tablet */
+    .search-results-dropdown {
+        width: 280px; /* Adjust width for tablet */
+        right: 0; /* Re-align if needed */
+    }
+}
+
+/* Desktop: Unchanged, default styles apply */
+/* Default styles: */
+/* .catalog-container { grid-template-columns: 280px 1fr; } */
+/* .product-grid { grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); } */

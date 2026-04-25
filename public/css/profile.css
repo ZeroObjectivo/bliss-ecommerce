@@ -522,3 +522,88 @@
 }
 .alert-success { background: #dcfce7; color: #166534; }
 .alert-error { background: #fee2e2; color: #991b1b; }
+
+/* --- Responsive Adjustments for Profile Page --- */
+
+/* Mobile: 1 column layout, sidebar hidden */
+@media (max-width: 768px) {
+    .profile-layout {
+        grid-template-columns: 1fr; /* Collapse to single column */
+        gap: var(--spacing-4); /* Adjusted gap for stacked layout */
+    }
+
+    .profile-sidebar {
+        display: none; /* Hide sidebar on mobile */
+    }
+
+    .profile-content {
+        padding: var(--spacing-4); /* Reduced padding */
+    }
+
+    .profile-section h3 {
+        font-size: 1.1rem; /* Smaller section titles */
+        margin-bottom: 1rem;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr; /* Collapse form fields to single column */
+        gap: 1rem;
+    }
+
+    .address-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* Adjusted min width for cards */
+    }
+
+    .order-tabs {
+        flex-direction: column; /* Stack tabs vertically */
+        align-items: center; /* Center tabs */
+        gap: 0.5rem;
+    }
+    .tab-btn {
+        width: 100%; /* Make tabs full width */
+        text-align: center;
+    }
+
+    .order-details-grid {
+        grid-template-columns: 1fr; /* Stack order items and summary */
+        gap: var(--spacing-4);
+    }
+}
+
+/* Tablet: Adjustments for 2-column layout */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .profile-layout {
+        grid-template-columns: 200px 1fr; /* Slightly narrower sidebar for tablet */
+        gap: var(--spacing-4);
+    }
+
+    .profile-sidebar {
+        padding: var(--spacing-3); /* Reduced padding */
+    }
+
+    .profile-content {
+        padding: var(--spacing-4); /* Reduced padding */
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr; /* Collapse form fields to single column on tablet for better readability */
+        gap: 1rem;
+    }
+
+    .address-grid {
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); /* Adjusted min width for cards */
+    }
+    
+    .order-details-grid {
+        grid-template-columns: 1fr; /* Stack order items and summary on tablet */
+        gap: var(--spacing-4);
+    }
+}
+
+/* Desktop: Unchanged, default styles apply */
+/* Default styles: */
+/* .profile-layout { grid-template-columns: 280px 1fr; } */
+/* .form-grid { grid-template-columns: 1fr 1fr; } */
+/* .address-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); } */
+/* .order-tabs { display: flex; } */
+/* .order-details-grid { grid-template-columns: 2fr 1fr; } */

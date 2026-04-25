@@ -902,7 +902,7 @@ a {
     height: auto;
     object-fit: contain;
     transform: scale(1.1);
-    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: transform 0.5s cubic- Tbezier(0.16, 1, 0.3, 1);
 }
 
 .glass-card:hover .product-image-container img {
@@ -1026,13 +1026,175 @@ a {
     border-top: 1px solid rgba(0,0,0,0.05);
 }
 
-/* Responsive */
+/* Responsive Adjustments for Header */
 @media (max-width: 768px) {
+    /* Existing styles - keeping them */
     .nav-links {
-        display: none;
+        display: none; /* Hide desktop nav */
     }
     .hero-content h1 {
         font-size: 3rem;
+    }
+
+    /* New styles for mobile header/navbar */
+
+    /* Hamburger Menu Toggle Button */
+    .mobile-nav-toggle {
+        display: block !important; /* Ensure visibility */
+        background: rgba(255, 255, 255, 0.2); /* More visible background */
+        border: none;
+        cursor: pointer;
+        padding: 0.75rem; /* Slightly more padding */
+        margin-left: 0; /* Not auto anymore, as order will handle positioning */
+        margin-right: var(--spacing-2); /* Space from next element */
+        order: 2; /* Position it after logo (implicit order 1) and before nav-actions (order 3) */
+        z-index: 110; /* Above header */
+        border-radius: 8px; /* Rounded corners */
+        transition: background 0.2s ease;
+    }
+    .mobile-nav-toggle:hover {
+        background-color: rgba(255, 255, 255, 0.3);
+    }
+    .mobile-nav-toggle-icon {
+        display: block;
+        width: 24px;
+        height: 2px;
+        background: var(--primary-color);
+        position: relative;
+        transition: background 0.2s ease;
+    }
+    .mobile-nav-toggle-icon::before,
+    .mobile-nav-toggle-icon::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background: var(--primary-color);
+        transition: transform 0.2s ease;
+    }
+    .mobile-nav-toggle-icon::before {
+        top: -8px;
+    }
+    .mobile-nav-toggle-icon::after {
+        bottom: -8px;
+    }
+    /* Optional: Add styling for active/X state */
+    /* .mobile-nav-toggle.active .mobile-nav-toggle-icon { background: transparent; } */
+    /* .mobile-nav-toggle.active .mobile-nav-toggle-icon::before, */
+    /* .mobile-nav-toggle.active .mobile-nav-toggle-icon::after { transform: rotate(45deg); } */
+    /* .mobile-nav-toggle.active .mobile-nav-toggle-icon::after { transform: rotate(-45deg); } */
+
+
+    /* Mobile Navigation Menu */
+    .nav-links {
+        display: none; /* Hidden by default */
+        flex-direction: column;
+        position: absolute; /* Position it relative to header or body */
+        top: 70px; /* Below the main header */
+        left: 0;
+        width: 100%;
+        background-color: #ffffff; /* Solid white background for minimalist look */
+        /* background-color: var(--bg-color); */ /* Or use a very light neutral from theme */
+        border-bottom: 1px solid #e2e8f0; /* Simple border */
+        padding: var(--spacing-3) 0; /* Adjusted padding */
+        box-shadow: var(--shadow-md); /* Simple shadow */
+        max-height: 0; /* Hidden initially */
+        overflow: hidden;
+        transition: max-height 0.3s ease-in-out, box-shadow 0.3s ease; /* Transition shadow too */
+        z-index: 100; /* Below toggle button if needed */
+    }
+    .nav-links.open {
+        display: flex; /* Show when open */
+        max-height: 400px; /* Adjust as needed */
+        box-shadow: var(--shadow-md); /* Consistent shadow */
+    }
+    .nav-links a {
+        padding: var(--spacing-2) var(--spacing-4); /* Slightly less vertical padding */
+        text-align: center;
+        font-size: 0.95rem; /* Adjusted font size */
+        color: var(--text-secondary); /* Muted text color for links */
+        transition: background 0.2s ease, color 0.2s ease; /* Smooth transitions for links */
+        border-bottom: 1px solid #f1f5f9; /* Subtle separator */
+    }
+    .nav-links a:hover {
+        background: #f8fafc; /* Very subtle hover background */
+        color: var(--primary-color); /* Highlight on hover */
+        transform: none; /* Remove horizontal transform for minimalist look */
+    }
+    .nav-links a:last-child {
+        border-bottom: none;
+    }
+
+    /* Adjustments to header elements */
+    .header-container {
+        padding: var(--spacing-2) var(--spacing-3); /* Reduced padding */
+        flex-wrap: wrap; /* Allow wrapping if needed */
+        justify-content: space-between; /* Default for flex */
+    }
+
+    .logo a {
+        font-size: 1.15rem; /* Slightly smaller logo */
+        order: 1; /* Ensure logo is first */
+    }
+    /* The hamburger is order: 2, nav-actions order: 3 */
+
+    .nav-actions {
+        gap: var(--spacing-1); /* Reduced gap for icons from 16px to 8px */
+        order: 3; /* Place actions after nav links/hamburger */
+        width: auto; /* Let actions take natural width */
+        justify-content: flex-end; /* Align actions to the right */
+        margin-left: auto; /* Push actions to the far right */
+        margin-top: 0; /* Remove top margin that was for column layout */
+    }
+
+    .search-bar {
+        flex-grow: 0; /* Prevent search bar from growing excessively */
+        max-width: 140px; /* Reduced max-width for search bar */
+        width: auto; /* Let it fill space */
+    }
+    .search-bar input {
+        width: auto; /* Allow input to fill space */
+        font-size: 0.8rem;
+    }
+    .search-bar:focus-within {
+        background: white; /* Keep focus style */
+    }
+
+    /* Profile dropdown adjustments for mobile */
+    .profile-dropdown .dropdown-content {
+        min-width: 150px; /* Reduced min-width for dropdown */
+        right: var(--spacing-2); /* Align with right edge, with some spacing */
+    }
+    .profile-name {
+        max-width: 80px; /* Reduced max-width for name */
+    }
+}
+
+/* Additional adjustments for very small screens */
+@media (max-width: 500px) {
+    .product-grid {
+        grid-template-columns: 1fr; /* Force single column for very small screens */
+    }
+}
+
+@media (max-width: 400px) {
+    .footer-content {
+        grid-template-columns: 1fr; /* Force single column for footer */
+    }
+    .hero-title {
+        font-size: clamp(2.5rem, 10vw, 6rem); /* Further reduce hero title */
+    }
+    .hero-subtitle {
+        font-size: clamp(0.9rem, 3vw, 1.5rem);
+    }
+    .hero-actions .btn {
+        font-size: 0.85rem;
+        padding: 12px 20px;
+    }
+    .section-tagline {
+        font-size: 0.75rem;
+        letter-spacing: 0.3em;
     }
 }
 
@@ -1116,4 +1278,3 @@ a {
     align-items: center;
     justify-content: center;
 }
-
