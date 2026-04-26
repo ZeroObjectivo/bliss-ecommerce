@@ -143,6 +143,13 @@ class ProductModel {
         return $this->db->execute();
     }
 
+    public function updateFeaturedGradient($product_id, $gradient) {
+        $this->db->query("UPDATE featured_products SET bg_gradient = :gradient WHERE product_id = :id");
+        $this->db->bind(':gradient', $gradient);
+        $this->db->bind(':id', $product_id);
+        return $this->db->execute();
+    }
+
     public function getNewArrivals($limit = null) {
         // Strictly filter products with 'New Arrival' in category string
         $sql = "SELECT p.*, CASE WHEN (fp.product_id IS NOT NULL OR p.category LIKE '%Featured%') THEN 1 ELSE 0 END as is_featured 

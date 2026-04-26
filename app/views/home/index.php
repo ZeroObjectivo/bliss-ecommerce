@@ -150,7 +150,7 @@
 <section class="container featured-section">
     <div class="section-header">
         <h2>Featured Drops</h2>
-        <a href="/php/Webdev/public/catalog" class="view-all">View All</a>
+        <a href="/php/Webdev/public/catalog" class="view-all">View All <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg></a>
     </div>
     <div class="product-grid">
         <?php foreach($data['products'] as $product): ?>
@@ -164,7 +164,7 @@
 <section class="container featured-section">
     <div class="section-header">
         <h2>New Arrivals</h2>
-        <a href="/php/Webdev/public/catalog?filter=new" class="view-all">View All</a>
+        <a href="/php/Webdev/public/catalog?filter=new" class="view-all">View All <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg></a>
     </div>
     <div class="product-grid">
         <?php foreach($data['newArrivals'] as $product): ?>
@@ -178,7 +178,7 @@
 <section class="container featured-section">
     <div class="section-header">
         <h2>Best Sellers</h2>
-        <a href="/php/Webdev/public/catalog?filter=best" class="view-all">View All</a>
+        <a href="/php/Webdev/public/catalog?filter=best" class="view-all">View All <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg></a>
     </div>
     <div class="product-grid">
         <?php foreach($data['bestSellers'] as $product): ?>
