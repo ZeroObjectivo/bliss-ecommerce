@@ -117,11 +117,16 @@
         <main class="catalog-main">
             <div class="catalog-header">
                 <div class="header-left-group">
+                    <button type="button" id="desktop-filter-toggle" class="desktop-filter-toggle">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
+                        <span>Hide Filters</span>
+                    </button>
                     <h2><?= htmlspecialchars($data['title']) ?></h2>
                 </div>
                 <div class="sort-by-premium">
                     <div class="custom-select-wrapper">
                         <select id="catalog-sort" class="premium-select">
+                            <option value="default" selected>Sort By: Default</option>
                             <option value="featured">Sort By: Featured</option>
                             <option value="newest">Sort By: Newest</option>
                             <option value="low-to-high">Price: Low to High</option>
@@ -166,7 +171,7 @@
 }
 
 .desktop-filter-toggle {
-    display: flex;
+    display: none; /* Hidden by default on mobile */
     align-items: center;
     gap: 10px;
     background: white;
@@ -179,6 +184,12 @@
     cursor: pointer;
     transition: all 0.2s ease;
     box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+@media (min-width: 769px) {
+    .desktop-filter-toggle {
+        display: flex; /* Visible on desktop */
+    }
 }
 
 .desktop-filter-toggle:hover {
@@ -196,7 +207,7 @@
 }
 
 .catalog-page.sidebar-hidden .catalog-main {
-    flex: 1;
+    flex-grow: 1;
     width: 100%;
 }
 
@@ -458,6 +469,21 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             e.stopPropagation();
             toggleFilter(false);
+        });
+    }
+
+    // Desktop Filter Toggle
+    const desktopFilterToggle = document.getElementById('desktop-filter-toggle');
+    if (desktopFilterToggle) {
+        desktopFilterToggle.addEventListener('click', () => {
+            const catalogPage = document.querySelector('.catalog-page');
+            catalogPage.classList.toggle('sidebar-hidden');
+            const span = desktopFilterToggle.querySelector('span');
+            if (catalogPage.classList.contains('sidebar-hidden')) {
+                span.innerText = 'Show Filters';
+            } else {
+                span.innerText = 'Hide Filters';
+            }
         });
     }
 
