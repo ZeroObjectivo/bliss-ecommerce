@@ -54,6 +54,10 @@ class Cart extends Controller {
             $oldKey = $_POST['old_key'] ?? '';
 
             if (empty($size)) {
+                if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+                    echo json_encode(['success' => false, 'error' => 'Please select a size.']);
+                    exit;
+                }
                 header("Location: " . ($_SERVER['HTTP_REFERER'] ?? "/php/Webdev/public/cart"));
                 exit;
             }
@@ -62,6 +66,48 @@ class Cart extends Controller {
 
             if (!isset($_SESSION['cart'])) {
                 $_SESSION['cart'] = [];
+            }
+
+            // Check Stock
+            $productModel = $this->model('ProductModel');
+            $product = $productModel->getProductById($id);
+            if (!$product) {
+                if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+                    echo json_encode(['success' => false, 'error' => 'Product not found.']);
+                    exit;
+                }
+                header("Location: /php/Webdev/public/cart");
+                exit;
+            }
+
+            $sizes = json_decode($product['sizes'], true);
+            $available = $sizes[$size] ?? 0;
+
+            $newQty = $quantity;
+            if ($isEdit && !empty($oldKey) && isset($_SESSION['cart'][$oldKey])) {
+                // If editing, we take the quantity from the old item
+                $newQty = $_SESSION['cart'][$oldKey];
+                // If the target size already exists in cart (and it's a different key), we must sum them to check stock
+                if ($oldKey !== $cartKey && isset($_SESSION['cart'][$cartKey])) {
+                    $newQty += $_SESSION['cart'][$cartKey];
+                }
+            } else if (isset($_SESSION['cart'][$cartKey])) {
+                // If adding more of the same, sum them up
+                $newQty = $_SESSION['cart'][$cartKey] + $quantity;
+            }
+
+            if ($newQty > $available) {
+                if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+                    $msg = $available <= 0 ? "This size is now out of stock." : "Only " . $available . " items in stock for this size.";
+                    if (isset($_SESSION['cart'][$cartKey]) && !$isEdit) {
+                        $inCart = $_SESSION['cart'][$cartKey];
+                        $msg = "You already have $inCart in cart. Only $available available.";
+                    }
+                    echo json_encode(['success' => false, 'error' => $msg]);
+                    exit;
+                }
+                header("Location: " . ($_SERVER['HTTP_REFERER'] ?? "/php/Webdev/public/cart") . "?error=insufficient_stock");
+                exit;
             }
 
             if ($isEdit && !empty($oldKey) && isset($_SESSION['cart'][$oldKey])) {
