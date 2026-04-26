@@ -538,4 +538,86 @@ document.addEventListener('DOMContentLoaded', () => {
         sidebarOverlay.addEventListener('click', () => toggle(false));
         profileSidebar.querySelectorAll('nav a').forEach(link => link.addEventListener('click', () => toggle(false)));
     }
+
+    // Global Favorites Toggle Handler
+    document.addEventListener('submit', (e) => {
+        if (e.target.classList.contains('favorite-toggle-form')) {
+            e.preventDefault();
+            const form = e.target;
+            const btn = form.querySelector('button');
+            const svg = btn.querySelector('svg');
+            const span = btn.querySelector('span');
+            const formData = new FormData(form);
+
+            btn.disabled = true;
+
+            fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    if (form.dataset.removeItem === 'true' && !data.isFavorite) {
+                        const itemCard = form.closest('.favorite-item');
+                        if (itemCard) {
+                            itemCard.style.opacity = '0';
+                            itemCard.style.transform = 'translateY(10px)';
+                            itemCard.style.transition = 'all 0.3s ease';
+                            setTimeout(() => {
+                                itemCard.remove();
+                                if (document.querySelectorAll('.favorite-item').length === 0) {
+                                    location.reload(); // Show empty state
+                                }
+                            }, 300);
+                        }
+                    } else {
+                        // Update Button State
+                        if (data.isFavorite) {
+                            btn.classList.add('active');
+                            svg.setAttribute('fill', 'currentColor');
+                            if (span) span.textContent = 'Remove from Favorites';
+                            btn.setAttribute('title', 'Remove from Favorites');
+                        } else {
+                            btn.classList.remove('active');
+                            svg.setAttribute('fill', 'none');
+                            if (span) span.textContent = 'Add To Favorites';
+                            btn.setAttribute('title', 'Add to Favorites');
+                        }
+                    }
+
+                    // Update Header Favorite Badge
+                    const favBadge = document.querySelector('.fav-link .fav-badge');
+                    if (favBadge) {
+                        favBadge.textContent = data.favCount;
+                        favBadge.style.display = data.favCount > 0 ? 'flex' : 'none';
+                    }
+
+                    if (typeof window.showToast === 'function') {
+                        window.showToast(data.message);
+                    }
+                } else if (data.redirect) {
+                    window.location.href = data.redirect;
+                } else if (data.error) {
+                    if (typeof window.showToast === 'function') {
+                        window.showToast(data.error, 'error');
+                    } else {
+                        alert(data.error);
+                    }
+                }
+            })
+            .catch(err => {
+                console.error('Favorites Error:', err);
+                if (typeof window.showToast === 'function') {
+                    window.showToast('An error occurred. Please try again.', 'error');
+                }
+            })
+            .finally(() => {
+                btn.disabled = false;
+            });
+        }
+    });
 });

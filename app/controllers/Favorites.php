@@ -22,6 +22,10 @@ class Favorites extends Controller {
     public function toggle() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['product_id'])) {
             if (!isset($_SESSION['user_id'])) {
+                if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest') {
+                    echo json_encode(['success' => false, 'error' => 'Please login to add to favorites.', 'redirect' => '/php/Webdev/public/auth/login']);
+                    exit;
+                }
                 header("Location: /php/Webdev/public/auth/login");
                 exit;
             }
@@ -34,14 +38,28 @@ class Favorites extends Controller {
                 $_SESSION['favorites_list'] = [];
             }
 
-            if (in_array($productId, $_SESSION['favorites_list'])) {
+            $isFavorite = in_array($productId, $_SESSION['favorites_list']);
+
+            if ($isFavorite) {
                 // Remove
                 $favoriteModel->removeFavorite($userId, $productId);
                 $_SESSION['favorites_list'] = array_diff($_SESSION['favorites_list'], [$productId]);
+                $newState = false;
             } else {
                 // Add
                 $favoriteModel->addFavorite($userId, $productId);
                 $_SESSION['favorites_list'][] = (int)$productId;
+                $newState = true;
+            }
+
+            if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest') {
+                echo json_encode([
+                    'success' => true, 
+                    'isFavorite' => $newState,
+                    'favCount' => count($_SESSION['favorites_list']),
+                    'message' => $newState ? 'Added to favorites!' : 'Removed from favorites!'
+                ]);
+                exit;
             }
 
             // Redirect back or to favorites page

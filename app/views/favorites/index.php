@@ -41,7 +41,7 @@
                                     </button>
                                     
                                     <!-- Remove from Favorites Form (Toggle) -->
-                                    <form action="/php/Webdev/public/favorites/toggle" method="POST" style="display:inline;">
+                                    <form action="/php/Webdev/public/favorites/toggle" method="POST" style="display:inline;" class="favorite-toggle-form" data-remove-item="true">
                                         <input type="hidden" name="product_id" value="<?= $product['id'] ?>">
                                         <button type="submit" class="remove-link" style="background:none; border:none; padding:0; cursor:pointer; margin-left:15px;">Remove</button>
                                     </form>
