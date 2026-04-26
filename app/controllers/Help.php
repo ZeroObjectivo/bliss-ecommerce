@@ -128,12 +128,18 @@ class Help extends Controller {
 
             $insertedId = $messageModel->createMessage($data);
             if ($insertedId) {
+                $newMessage = $messageModel->getMessageById($insertedId);
                 if (isset($_POST['redirect']) && $_POST['redirect'] === 'profile/inbox' || (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest')) {
-                    $newMessage = $messageModel->getMessageById($insertedId);
-                    echo json_encode(['success' => true, 'message' => 'message_sent', 'ticket' => $newMessage]);
+                    echo json_encode([
+                        'success' => true, 
+                        'message' => 'message_sent', 
+                        'ticket' => $newMessage,
+                        'ticket_number' => $newMessage['ticket_number'],
+                        'is_logged_in' => isset($_SESSION['user_id'])
+                    ]);
                     exit;
                 }
-                header('Location: /php/Webdev/public/' . $redirect . '?success=message_sent');
+                header('Location: /php/Webdev/public/' . $redirect . '?success=message_sent&t=' . $newMessage['ticket_number']);
             } else {
                 if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
                     echo json_encode(['success' => false, 'message' => 'failed_to_send']);

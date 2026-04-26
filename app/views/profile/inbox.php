@@ -398,10 +398,14 @@ document.addEventListener('DOMContentLoaded', () => {
             if (data.success) {
                 document.getElementById('new-ticket-modal').classList.remove('active');
                 form.reset();
-                window.showToast('Your concern has been successfully submitted to our support team.');
+                window.showToast('Your concern has been submitted successfully.');
                 if (document.querySelector('.empty-state-messenger')) { location.reload(); return; }
                 appendTicketToSidebar(data.ticket);
-            } else alert('Failed to submit ticket.');
+            } else window.showToast('Failed to submit your concern. Please try again.', 'error');
+        })
+        .catch(err => {
+            console.error('Error:', err);
+            window.showToast('An unexpected error occurred.', 'error');
         });
     });
 
@@ -430,8 +434,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     activeItem.querySelector('.status-dot').className = 'status-dot active';
                     activeItem.dataset.status = 'active';
                 }
-                window.showToast('Your reply has been transmitted successfully.');
-            } else alert('Failed to send reply.');
+                window.showToast('Your reply has been sent successfully.');
+            } else window.showToast('Failed to send your reply. Please try again.', 'error');
+        })
+        .catch(err => {
+            console.error('Error:', err);
+            window.showToast('An unexpected error occurred.', 'error');
         });
     });
 });

@@ -80,12 +80,23 @@
             <!-- Form Side -->
             <div class="contact-form-side reveal-on-scroll" style="transition-delay: 0.2s;">
                 <?php if(isset($_GET['success'])): ?>
-                    <div class="alert alert-success-proper" id="success-alert">
+                    <?php $t = $_GET['t'] ?? ''; ?>
+                    <div class="alert alert-success-proper" id="success-alert" style="height: auto; padding: 20px 25px;">
                         <div class="alert-icon-circle">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
                         </div>
-                        <span class="alert-text">Your concern has been successfully submitted to our support team.</span>
-                        <button class="alert-close-btn" onclick="closeSuccessAlert()">
+                        <div class="alert-content" style="flex-grow: 1; margin-right: 15px;">
+                            <div style="font-weight: 800; font-size: 1rem; margin-bottom: 4px;">Concern Submitted Successfully</div>
+                            <div style="font-size: 0.85rem; line-height: 1.4; opacity: 0.9;">
+                                Your ticket number is <strong style="text-decoration: underline;"><?= htmlspecialchars($t) ?></strong>.
+                                <?php if(isset($_SESSION['user_id'])): ?>
+                                    You can track its progress in your <a href="/php/Webdev/public/profile/inbox" style="color: inherit; font-weight: 800;">Inbox</a>.
+                                <?php else: ?>
+                                    Please <strong>copy and save</strong> this number to track your request.
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                        <button class="alert-close-btn" onclick="closeSuccessAlert()" style="align-self: flex-start; margin-top: -5px;">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                         </button>
                         <div class="alert-progress-bar"></div>
@@ -104,8 +115,9 @@
                             closeSuccessAlert();
                             const url = new URL(window.location);
                             url.searchParams.delete('success');
+                            url.searchParams.delete('t');
                             window.history.replaceState({}, document.title, url);
-                        }, 3000);
+                        }, 8000);
                     </script>
                 <?php endif; ?>
                 <?php if(isset($_GET['error'])): ?>
@@ -188,7 +200,7 @@ document.getElementById('contact-page-form')?.addEventListener('submit', functio
     .then(data => {
         if (data.success) {
             form.reset();
-            showDynamicAlert('Your concern has been successfully submitted to our support team.');
+            showDynamicAlert('Your concern has been successfully submitted.', data.ticket_number, data.is_logged_in);
         } else {
             alert('Failed to send message. Please try again.');
         }
@@ -196,14 +208,22 @@ document.getElementById('contact-page-form')?.addEventListener('submit', functio
     .catch(err => console.error('Error:', err));
 });
 
-function showDynamicAlert(message) {
+function showDynamicAlert(message, ticketNumber = '', isLoggedIn = false) {
     const alertHtml = `
-        <div class="alert alert-success-proper" id="success-alert">
+        <div class="alert alert-success-proper" id="success-alert" style="height: auto; padding: 20px 25px;">
             <div class="alert-icon-circle">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
             </div>
-            <span class="alert-text">${message}</span>
-            <button class="alert-close-btn" onclick="closeSuccessAlert()">
+            <div class="alert-content" style="flex-grow: 1; margin-right: 15px; text-align: left;">
+                <div style="font-weight: 800; font-size: 1rem; margin-bottom: 4px;">Concern Submitted Successfully</div>
+                <div style="font-size: 0.85rem; line-height: 1.4; opacity: 0.9;">
+                    Your ticket number is <strong style="text-decoration: underline;">${ticketNumber}</strong>.
+                    ${isLoggedIn 
+                        ? `You can track its progress in your <a href="/php/Webdev/public/profile/inbox" style="color: inherit; font-weight: 800;">Inbox</a>.` 
+                        : `Please <strong>copy and save</strong> this number to track your request.`}
+                </div>
+            </div>
+            <button class="alert-close-btn" onclick="closeSuccessAlert()" style="align-self: flex-start; margin-top: -5px;">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
             </button>
             <div class="alert-progress-bar"></div>
@@ -215,6 +235,6 @@ function showDynamicAlert(message) {
     
     setTimeout(() => {
         closeSuccessAlert();
-    }, 3000);
+    }, 8000);
 }
 </script>

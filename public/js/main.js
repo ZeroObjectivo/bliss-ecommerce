@@ -41,31 +41,45 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (successKey) {
         const messages = {
-            'profile_updated': 'Profile updated successfully!',
-            'info_updated': 'Profile updated successfully!',
-            'password_changed': 'Your password has been changed.',
-            'password_updated': 'Your password has been changed.',
-            'address_added': 'New address saved to your account.',
-            'address_updated': 'Address updated successfully.',
-            'address_deleted': 'Address removed successfully.',
-            'default_set': 'Default address updated.',
-            'default_address_set': 'Default address updated.',
-            'avatar_updated': 'Profile picture updated!',
-            'order_completed': 'Order marked as completed!'
+            'login_success': 'Welcome back! You have successfully signed in.',
+            'registered': 'Welcome to BLISS! Your account has been created successfully.',
+            'profile_updated': 'Your profile has been updated successfully.',
+            'info_updated': 'Your profile information has been updated successfully.',
+            'password_changed': 'Your password has been changed successfully.',
+            'password_updated': 'Your password has been changed successfully.',
+            'address_added': 'The new address has been saved to your account.',
+            'address_updated': 'The address has been updated successfully.',
+            'address_deleted': 'The address has been removed successfully.',
+            'default_set': 'Your default address has been updated.',
+            'default_address_set': 'Your default address has been updated.',
+            'avatar_updated': 'Your profile picture has been updated successfully.',
+            'order_completed': 'The order has been marked as completed.',
+            'message_sent': 'Your message has been sent to our support team.',
+            'reply_sent': 'Your reply has been sent successfully.',
+            'status_updated': 'The status has been updated successfully.'
         };
-        const msg = messages[successKey] || successKey.replace(/_/g, ' ') + '!';
+        const msg = messages[successKey] || successKey.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) + ' successfully!';
         window.showToast(msg);
         const newUrl = new URL(window.location);
         newUrl.searchParams.delete('success');
-        window.history.replaceState({}, document.title, newUrl);
+        window.history.replaceState({}, document.title, newUrl.pathname + newUrl.search);
     }
 
     if (errorKey) {
-        const msg = errorKey.replace(/_/g, ' ') + '. Please try again.';
+        const errors = {
+            'invalid_credentials': 'The email or password you entered is incorrect.',
+            'email_exists': 'This email address is already registered.',
+            'insufficient_stock': 'Sorry, we do not have enough stock for the selected quantity.',
+            'unauthorized': 'You do not have permission to access this page.',
+            'failed_to_send': 'We encountered an error while sending your message. Please try again.',
+            'auth_required': 'Please sign in to continue.',
+            'reply_failed': 'Failed to send your reply. Please try again.'
+        };
+        const msg = errors[errorKey] || errorKey.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) + '. Please try again.';
         window.showToast(msg, 'error');
         const newUrl = new URL(window.location);
         newUrl.searchParams.delete('error');
-        window.history.replaceState({}, document.title, newUrl);
+        window.history.replaceState({}, document.title, newUrl.pathname + newUrl.search);
     }
 
     // Search Functionality
