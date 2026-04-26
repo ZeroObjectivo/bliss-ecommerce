@@ -76,18 +76,34 @@
         <!-- Inventory & Categories -->
         <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 40px;">
             <div>
-                <label style="text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.75rem; color: var(--admin-text-muted); display: block; margin-bottom: 20px;">Inventory by Size</label>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <label style="text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.75rem; color: var(--admin-text-muted); margin: 0;">Inventory by Size</label>
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <input type="number" id="fill-all-input" placeholder="All" style="width: 60px; padding: 5px 10px; border-radius: 8px; border: 1px solid var(--admin-border); font-size: 0.85rem; font-weight: 600;">
+                        <button type="button" onclick="fillAllInventory()" style="background: var(--admin-bg-soft); border: 1px solid var(--admin-border); padding: 5px 12px; border-radius: 8px; font-size: 0.75rem; font-weight: 700; cursor: pointer; color: var(--admin-text-main); transition: all 0.2s;" onmouseover="this.style.background='#e2e8f0'" onmouseout="this.style.background='var(--admin-bg-soft)'">Fill All</button>
+                    </div>
+                </div>
                 <?php $sizesStock = json_decode($data['product']['sizes'], true) ?: []; ?>
                 <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
                     <?php for($i=7; $i<=12; $i++): ?>
                         <?php $sizeKey = "US " . $i; ?>
                         <div style="background: var(--admin-bg-soft); padding: 15px; border-radius: 12px; border: 1px solid var(--admin-border); display: flex; align-items: center; justify-content: space-between;">
                             <span style="font-weight: 700; color: var(--admin-text-main);"><?= $sizeKey ?></span>
-                            <input type="number" name="size_<?= $i ?>" value="<?= $sizesStock[$sizeKey] ?? 0 ?>" min="0" required style="width: 60px; text-align: center; border: none; background: white; padding: 8px; border-radius: 8px; font-weight: 600; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+                            <input type="number" name="size_<?= $i ?>" class="size-inventory-input" value="<?= $sizesStock[$sizeKey] ?? 0 ?>" min="0" required style="width: 60px; text-align: center; border: none; background: white; padding: 8px; border-radius: 8px; font-weight: 600; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
                         </div>
                     <?php endfor; ?>
                 </div>
             </div>
+
+            <script>
+            function fillAllInventory() {
+                const val = document.getElementById('fill-all-input').value;
+                if (val === '') return;
+                document.querySelectorAll('.size-inventory-input').forEach(input => {
+                    input.value = val;
+                });
+            }
+            </script>
 
             <div>
                 <label style="text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.75rem; color: var(--admin-text-muted); display: block; margin-bottom: 20px;">Categories</label>
