@@ -20,7 +20,6 @@
 </head>
 
 <script src="/php/Webdev/public/js/mobile-menu.js"></script>
-<script src="/php/Webdev/public/js/main.js?v=<?= time() ?>"></script>
 
 <body>
 
