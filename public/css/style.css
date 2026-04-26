@@ -114,7 +114,7 @@ a {
     position: relative;
     white-space: nowrap;
     width: 100%;
-    z-index: 2001; /* Higher than header to stay on top if needed */
+    z-index: 1000; /* Lower than header and overlays */
 }
 
 .marquee {

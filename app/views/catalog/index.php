@@ -7,13 +7,14 @@
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
                 Filter By
             </button>
-            <div class="mobile-sort-container">
-                <select id="catalog-sort-mobile">
+            <div class="mobile-sort-container custom-select-wrapper">
+                <select id="catalog-sort-mobile" class="premium-select">
                     <option value="featured">Sort: Featured</option>
                     <option value="newest">Sort: Newest</option>
                     <option value="low-to-high">Low to High</option>
                     <option value="high-to-low">High to Low</option>
                 </select>
+                <svg class="select-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </div>
         </div>
 
@@ -116,19 +117,18 @@
         <main class="catalog-main">
             <div class="catalog-header">
                 <div class="header-left-group">
-                    <button type="button" id="desktop-filter-toggle" class="desktop-filter-toggle">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
-                        <span>Hide Filters</span>
-                    </button>
                     <h2><?= htmlspecialchars($data['title']) ?></h2>
                 </div>
-                <div class="sort-by">
-                    <select id="catalog-sort">
-                        <option value="featured">Sort By: Featured</option>
-                        <option value="newest">Sort By: Newest</option>
-                        <option value="low-to-high">Price: Low to High</option>
-                        <option value="high-to-low">Price: High to Low</option>
-                    </select>
+                <div class="sort-by-premium">
+                    <div class="custom-select-wrapper">
+                        <select id="catalog-sort" class="premium-select">
+                            <option value="featured">Sort By: Featured</option>
+                            <option value="newest">Sort By: Newest</option>
+                            <option value="low-to-high">Price: Low to High</option>
+                            <option value="high-to-low">Price: High to Low</option>
+                        </select>
+                        <svg class="select-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </div>
                 </div>
             </div>
 
@@ -216,6 +216,69 @@
     overflow: hidden;
 }
 
+.sort-by-premium {
+    min-width: 220px;
+}
+
+.custom-select-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.premium-select {
+    width: 100%;
+    padding: 12px 40px 12px 18px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    background: white;
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    cursor: pointer;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+}
+
+.premium-select:hover {
+    border-color: #cbd5e1;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+}
+
+.premium-select:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+}
+
+.select-chevron {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: var(--text-secondary);
+    transition: transform 0.3s ease;
+}
+
+.custom-select-wrapper:hover .select-chevron {
+    color: var(--accent-color);
+}
+
+#catalog-sort-mobile.premium-select {
+    padding: 15px 40px 15px 18px;
+    font-size: 0.9rem;
+    text-align: left;
+    text-transform: none;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+
 .sidebar-header-mobile {
     display: none;
     justify-content: space-between;
@@ -276,7 +339,7 @@
         left: -100% !important;
         width: 100% !important;
         height: 100% !important;
-        z-index: 2000 !important;
+        z-index: 5000 !important; /* Higher than announcement bar (1000) and header (2000) */
         background: #fff !important;
         border-radius: 0 !important;
         padding: var(--spacing-5) !important;
@@ -395,21 +458,6 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             e.stopPropagation();
             toggleFilter(false);
-        });
-    }
-
-    // Desktop Filter Toggle
-    const desktopFilterToggle = document.getElementById('desktop-filter-toggle');
-    if (desktopFilterToggle) {
-        desktopFilterToggle.addEventListener('click', () => {
-            const catalogPage = document.querySelector('.catalog-page');
-            catalogPage.classList.toggle('sidebar-hidden');
-            const span = desktopFilterToggle.querySelector('span');
-            if (catalogPage.classList.contains('sidebar-hidden')) {
-                span.innerText = 'Show Filters';
-            } else {
-                span.innerText = 'Hide Filters';
-            }
         });
     }
 
