@@ -46,7 +46,7 @@
     <h3 style="color: white; margin-bottom: var(--spacing-3); font-size: 0.9rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; text-transform: uppercase; letter-spacing: 0.025em;">Management Console</h3>
     
     <div class="quick-actions-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
-        <?php if ($_SESSION['user_role'] === 'superadmin'): ?>
+        <?php if ($_SESSION['admin_role'] === 'superadmin'): ?>
         <a href="/php/Webdev/public/superadmin/product_add" class="quick-action-btn dark">
             <div class="qa-icon" style="background: rgba(255,255,255,0.1); color: white;">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>

@@ -69,7 +69,7 @@ foreach($tabs as $tab):
                                 <button type="submit" class="btn-admin" style="background: var(--admin-card); border: 1px solid var(--admin-border); color: var(--admin-accent); padding: 6px 10px; font-size: 0.75rem;">Reset Pass</button>
                             </form>
 
-                            <?php if ($_SESSION['user_role'] === 'superadmin'): ?>
+                            <?php if ($_SESSION['admin_role'] === 'superadmin'): ?>
                                 <a href="/php/Webdev/public/superadmin/customer_delete/<?= $user['id'] ?>" 
                                    class="btn-admin btn-admin-danger" 
                                    onclick="return confirm('Delete this customer permanently?')"

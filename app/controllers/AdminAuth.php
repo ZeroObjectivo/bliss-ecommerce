@@ -38,9 +38,11 @@ class AdminAuth extends Controller {
     }
 
     public function logout() {
-        unset($_SESSION['admin_id']);
-        unset($_SESSION['admin_name']);
-        unset($_SESSION['admin_role']);
+        // To properly logout from admin when auto-bridge is active, 
+        // we must clear the entire session otherwise the auto-bridge 
+        // in login() will immediately log the user back in.
+        session_unset();
+        session_destroy();
         header("Location: /php/Webdev/public/adminauth/login");
         exit;
     }

@@ -8,7 +8,10 @@
                 <input type="email" name="email" required placeholder="name@example.com">
             </div>
             <div class="form-group">
-                <label>Password</label>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <label>Password</label>
+                    <a href="/php/Webdev/public/auth/forgot_password" style="font-size: 0.8rem; color: var(--accent-color); text-decoration: none;">Forgot Password?</a>
+                </div>
                 <input type="password" name="password" required placeholder="Enter your password">
             </div>
             <button type="submit" class="btn btn-primary w-100">Sign In</button>
