@@ -146,6 +146,12 @@ class Profile extends Controller {
 
             if (password_verify($current, $user['password'])) {
                 if ($new === $confirm) {
+                    $val = $this->validatePassword($new);
+                    if ($val !== true) {
+                        header("Location: /php/Webdev/public/profile?error=weak_password&msg=" . urlencode($val));
+                        exit;
+                    }
+
                     $hashed = password_hash($new, PASSWORD_DEFAULT);
                     $userModel->resetUserPassword($_SESSION['user_id'], $hashed);
                     header("Location: /php/Webdev/public/profile?success=password_changed");

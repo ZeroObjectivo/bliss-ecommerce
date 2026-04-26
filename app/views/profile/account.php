@@ -194,11 +194,19 @@
                         <div class="form-grid">
                             <div class="form-group">
                                 <label>New Password</label>
-                                <input type="password" name="new_password" required>
+                                <input type="password" name="new_password" required 
+                                       pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$" 
+                                       title="Must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one number."
+                                       placeholder="At least 8 characters + complexity">
+                                <small style="display: block; margin-top: 5px; color: #64748b; font-size: 0.75rem;">
+                                    Min. 8 characters, including uppercase, lowercase, and a number.
+                                </small>
                             </div>
                             <div class="form-group">
                                 <label>Confirm New Password</label>
-                                <input type="password" name="confirm_password" required>
+                                <input type="password" name="confirm_password" required 
+                                       pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$"
+                                       placeholder="Repeat new password">
                             </div>
                         </div>
                         <button type="submit" class="btn btn-secondary">Update Password</button>

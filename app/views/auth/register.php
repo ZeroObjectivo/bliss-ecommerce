@@ -13,7 +13,13 @@
             </div>
             <div class="form-group">
                 <label>Password</label>
-                <input type="password" name="password" required minlength="6" placeholder="Create a password">
+                <input type="password" name="password" required 
+                       pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$" 
+                       title="Must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one number."
+                       placeholder="Create a password">
+                <small style="display: block; margin-top: 5px; color: #64748b; font-size: 0.75rem; line-height: 1.4;">
+                    Minimum 8 characters, including uppercase, lowercase, and a number.
+                </small>
             </div>
 
             <hr style="margin: 20px 0; border: none; border-top: 1px solid rgba(0,0,0,0.1);">

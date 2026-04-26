@@ -24,13 +24,21 @@
                     
                     <div class="form-group">
                         <label style="font-weight: 700; color: #000; margin-bottom: 8px; display: block;">New Password</label>
-                        <input type="password" name="password" required minlength="6" placeholder="At least 6 characters" 
+                        <input type="password" name="password" required 
+                               pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$" 
+                               title="Must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one number."
+                               placeholder="Min. 8 characters + complexity" 
                                style="width: 100%; padding: 14px 18px; border: 1px solid #e2e8f0; border-radius: 12px; background: #f8fafc; font-family: inherit;">
+                        <small style="display: block; margin-top: 5px; color: #64748b; font-size: 0.75rem; line-height: 1.4;">
+                            Must be at least 8 characters, with uppercase, lowercase, and a number.
+                        </small>
                     </div>
                     
                     <div class="form-group" style="margin-bottom: 30px;">
                         <label style="font-weight: 700; color: #000; margin-bottom: 8px; display: block;">Confirm Password</label>
-                        <input type="password" name="password_confirm" required minlength="6" placeholder="Repeat new password"
+                        <input type="password" name="password_confirm" required 
+                               pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$"
+                               placeholder="Repeat new password"
                                style="width: 100%; padding: 14px 18px; border: 1px solid #e2e8f0; border-radius: 12px; background: #f8fafc; font-family: inherit;">
                     </div>
                     

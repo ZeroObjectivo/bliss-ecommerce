@@ -19,7 +19,12 @@ class Auth extends Controller {
             $userModel = $this->model('User');
             $user = $userModel->findUserByEmail($_POST['email']);
 
-            if ($user && password_verify($_POST['password'], $user['password'])) {
+            if (!$user) {
+                header("Location: /php/Webdev/public/auth/login?error=user_not_found");
+                exit;
+            }
+
+            if (password_verify($_POST['password'], $user['password'])) {
                 // Check if user is suspended
                 if ($user['status'] === 'inactive') {
                     header("Location: /php/Webdev/public/auth/login?error=suspended");
@@ -128,10 +133,26 @@ class Auth extends Controller {
     public function process_register() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $userModel = $this->model('User');
+            
+            // Check if email already exists
+            if ($userModel->findUserByEmail($_POST['email'])) {
+                header("Location: /php/Webdev/public/auth/login?error=duplicate_email&email=" . urlencode($_POST['email']));
+                exit;
+            }
+
+            $password = $_POST['password'];
+            $val = $this->validatePassword($password);
+            if ($val !== true) {
+                // Pass error via session or query param
+                header("Location: /php/Webdev/public/auth/register?error=weak_password&msg=" . urlencode($val));
+                exit;
+            }
+
+            $userModel = $this->model('User');
             $userModel->register([
                 'name' => $_POST['name'],
                 'email' => $_POST['email'],
-                'password' => password_hash($_POST['password'], PASSWORD_DEFAULT),
+                'password' => password_hash($password, PASSWORD_DEFAULT),
                 'security_q1' => $_POST['security_question_1'],
                 'security_a1' => strtolower(trim($_POST['security_answer_1'])),
                 'security_q2' => $_POST['security_question_2'],
@@ -139,7 +160,7 @@ class Auth extends Controller {
                 'security_q3' => $_POST['security_question_3'],
                 'security_a3' => strtolower(trim($_POST['security_answer_3']))
             ]);
-            header("Location: /php/Webdev/public/auth/login");
+            header("Location: /php/Webdev/public/auth/login?success=registered");
             exit;
         }
     }
@@ -177,6 +198,15 @@ class Auth extends Controller {
 
             if ($_POST['password'] !== $_POST['password_confirm']) {
                 $data = ['title' => 'Reset Password', 'token' => $token, 'error' => 'Passwords do not match.'];
+                $this->view('templates/header', $data);
+                $this->view('auth/reset', $data);
+                $this->view('templates/footer');
+                return;
+            }
+
+            $val = $this->validatePassword($_POST['password']);
+            if ($val !== true) {
+                $data = ['title' => 'Reset Password', 'token' => $token, 'error' => $val];
                 $this->view('templates/header', $data);
                 $this->view('auth/reset', $data);
                 $this->view('templates/footer');
