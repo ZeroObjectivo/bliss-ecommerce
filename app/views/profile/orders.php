@@ -1,7 +1,16 @@
 <div class="container py-8">
+    <!-- Sidebar Overlay for Mobile -->
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <!-- Mobile Profile Navigation Trigger -->
+    <button class="mobile-profile-nav-trigger" id="mobile-profile-trigger">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        <span>Profile Menu</span>
+    </button>
+
     <div class="profile-layout">
         <!-- Sidebar -->
-        <aside class="profile-sidebar">
+        <aside class="profile-sidebar" id="profile-sidebar">
             <div class="user-avatar-section">
                 <div class="avatar-wrapper">
                     <?php if(isset($data['user']['profile_picture']) && $data['user']['profile_picture']): ?>

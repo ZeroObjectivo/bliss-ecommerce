@@ -1,7 +1,16 @@
 <div class="container py-8">
+    <!-- Sidebar Overlay for Mobile -->
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <!-- Mobile Profile Navigation Trigger -->
+    <button class="mobile-profile-nav-trigger" id="mobile-profile-trigger">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        <span>Profile Menu</span>
+    </button>
+
     <div class="profile-layout">
         <!-- Sidebar -->
-        <aside class="profile-sidebar">
+        <aside class="profile-sidebar" id="profile-sidebar">
             <div class="user-avatar-section">
                 <div class="avatar-wrapper">
                     <?php if($data['user']['profile_picture']): ?>
@@ -30,51 +39,29 @@
 
         <!-- Main Content -->
         <main class="profile-content">
-            <?php if(isset($_GET['success'])): 
-                $profileMessages = [
-                    'info_updated' => 'Your personal information has been successfully updated.',
-                    'password_updated' => 'Your security credentials have been successfully modified.',
-                    'address_added' => 'The new address has been successfully registered to your account.',
-                    'address_deleted' => 'The selected address has been permanently removed.',
-                    'default_address_set' => 'Your default shipping address has been successfully updated.',
-                    'avatar_updated' => 'Your profile identification image has been successfully updated.'
-                ];
-                $msgKey = $_GET['success'];
-                $displayMsg = isset($profileMessages[$msgKey]) ? $profileMessages[$msgKey] : str_replace('_', ' ', $msgKey) . ' successfully!';
-            ?>
-                <div class="alert alert-success-proper" id="success-alert">
-                    <div class="alert-icon-circle">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <!-- Mobile-Friendly Profile Picture Section -->
+            <section class="profile-section profile-picture-main-section">
+                <h3>Profile Picture</h3>
+                <div class="profile-picture-edit-card">
+                    <div class="avatar-wrapper-main">
+                        <?php if($data['user']['profile_picture']): ?>
+                            <img src="/php/Webdev/public/<?= $data['user']['profile_picture'] ?>" alt="Avatar" class="main-avatar-preview">
+                        <?php else: ?>
+                            <div class="avatar-placeholder-main"><?= strtoupper(substr($data['user']['name'], 0, 1)) ?></div>
+                        <?php endif; ?>
                     </div>
-                    <span class="alert-text"><?= $displayMsg ?></span>
-                    <button class="alert-close-btn" onclick="closeSuccessAlert()">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                    </button>
-                    <div class="alert-progress-bar"></div>
+                    <div class="picture-actions">
+                        <p class="picture-tip">Upload a high-quality image to personalize your account.</p>
+                        <form action="/php/Webdev/public/profile/update_avatar" method="POST" enctype="multipart/form-data">
+                            <label for="profile_picture_main" class="btn btn-secondary btn-sm" style="cursor: pointer;">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                                Change Picture
+                            </label>
+                            <input type="file" name="profile_picture" id="profile_picture_main" hidden onchange="this.form.submit()">
+                        </form>
+                    </div>
                 </div>
-                <script>
-                    function closeSuccessAlert() {
-                        const alert = document.getElementById('success-alert');
-                        if(alert) {
-                            alert.style.opacity = '0';
-                            alert.style.transform = 'translateX(-50%) translateY(-20px)';
-                            alert.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
-                            setTimeout(() => alert.remove(), 400);
-                        }
-                    }
-                    setTimeout(() => {
-                        closeSuccessAlert();
-                        const url = new URL(window.location);
-                        url.searchParams.delete('success');
-                        window.history.replaceState({}, document.title, url);
-                    }, 3000);
-                </script>
-            <?php endif; ?>
-            <?php if(isset($_GET['error'])): ?>
-                <div class="alert alert-error">
-                    <?= str_replace('_', ' ', $_GET['error']) ?>. Please try again.
-                </div>
-            <?php endif; ?>
+            </section>
 
             <section class="profile-section">
                 <h3>Personal Information</h3>

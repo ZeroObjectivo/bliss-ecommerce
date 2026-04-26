@@ -24,6 +24,9 @@
 
 <body>
 
+<!-- Mobile Menu Overlay -->
+<div class="mobile-menu-overlay" id="mobile-menu-overlay"></div>
+
 <!-- Sub Header (Top Bar) -->
 <div class="sub-header">
     <div class="container sub-header-content">
@@ -96,8 +99,58 @@
             </button>
 
         <nav class="nav-links">
-            <a href="/php/Webdev/public/">New & Featured</a>
-            <a href="/php/Webdev/public/catalog">Catalog</a>
+            <header class="mobile-menu-header">
+                <span>Menu</span>
+                <button class="close-mobile-menu" aria-label="Close menu">&times;</button>
+            </header>
+
+            <div class="nav-group">
+                <span class="nav-group-title">Shop</span>
+                <a href="/php/Webdev/public/">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                    New & Featured
+                </a>
+                <a href="/php/Webdev/public/catalog">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                    Catalog
+                </a>
+            </div>
+
+            <?php if(isset($_SESSION['user_id'])): ?>
+            <div class="nav-group">
+                <span class="nav-group-title">Account</span>
+                <a href="/php/Webdev/public/profile">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    My Profile
+                </a>
+                <a href="/php/Webdev/public/profile/orders">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+                    My Orders
+                </a>
+                <a href="/php/Webdev/public/profile/inbox">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                    Support Inbox
+                </a>
+            </div>
+            <div class="nav-group">
+                <a href="/php/Webdev/public/auth/logout" class="logout-link">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                    Logout
+                </a>
+            </div>
+            <?php else: ?>
+            <div class="nav-group">
+                <span class="nav-group-title">Join Us</span>
+                <a href="/php/Webdev/public/auth/login">Sign In</a>
+                <a href="/php/Webdev/public/auth/register">Join BLISS</a>
+            </div>
+            <?php endif; ?>
+
+            <div class="nav-group">
+                <span class="nav-group-title">Help & Info</span>
+                <a href="/php/Webdev/public/store">Find a Store</a>
+                <a href="/php/Webdev/public/help">Customer Service</a>
+            </div>
         </nav>
         <div class="nav-actions">
             <div class="search-bar">

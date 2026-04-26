@@ -56,21 +56,22 @@
 </style>
 
         <!-- Action Buttons -->
-        <div class="product-actions">
+        <div class="product-actions" style="display: flex; gap: 15px; align-items: stretch; margin-top: var(--spacing-6); flex-wrap: wrap;">
             <!-- Add to Cart & Buy Now Form -->
-            <form action="/php/Webdev/public/cart/add" method="POST" class="add-to-cart-form" id="cart-form" style="flex: 1; display: flex; gap: 15px;">
+            <form action="/php/Webdev/public/cart/add" method="POST" class="add-to-cart-form" id="cart-form" style="flex: 1; display: flex; gap: 15px; min-width: 280px;">
                 <input type="hidden" name="product_id" value="<?= $data['product']['id'] ?>">
                 <input type="hidden" name="size" id="selected-size-input" value="">
                 
-                <button type="submit" id="add-to-cart-btn" class="btn btn-secondary btn-large" style="flex: 1;" disabled>Add to Cart</button>
-                <button type="submit" id="buy-now-btn" name="buy_now" value="1" class="btn btn-primary btn-large" style="flex: 1.5;" disabled>Buy Now</button>
+                <button type="submit" id="add-to-cart-btn" class="btn btn-secondary btn-large" style="flex: 1; white-space: nowrap;" disabled>Add to Cart</button>
+                <button type="submit" id="buy-now-btn" name="buy_now" value="1" class="btn btn-primary btn-large" style="flex: 1.5; white-space: nowrap;" disabled>Buy Now</button>
             </form>
             
             <?php $isFavorite = in_array($data['product']['id'], $_SESSION['favorites_list'] ?? []); ?>
-            <form action="/php/Webdev/public/favorites/toggle" method="POST">
+            <form action="/php/Webdev/public/favorites/toggle" method="POST" style="margin:0; display: flex; flex: 1;">
                 <input type="hidden" name="product_id" value="<?= $data['product']['id'] ?>">
-                <button type="submit" class="btn btn-secondary btn-icon-large <?= $isFavorite ? 'active' : '' ?>" style="height: 64px; width: 64px;" title="<?= $isFavorite ? 'Remove from Favorites' : 'Add to Favorites' ?>">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="<?= $isFavorite ? 'currentColor' : 'none' ?>" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                <button type="submit" class="btn btn-secondary <?= $isFavorite ? 'active' : '' ?>" style="height: 64px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 12px; border-radius: 16px; padding: 0 20px;" title="<?= $isFavorite ? 'Remove from Favorites' : 'Add to Favorites' ?>">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="<?= $isFavorite ? 'currentColor' : 'none' ?>" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                    <span style="font-weight: 700; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.03em;"><?= $isFavorite ? 'Remove from Favorites' : 'Add To Favorites' ?></span>
                 </button>
             </form>
         </div>

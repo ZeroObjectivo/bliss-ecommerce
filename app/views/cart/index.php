@@ -164,7 +164,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             items.forEach((item, index) => {
                 if (index >= start && index < end) {
-                    item.style.display = 'grid';
+                    item.style.display = ''; // Reset to CSS default (flex)
                 } else {
                     item.style.display = 'none';
                 }

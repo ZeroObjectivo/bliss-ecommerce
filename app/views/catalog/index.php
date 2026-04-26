@@ -1,8 +1,28 @@
 <div class="catalog-page">
     <div class="container catalog-container">
         
+        <!-- Mobile Filter/Sort Controls -->
+        <div class="mobile-filter-bar">
+            <button type="button" class="mobile-filter-trigger" id="mobile-filter-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
+                Filter By
+            </button>
+            <div class="mobile-sort-container">
+                <select id="catalog-sort-mobile">
+                    <option value="featured">Sort: Featured</option>
+                    <option value="newest">Sort: Newest</option>
+                    <option value="low-to-high">Low to High</option>
+                    <option value="high-to-low">High to Low</option>
+                </select>
+            </div>
+        </div>
+
         <!-- Sidebar Filters -->
-        <aside class="catalog-sidebar glass-card">
+        <aside class="catalog-sidebar glass-card" id="catalog-sidebar">
+            <div class="sidebar-header-mobile">
+                <h3>Filters</h3>
+                <button type="button" id="close-filter-mobile">&times;</button>
+            </div>
             <h3 class="sidebar-title">Explore</h3>
             
             <!-- Catalog Live Search -->
@@ -127,6 +147,96 @@
 </div>
 
 <style>
+.catalog-container {
+    display: flex;
+    gap: var(--spacing-6);
+    padding-top: var(--spacing-6);
+}
+
+.mobile-filter-bar {
+    display: none;
+    width: 100%;
+    margin-bottom: var(--spacing-4);
+    background: #fff;
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.sidebar-header-mobile {
+    display: none;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: var(--spacing-4);
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    margin-bottom: var(--spacing-4);
+}
+
+.sidebar-header-mobile h3 { font-size: 1.25rem; font-weight: 800; }
+#close-filter-mobile { background: none; border: none; font-size: 2rem; color: var(--text-secondary); cursor: pointer; }
+
+@media (max-width: 768px) {
+    .catalog-container { flex-direction: column !important; padding-top: var(--spacing-4) !important; }
+    
+    .mobile-filter-bar { 
+        display: flex !important; 
+        align-items: center; 
+        justify-content: space-between; 
+        position: relative;
+        z-index: 500;
+    }
+    
+    .mobile-filter-trigger {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 15px;
+        border: none;
+        background: none;
+        font-weight: 700;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        border-right: 1px solid var(--glass-border);
+        cursor: pointer;
+    }
+
+    .mobile-sort-container { flex: 1; }
+    #catalog-sort-mobile {
+        width: 100%;
+        padding: 15px;
+        border: none;
+        background: none;
+        font-weight: 700;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        cursor: pointer;
+        outline: none;
+        text-align: center;
+        -webkit-appearance: none;
+    }
+
+    .catalog-sidebar {
+        position: fixed !important;
+        top: 0 !important;
+        left: -100% !important;
+        width: 100% !important;
+        height: 100% !important;
+        z-index: 2000 !important;
+        background: #fff !important;
+        border-radius: 0 !important;
+        padding: var(--spacing-5) !important;
+        transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        overflow-y: auto !important;
+        display: flex !important; /* Ensure it is flex when displayed */
+    }
+
+    .catalog-sidebar.open { left: 0 !important; }
+    .sidebar-header-mobile { display: flex !important; }
+    .catalog-header .sort-by { display: none !important; }
+}
+
 .filter-group-collapsible {
     border-bottom: 1px solid rgba(0,0,0,0.05);
     margin-bottom: 15px;
@@ -203,6 +313,38 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
+    // Mobile Filter Sidebar Toggle
+    const mobileFilterBtn = document.getElementById('mobile-filter-btn');
+    const closeFilterBtn = document.getElementById('close-filter-mobile');
+    const catalogSidebar = document.getElementById('catalog-sidebar');
+
+    const toggleFilter = (show) => {
+        if (!catalogSidebar) return;
+        if (show) {
+            catalogSidebar.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        } else {
+            catalogSidebar.classList.remove('open');
+            document.body.style.overflow = '';
+        }
+    };
+
+    if (mobileFilterBtn) {
+        mobileFilterBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleFilter(true);
+        });
+    }
+
+    if (closeFilterBtn) {
+        closeFilterBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleFilter(false);
+        });
+    }
+
     // Collapsible Logic
     const triggers = document.querySelectorAll('.filter-group-trigger');
     triggers.forEach(trigger => {
@@ -220,6 +362,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const stockRadios = document.querySelectorAll('input[name="stock"]');
     const catalogGrid = document.getElementById('catalog-grid');
     const sortSelect = document.getElementById('catalog-sort');
+    const sortSelectMobile = document.getElementById('catalog-sort-mobile');
 
     function filterProducts() {
         const query = catalogSearch.value.toLowerCase().trim();
@@ -271,8 +414,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function sortProducts() {
-        const sortBy = sortSelect.value;
+    function sortProducts(sortBy) {
         const cardsArray = Array.from(productCards);
 
         cardsArray.sort((a, b) => {
@@ -307,7 +449,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     if (sortSelect) {
-        sortSelect.addEventListener('change', sortProducts);
+        sortSelect.addEventListener('change', () => sortProducts(sortSelect.value));
+    }
+
+    if (sortSelectMobile) {
+        sortSelectMobile.addEventListener('change', () => sortProducts(sortSelectMobile.value));
     }
 
     // Initial Filter on Page Load

@@ -111,6 +111,13 @@
     border-bottom: 1px solid #f1f5f9;
 }
 
+@media (max-width: 480px) {
+    .modal-header-premium { padding: 20px 25px; }
+    .modal-body-premium { padding: 25px 25px 30px; }
+    .modal-header-premium h3 { font-size: 1.25rem; }
+    .premium-size-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
 .modal-subtitle { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: #94a3b8; display: block; margin-bottom: 4px; }
 .modal-header-premium h3 { margin: 0; font-size: 1.5rem; font-weight: 800; letter-spacing: -0.03em; color: #0f172a; }
 
@@ -167,6 +174,6 @@
 .btn-premium-action:disabled { background: #cbd5e1; cursor: not-allowed; }
 </style>
 
-<script src="/php/Webdev/public/js/main.js"></script>
+<script src="/php/Webdev/public/js/main.js?v=<?= time() ?>"></script>
 </body>
 </html>

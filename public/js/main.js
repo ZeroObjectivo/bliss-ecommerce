@@ -1,21 +1,87 @@
+// Toast Notification System (Global)
+window.showToast = function(message, type = 'success') {
+    let toastContainer = document.querySelector('.toast-container');
+    if (!toastContainer) {
+        toastContainer = document.createElement('div');
+        toastContainer.className = 'toast-container';
+        document.body.appendChild(toastContainer);
+    }
+
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    toast.innerHTML = `
+        <div class="toast-content">
+            <span class="toast-icon">${type === 'success' ? '✓' : '✕'}</span>
+            <span class="toast-message">${message}</span>
+        </div>
+        <button class="toast-close" style="background:none; border:none; color:inherit; opacity:0.5; cursor:pointer; font-size:1.2rem; padding: 0 0 0 15px;">&times;</button>
+    `;
+
+    toastContainer.appendChild(toast);
+
+    const closeBtn = toast.querySelector('.toast-close');
+    const dismissToast = () => {
+        toast.classList.remove('active');
+        setTimeout(() => toast.remove(), 500);
+    };
+    if (closeBtn) closeBtn.addEventListener('click', dismissToast);
+
+    setTimeout(() => toast.classList.add('active'), 50);
+
+    setTimeout(() => {
+        if (toast.parentElement) dismissToast();
+    }, 4500);
+};
+
 document.addEventListener('DOMContentLoaded', () => {
+    // Check for success/error messages in URL and show toasts
+    const urlParams = new URLSearchParams(window.location.search);
+    const successKey = urlParams.get('success');
+    const errorKey = urlParams.get('error');
+
+    if (successKey) {
+        const messages = {
+            'profile_updated': 'Profile updated successfully!',
+            'info_updated': 'Profile updated successfully!',
+            'password_changed': 'Your password has been changed.',
+            'password_updated': 'Your password has been changed.',
+            'address_added': 'New address saved to your account.',
+            'address_updated': 'Address updated successfully.',
+            'address_deleted': 'Address removed successfully.',
+            'default_set': 'Default address updated.',
+            'default_address_set': 'Default address updated.',
+            'avatar_updated': 'Profile picture updated!',
+            'order_completed': 'Order marked as completed!'
+        };
+        const msg = messages[successKey] || successKey.replace(/_/g, ' ') + '!';
+        window.showToast(msg);
+        const newUrl = new URL(window.location);
+        newUrl.searchParams.delete('success');
+        window.history.replaceState({}, document.title, newUrl);
+    }
+
+    if (errorKey) {
+        const msg = errorKey.replace(/_/g, ' ') + '. Please try again.';
+        window.showToast(msg, 'error');
+        const newUrl = new URL(window.location);
+        newUrl.searchParams.delete('error');
+        window.history.replaceState({}, document.title, newUrl);
+    }
+
     // Search Functionality
     const searchInput = document.querySelector('.search-bar input');
     const searchBar = document.querySelector('.search-bar');
     
     if (searchBar && searchInput) {
-        // Create dropdown container for live search
         const searchResults = document.createElement('div');
         searchResults.className = 'search-results-dropdown';
         searchResults.style.display = 'none';
         searchBar.appendChild(searchResults);
 
         let debounceTimer;
-
         searchInput.addEventListener('input', (e) => {
             clearTimeout(debounceTimer);
             const query = e.target.value.trim();
-
             if (query.length < 2) {
                 searchResults.style.display = 'none';
                 return;
@@ -26,7 +92,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     .then(response => response.json())
                     .then(data => {
                         searchResults.innerHTML = '';
-                        
                         if (data.results && data.results.length > 0) {
                             data.results.forEach(product => {
                                 const item = document.createElement('a');
@@ -47,10 +112,9 @@ document.addEventListener('DOMContentLoaded', () => {
                         searchResults.style.display = 'block';
                     })
                     .catch(err => console.error('Search error:', err));
-            }, 300); // 300ms debounce
+            }, 300);
         });
 
-        // Close dropdown on outside click
         document.addEventListener('click', (e) => {
             if (!searchBar.contains(e.target)) {
                 searchResults.style.display = 'none';
@@ -66,25 +130,21 @@ document.addEventListener('DOMContentLoaded', () => {
         const faqSection = document.querySelector('.faq-section');
         const helpGrid = document.querySelector('.help-grid');
 
-        // Create "No results" message
         const noResultsMsg = document.createElement('div');
         noResultsMsg.className = 'no-results-message';
         noResultsMsg.innerHTML = `
             <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
             <h3>No results found</h3>
-            <p>Try searching for different keywords like "shipping", "returns", or "account".</p>
+            <p>Try searching for different keywords.</p>
         `;
         noResultsMsg.style.display = 'none';
-        if (faqSection) {
-            faqSection.parentNode.insertBefore(noResultsMsg, faqSection.nextSibling);
-        }
+        if (faqSection) faqSection.parentNode.insertBefore(noResultsMsg, faqSection.nextSibling);
 
         helpSearchInput.addEventListener('input', (e) => {
             const query = e.target.value.toLowerCase().trim();
             filterHelp(query);
         });
 
-        // Category Card Click Filtering
         const clearFilterBtn = document.getElementById('clear-filter');
         const faqTitle = document.getElementById('faq-title');
 
@@ -92,13 +152,8 @@ document.addEventListener('DOMContentLoaded', () => {
             card.addEventListener('click', () => {
                 const category = card.getAttribute('data-category');
                 const categoryName = card.querySelector('h3').textContent;
-                
                 filterHelp('', category);
-                
-                // Smooth scroll to FAQ section
                 faqSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                
-                // Update UI to show active filter
                 if (faqTitle) faqTitle.textContent = `${categoryName} - FAQ`;
                 if (clearFilterBtn) clearFilterBtn.style.display = 'block';
             });
@@ -117,7 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const helpItemsPerPage = 5;
 
         function filterHelp(query, categoryFilter = null) {
-            currentHelpPage = 1; // Reset to first page on filter change
+            currentHelpPage = 1;
             updateHelpUI(query, categoryFilter);
         }
 
@@ -125,33 +180,22 @@ document.addEventListener('DOMContentLoaded', () => {
             let filteredFAQs = [];
             let categoryVisibleCount = 0;
 
-            // 1. Determine which FAQs match the filter
             faqItems.forEach(item => {
                 const text = item.textContent.toLowerCase();
                 const itemCategory = item.getAttribute('data-category');
-                
                 let matchesQuery = text.includes(query);
                 let matchesCategory = !categoryFilter || itemCategory === categoryFilter;
-
-                if (matchesQuery && matchesCategory) {
-                    filteredFAQs.push(item);
-                }
-                item.style.display = 'none'; // Hide all initially
+                if (matchesQuery && matchesCategory) filteredFAQs.push(item);
+                item.style.display = 'none';
             });
 
-            // 2. Paginate the filtered results
             const totalPages = Math.ceil(filteredFAQs.length / helpItemsPerPage);
             const startIndex = (currentHelpPage - 1) * helpItemsPerPage;
             const endIndex = startIndex + helpItemsPerPage;
-            
-            filteredFAQs.slice(startIndex, endIndex).forEach(item => {
-                item.style.display = 'block';
-            });
+            filteredFAQs.slice(startIndex, endIndex).forEach(item => { item.style.display = 'block'; });
 
-            // 3. Render Pagination Controls
             renderPagination(totalPages, query, categoryFilter);
 
-            // 4. Filter Category Cards
             categoryCards.forEach(card => {
                 if (categoryFilter) {
                     card.style.display = 'flex';
@@ -176,7 +220,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
 
-            // 5. Toggle Sections and No Results Message
             if (faqSection) {
                 const faqHeader = faqSection.querySelector('h2');
                 if (filteredFAQs.length === 0 && !categoryFilter) {
@@ -198,36 +241,20 @@ document.addEventListener('DOMContentLoaded', () => {
         function renderPagination(totalPages, query, categoryFilter) {
             const paginationContainer = document.getElementById('faq-pagination');
             if (!paginationContainer) return;
-
             paginationContainer.innerHTML = '';
-            
             if (totalPages <= 1) return;
-
             for (let i = 1; i <= totalPages; i++) {
                 const btn = document.createElement('button');
                 btn.textContent = i;
-                btn.style.cssText = `
-                    padding: 8px 16px;
-                    border: 1px solid ${i === currentHelpPage ? 'var(--accent-color)' : '#e2e8f0'};
-                    background: ${i === currentHelpPage ? 'var(--accent-color)' : 'white'};
-                    color: ${i === currentHelpPage ? 'white' : 'var(--text-primary)'};
-                    border-radius: 8px;
-                    cursor: pointer;
-                    font-weight: 600;
-                    transition: all 0.2s ease;
-                `;
-                
+                btn.style.cssText = `padding: 8px 16px; border: 1px solid ${i === currentHelpPage ? 'var(--accent-color)' : '#e2e8f0'}; background: ${i === currentHelpPage ? 'var(--accent-color)' : 'white'}; color: ${i === currentHelpPage ? 'white' : 'var(--text-primary)'}; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.2s ease;`;
                 btn.addEventListener('click', () => {
                     currentHelpPage = i;
                     updateHelpUI(query, categoryFilter);
                     faqSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 });
-
                 paginationContainer.appendChild(btn);
             }
         }
-
-        // Initial render
         filterHelp('');
     }
 
@@ -240,7 +267,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const progressDots = document.querySelectorAll('.progress-dot');
 
     if (stickyContainer) {
-        // Create particles dynamically
         const visualContainer = stickyContainer.querySelector('.sticky-image-container');
         if (visualContainer) {
             for (let i = 0; i < 15; i++) {
@@ -260,51 +286,34 @@ document.addEventListener('DOMContentLoaded', () => {
             const containerHeight = stickyContainer.offsetHeight;
             const scrollY = window.scrollY;
             const viewportHeight = window.innerHeight;
-            
             let progress = (scrollY - containerTop) / (containerHeight - viewportHeight);
             progress = Math.max(0, Math.min(1, progress));
-
-            // Toggle active class for navigation visibility
-            if (progress > 0 && progress < 1) {
-                stickyContainer.classList.add('is-active');
-            } else {
-                stickyContainer.classList.remove('is-active');
-            }
-
-            // 1. Scale & Rotate image based on progress
+            if (progress > 0 && progress < 1) stickyContainer.classList.add('is-active');
+            else stickyContainer.classList.remove('is-active');
             if (stickyImg) {
                 const scale = 0.95 + (progress * 0.25);
-                const rotateX = (progress * 20) - 10; // -10 to 10 deg
-                const rotateY = (progress * 30) - 15; // -15 to 15 deg
+                const rotateX = (progress * 20) - 10;
+                const rotateY = (progress * 30) - 15;
                 stickyImg.style.transform = `scale(${scale}) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
             }
-
-            // 2. Animate Glow intensity and scale
             if (productGlow) {
                 const glowScale = 0.8 + (progress * 0.6);
                 const glowOpacity = 0.1 + (progress * 0.5);
                 productGlow.style.transform = `scale(${glowScale})`;
                 productGlow.style.opacity = glowOpacity;
             }
-
-            // 3. Animate Huge Background Text
             if (hugeBgText) {
                 const bgScale = 1 + (progress * 0.4);
-                const baseOpacity = 1; // Stroke is already subtle, keep opacity at 1
-                const bgOpacity = progress < 0.5 ? baseOpacity : baseOpacity * (1 - (progress - 0.5) * 2); 
+                const bgOpacity = progress < 0.5 ? 1 : 1 * (1 - (progress - 0.5) * 2); 
                 hugeBgText.style.transform = `scale(${bgScale})`;
                 hugeBgText.style.opacity = Math.max(0, bgOpacity);
             }
-
-            // 4. Move Particles
             const particles = stickyContainer.querySelectorAll('.particle');
             particles.forEach((p, i) => {
                 const speed = 0.2 + (i * 0.05);
                 const yOffset = progress * 200 * speed;
                 p.style.transform = `translateY(-${yOffset}px)`;
             });
-
-            // 4. Update Progress Dots
             const step = Math.min(progressDots.length - 1, Math.floor(progress * progressDots.length));
             progressDots.forEach((dot, index) => {
                 if (index === step) dot.classList.add('active');
@@ -313,29 +322,21 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-
-    // Intersection Observer for smooth reveal
     if (revealElements.length > 0) {
-        const observerOptions = {
-            threshold: 0.15,
-            rootMargin: '0px 0px -50px 0px'
-        };
-
+        const observerOptions = { threshold: 0.15, rootMargin: '0px 0px -50px 0px' };
         const revealObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('is-visible');
                 } else {
-                    // Optional: Remove if you want them to re-animate when scrolling up
-                    // entry.target.classList.remove('is-visible');
+                    entry.target.classList.remove('is-visible');
                 }
             });
         }, observerOptions);
-
         revealElements.forEach(el => revealObserver.observe(el));
     }
 
-    // --- Quick Add Modal Logic (Supports Add & Edit) ---
+    // Quick Add Modal Logic
     const modal = document.getElementById('quick-add-modal');
     if (modal) {
         const closeBtn = modal.querySelector('.modal-close-btn');
@@ -349,63 +350,44 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const openModal = (data) => {
             const { id, name, price, image, sizes, isEdit, oldKey, currentSize, removeFromFav } = data;
-
-            // Populate Modal Info
             document.getElementById('modal-img').src = image;
             document.getElementById('modal-name').textContent = name;
             document.getElementById('modal-price').textContent = `₱${parseFloat(price).toLocaleString(undefined, {minimumFractionDigits: 2})}`;
             document.getElementById('modal-product-id').value = id;
-            
-            // Handle Edit state
             isEditInput.value = isEdit ? '1' : '0';
             oldKeyInput.value = oldKey || '';
             document.getElementById('modal-remove-from-fav').value = removeFromFav ? '1' : '0';
             btnText.textContent = isEdit ? 'Update Size' : (removeFromFav ? 'Move to Cart' : 'Select a Size');
-
             sizeGrid.innerHTML = '';
             sizeInput.value = '';
             submitBtn.disabled = true;
             stockInfo.textContent = '';
-
             Object.entries(sizes).forEach(([size, stock]) => {
                 const sBtn = document.createElement('button');
                 sBtn.type = 'button';
                 sBtn.className = 'premium-size-btn';
                 sBtn.textContent = size;
                 if (stock <= 0) sBtn.disabled = true;
-
-                // Pre-select current size if editing
                 if (isEdit && size === currentSize) {
                     sBtn.classList.add('active');
                     sizeInput.value = size;
                     submitBtn.disabled = false;
                     btnText.textContent = 'Keep Size';
                 }
-
                 sBtn.addEventListener('click', () => {
                     sizeGrid.querySelectorAll('.premium-size-btn').forEach(b => b.classList.remove('active'));
                     sBtn.classList.add('active');
                     sizeInput.value = size;
                     submitBtn.disabled = false;
                     btnText.textContent = isEdit ? (size === currentSize ? 'Keep Size' : 'Update Size') : 'Add to Cart';
-
-                    // Dynamic stock feedback
-                    if (stock <= 5) {
-                        stockInfo.textContent = `Only ${stock} left!`;
-                        stockInfo.style.color = '#ef4444';
-                    } else {
-                        stockInfo.textContent = 'In Stock';
-                        stockInfo.style.color = '#10b981';
-                    }
+                    if (stock <= 5) { stockInfo.textContent = `Only ${stock} left!`; stockInfo.style.color = '#ef4444'; }
+                    else { stockInfo.textContent = 'In Stock'; stockInfo.style.color = '#10b981'; }
                 });
-
                 sizeGrid.appendChild(sBtn);
             });
-
             modal.classList.add('active');
         };
 
-        // Trigger: Quick Add (from Cards)
         document.querySelectorAll('.quick-add-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -421,7 +403,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
 
-        // Trigger: Edit Size (from Cart)
         document.querySelectorAll('.edit-size-link').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -442,111 +423,42 @@ document.addEventListener('DOMContentLoaded', () => {
         closeBtn.addEventListener('click', closeModal);
         window.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
 
-        // AJAX Form Submission for Cart
         const cartForm = document.getElementById('modal-cart-form');
         if (cartForm) {
             cartForm.addEventListener('submit', (e) => {
                 e.preventDefault();
-                
                 const formData = new FormData(cartForm);
                 const submitBtn = cartForm.querySelector('button[type="submit"]');
                 const originalBtnContent = submitBtn.innerHTML;
-                
-                // Loading state
                 submitBtn.disabled = true;
                 submitBtn.innerHTML = '<span class="loading-spinner"></span> Adding...';
-
-                fetch(cartForm.action, {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                })
+                fetch(cartForm.action, { method: 'POST', body: formData, headers: { 'X-Requested-With': 'XMLHttpRequest' } })
                 .then(res => res.json())
                 .then(data => {
                     if (data.success) {
-                        // Update Cart Badge
                         const cartBadge = document.querySelector('.cart-link .cart-badge');
-                        if (cartBadge) {
-                            cartBadge.textContent = data.cartCount;
-                            cartBadge.style.display = data.cartCount > 0 ? 'flex' : 'none';
-                        }
-                        
-                        // Handle Favorites Removal from DOM
+                        if (cartBadge) { cartBadge.textContent = data.cartCount; cartBadge.style.display = data.cartCount > 0 ? 'flex' : 'none'; }
                         const isFromFav = document.getElementById('modal-remove-from-fav').value === '1';
                         if (isFromFav) {
                             const productId = document.getElementById('modal-product-id').value;
                             const favItem = document.querySelector(`.favorite-item button[data-id="${productId}"]`)?.closest('.favorite-item');
                             if (favItem) {
                                 favItem.style.opacity = '0';
-                                favItem.style.transform = 'scale(0.95)';
                                 favItem.style.transition = 'all 0.3s ease';
-                                setTimeout(() => {
-                                    favItem.remove();
-                                    const remaining = document.querySelectorAll('.favorite-item').length;
-                                    if (remaining === 0) location.reload(); 
-                                }, 300);
-                            }
-                            
-                            // Update Favorites Badge
-                            const favBadge = document.querySelector('a[aria-label="Favorites"] .cart-badge');
-                            if (favBadge) {
-                                let count = parseInt(favBadge.textContent) - 1;
-                                favBadge.textContent = count;
-                                if (count <= 0) favBadge.style.display = 'none';
+                                setTimeout(() => { favItem.remove(); if (document.querySelectorAll('.favorite-item').length === 0) location.reload(); }, 300);
                             }
                         }
-
-                        showToast(isFromFav ? 'Moved to cart!' : 'Item added to cart successfully!');
+                        window.showToast(isFromFav ? 'Moved to cart!' : 'Item added to cart successfully!');
                         closeModal();
-                    } else {
-                        showToast(data.error || 'Failed to add item to cart.', 'error');
-                    }
+                    } else window.showToast(data.error || 'Failed to add item.', 'error');
                 })
-                .catch(err => {
-                    console.error('Cart Error:', err);
-                    showToast('An error occurred. Please try again.', 'error');
-                })
-                .finally(() => {
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = originalBtnContent;
-                });
+                .catch(err => { console.error('Cart Error:', err); window.showToast('An error occurred.', 'error'); })
+                .finally(() => { submitBtn.disabled = false; submitBtn.innerHTML = originalBtnContent; });
             });
         }
     }
 
-    // Toast Notification System
-    function showToast(message, type = 'success') {
-        let toastContainer = document.querySelector('.toast-container');
-        if (!toastContainer) {
-            toastContainer = document.createElement('div');
-            toastContainer.className = 'toast-container';
-            document.body.appendChild(toastContainer);
-        }
-
-        const toast = document.createElement('div');
-        toast.className = `toast toast-${type}`;
-        toast.innerHTML = `
-            <div class="toast-content">
-                <span class="toast-icon">${type === 'success' ? '✓' : '✕'}</span>
-                <span class="toast-message">${message}</span>
-            </div>
-        `;
-
-        toastContainer.appendChild(toast);
-
-        // Animate in
-        setTimeout(() => toast.classList.add('active'), 10);
-
-        // Remove after delay
-        setTimeout(() => {
-            toast.classList.remove('active');
-            setTimeout(() => toast.remove(), 300);
-        }, 3000);
-    }
-
-    // --- Cart Quantity Updates ---
+    // Cart Quantity Updates
     const cartItems = document.querySelectorAll('.cart-item');
     if (cartItems.length > 0) {
         cartItems.forEach(item => {
@@ -555,38 +467,32 @@ document.addEventListener('DOMContentLoaded', () => {
             const qtyInput = item.querySelector('.qty-input');
             const cartKey = item.dataset.key;
             const maxStock = parseInt(item.dataset.stock);
-
             const updateQty = (newQty) => {
-                if (newQty < 1) return;
-                if (newQty > maxStock) {
-                    alert(`Sorry, only ${maxStock} items available for this size.`);
-                    return;
-                }
-
-                // Use fetch to update session cart
+                if (newQty < 1 || newQty > maxStock) return;
                 fetch('/php/Webdev/public/cart/update_quantity', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                     body: `key=${encodeURIComponent(cartKey)}&qty=${newQty}`
-                })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success) {
-                        location.reload(); // Refresh to update totals
-                    }
-                });
+                }).then(res => res.json()).then(data => { if (data.success) location.reload(); });
             };
-
-            if (minusBtn) {
-                minusBtn.addEventListener('click', () => updateQty(parseInt(qtyInput.value) - 1));
-            }
-            if (plusBtn) {
-                plusBtn.addEventListener('click', () => updateQty(parseInt(qtyInput.value) + 1));
-            }
-            if (qtyInput) {
-                qtyInput.addEventListener('change', () => updateQty(parseInt(qtyInput.value)));
-            }
+            if (minusBtn) minusBtn.addEventListener('click', () => updateQty(parseInt(qtyInput.value) - 1));
+            if (plusBtn) plusBtn.addEventListener('click', () => updateQty(parseInt(qtyInput.value) + 1));
+            if (qtyInput) qtyInput.addEventListener('change', () => updateQty(parseInt(qtyInput.value)));
         });
     }
 
+    // Profile Sidebar Toggle (Mobile)
+    const profileTrigger = document.getElementById('mobile-profile-trigger');
+    const profileSidebar = document.getElementById('profile-sidebar');
+    const sidebarOverlay = document.getElementById('sidebar-overlay');
+    if (profileTrigger && profileSidebar && sidebarOverlay) {
+        const toggle = (show) => {
+            profileSidebar.classList.toggle('open', show);
+            sidebarOverlay.classList.toggle('active', show);
+            document.body.style.overflow = show ? 'hidden' : '';
+        };
+        profileTrigger.addEventListener('click', () => toggle(true));
+        sidebarOverlay.addEventListener('click', () => toggle(false));
+        profileSidebar.querySelectorAll('nav a').forEach(link => link.addEventListener('click', () => toggle(false)));
+    }
 });
