@@ -107,33 +107,42 @@ a {
 .announcement-bar {
     background-color: var(--primary-color);
     color: white;
-    padding: 10px 0;
+    padding: 8px 0;
     font-size: 0.85rem;
     font-weight: 500;
     overflow: hidden;
     position: relative;
     white-space: nowrap;
+    width: 100%;
+    z-index: 2001; /* Higher than header to stay on top if needed */
 }
 
 .marquee {
     display: flex;
+    overflow: hidden;
+    width: 100%;
 }
 
 .marquee-content {
     display: flex;
-    justify-content: space-around;
+    flex-shrink: 0;
     min-width: 100%;
+    justify-content: space-around;
+    align-items: center;
     animation: scroll 25s linear infinite;
+    will-change: transform;
 }
 
 .marquee-content span {
     padding: 0 var(--spacing-4);
+    flex-shrink: 0;
     letter-spacing: 0.02em;
 }
 
 .marquee-content .dot {
     color: rgba(255, 255, 255, 0.4);
     padding: 0;
+    flex-shrink: 0;
 }
 
 @keyframes scroll {
@@ -1264,6 +1273,15 @@ a {
     }
 
     /* Hero Section Mobile Refinement */
+    .announcement-bar {
+        font-size: 0.75rem;
+        padding: 6px 0;
+    }
+
+    .marquee-content span {
+        padding: 0 var(--spacing-2); /* Less padding on mobile */
+    }
+
     .glass-panel {
         width: 92% !important; 
         max-width: 92% !important;
