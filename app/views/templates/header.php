@@ -19,8 +19,8 @@
     <link rel="stylesheet" href="/php/Webdev/public/css/shipping_returns.css">
 </head>
 
-<script
-     src="/php/Webdev/public/js/mobile-menu.js"></script>
+<script src="/php/Webdev/public/js/mobile-menu.js"></script>
+<script src="/php/Webdev/public/js/main.js?v=<?= time() ?>"></script>
 
 <body>
 

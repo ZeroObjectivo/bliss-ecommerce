@@ -73,7 +73,8 @@ document.addEventListener('DOMContentLoaded', () => {
             'unauthorized': 'You do not have permission to access this page.',
             'failed_to_send': 'We encountered an error while sending your message. Please try again.',
             'auth_required': 'Please sign in to continue.',
-            'reply_failed': 'Failed to send your reply. Please try again.'
+            'reply_failed': 'Failed to send your reply. Please try again.',
+            'file_too_large': 'The selected image is too large. Maximum size is 5MB.'
         };
         const msg = errors[errorKey] || errorKey.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) + '. Please try again.';
         window.showToast(msg, 'error');

@@ -2,43 +2,21 @@
     <div class="container">
         <?php if(isset($_GET['success'])): ?>
             <?php $t = $_GET['t'] ?? ''; ?>
-            <div class="alert alert-success-proper" id="success-alert" style="height: auto; padding: 20px 25px;">
-                <div class="alert-icon-circle">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                </div>
-                <div class="alert-content" style="flex-grow: 1; margin-right: 15px;">
-                    <div style="font-weight: 800; font-size: 1rem; margin-bottom: 4px;">Concern Submitted Successfully</div>
-                    <div style="font-size: 0.85rem; line-height: 1.4; opacity: 0.9;">
-                        Your ticket number is <strong style="text-decoration: underline;"><?= htmlspecialchars($t) ?></strong>.
-                        <?php if(isset($_SESSION['user_id'])): ?>
-                            You can track its progress in your <a href="/php/Webdev/public/profile/inbox" style="color: inherit; font-weight: 800;">Inbox</a>.
-                        <?php else: ?>
-                            Please <strong>copy and save</strong> this number to track your request.
-                        <?php endif; ?>
-                    </div>
-                </div>
-                <button class="alert-close-btn" onclick="closeSuccessAlert()" style="align-self: flex-start; margin-top: -5px;">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                </button>
-                <div class="alert-progress-bar"></div>
-            </div>
             <script>
-                function closeSuccessAlert() {
-                    const alert = document.getElementById('success-alert');
-                    if(alert) {
-                        alert.style.opacity = '0';
-                        alert.style.transform = 'translateX(-50%) translateY(-20px)';
-                        alert.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
-                        setTimeout(() => alert.remove(), 400);
-                    }
-                }
-                setTimeout(() => {
-                    closeSuccessAlert();
+                document.addEventListener('DOMContentLoaded', () => {
+                    showSuccessModalGlobal(
+                        'Concern Submitted', 
+                        'Your message has been successfully delivered to our support team.',
+                        '<?= htmlspecialchars($t) ?>',
+                        <?= isset($_SESSION['user_id']) ? 'true' : 'false' ?>
+                    );
+                    
+                    // Clean URL
                     const url = new URL(window.location);
                     url.searchParams.delete('success');
                     url.searchParams.delete('t');
-                    window.history.replaceState({}, document.title, url);
-                }, 8000); // Extended time to read ticket number
+                    window.history.replaceState({}, document.title, url.pathname + url.search);
+                });
             </script>
         <?php endif; ?>
         <?php if(isset($_GET['error'])): ?>
@@ -255,41 +233,12 @@ document.getElementById('help-contact-form')?.addEventListener('submit', functio
         if (data.success) {
             document.getElementById('contact-modal').classList.remove('active');
             form.reset();
-            showDynamicAlert('Your concern has been successfully submitted.', data.ticket_number, data.is_logged_in);
+            showSuccessModalGlobal('Concern Submitted', 'Your message has been successfully delivered.', data.ticket_number, data.is_logged_in);
         } else {
             alert('Failed to send message. Please try again.');
         }
     })
     .catch(err => console.error('Error:', err));
 });
-
-function showDynamicAlert(message, ticketNumber = '', isLoggedIn = false) {
-    const alertHtml = `
-        <div class="alert alert-success-proper" id="success-alert" style="height: auto; padding: 20px 25px;">
-            <div class="alert-icon-circle">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
-            </div>
-            <div class="alert-content" style="flex-grow: 1; margin-right: 15px; text-align: left;">
-                <div style="font-weight: 800; font-size: 1rem; margin-bottom: 4px;">Concern Submitted Successfully</div>
-                <div style="font-size: 0.85rem; line-height: 1.4; opacity: 0.9;">
-                    Your ticket number is <strong style="text-decoration: underline;">${ticketNumber}</strong>.
-                    ${isLoggedIn 
-                        ? `You can track its progress in your <a href="/php/Webdev/public/profile/inbox" style="color: inherit; font-weight: 800;">Inbox</a>.` 
-                        : `Please <strong>copy and save</strong> this number to track your request.`}
-                </div>
-            </div>
-            <button class="alert-close-btn" onclick="closeSuccessAlert()" style="align-self: flex-start; margin-top: -5px;">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-            </button>
-            <div class="alert-progress-bar"></div>
-        </div>
-    `;
-    const div = document.createElement('div');
-    div.innerHTML = alertHtml.trim();
-    document.body.appendChild(div.firstChild);
-    
-    setTimeout(() => {
-        closeSuccessAlert();
-    }, 8000);
-}
+</script>
 </script>

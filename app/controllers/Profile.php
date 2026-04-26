@@ -12,15 +12,39 @@ class Profile extends Controller {
         $user = $userModel->getUserById($_SESSION['user_id']);
         $addresses = $userModel->getAddresses($_SESSION['user_id']);
 
+        $has_security = !empty($user['security_q1']) && !empty($user['security_q2']) && !empty($user['security_q3']);
+
         $data = [
             'title' => 'My Account',
             'user' => $user,
-            'addresses' => $addresses
+            'addresses' => $addresses,
+            'has_security' => $has_security
         ];
 
         $this->view('templates/header', $data);
         $this->view('profile/account', $data);
         $this->view('templates/footer');
+    }
+
+    public function update_security() {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $userModel = $this->model('UserModel');
+            $data = [
+                'security_q1' => $_POST['security_question_1'],
+                'security_a1' => strtolower(trim($_POST['security_answer_1'])),
+                'security_q2' => $_POST['security_question_2'],
+                'security_a2' => strtolower(trim($_POST['security_answer_2'])),
+                'security_q3' => $_POST['security_question_3'],
+                'security_a3' => strtolower(trim($_POST['security_answer_3']))
+            ];
+
+            if ($userModel->updateSecurityQuestions($_SESSION['user_id'], $data)) {
+                header("Location: /php/Webdev/public/profile?success=security_updated");
+            } else {
+                header("Location: /php/Webdev/public/profile?error=security_update_failed");
+            }
+            exit;
+        }
     }
 
     public function update_info() {
@@ -44,6 +68,14 @@ class Profile extends Controller {
     public function update_avatar() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['profile_picture'])) {
             $file = $_FILES['profile_picture'];
+            
+            // Check file size (5MB = 5 * 1024 * 1024 bytes)
+            $maxSize = 5 * 1024 * 1024;
+            if ($file['size'] > $maxSize) {
+                header("Location: /php/Webdev/public/profile?error=file_too_large");
+                exit;
+            }
+
             $target_dir = "uploads/profiles/";
             
             if (!is_dir($target_dir)) {

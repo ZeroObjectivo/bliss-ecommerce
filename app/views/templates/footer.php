@@ -174,6 +174,55 @@
 .btn-premium-action:disabled { background: #cbd5e1; cursor: not-allowed; }
 </style>
 
+<!-- Global Success Modal (Premium Design) -->
+<div id="success-modal-global" class="modal-overlay">
+    <div class="modal-content glass-premium-modal" style="max-width: 420px;">
+        <div class="modal-body-premium" style="text-align: center; padding: 50px 40px 40px;">
+            <div class="success-icon-animated" style="width: 80px; height: 80px; background: #10b981; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 30px; box-shadow: 0 15px 30px rgba(16, 185, 129, 0.2);">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            </div>
+            
+            <h3 id="success-modal-title" style="font-size: 1.5rem; font-weight: 900; margin-bottom: 12px; letter-spacing: -0.02em;">Success!</h3>
+            <p id="success-modal-message" style="color: #64748b; line-height: 1.6; margin-bottom: 30px; font-size: 0.95rem;"></p>
+            
+            <div id="ticket-info-container" style="display: none; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 20px; margin-bottom: 30px; text-align: left;">
+                <div style="font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: #94a3b8; letter-spacing: 0.05em; margin-bottom: 8px;">Your Ticket Number</div>
+                <div id="display-ticket-number" style="font-family: monospace; font-size: 1.25rem; font-weight: 900; color: #0f172a; letter-spacing: 1px; margin-bottom: 12px;"></div>
+                <div id="ticket-instructions" style="font-size: 0.8rem; color: #64748b; line-height: 1.5;"></div>
+            </div>
+
+            <button onclick="closeSuccessModalGlobal()" class="btn-premium-action w-100" style="height: 56px; border-radius: 14px;">
+                Continue
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+function showSuccessModalGlobal(title, message, ticketNumber = '', isLoggedIn = false) {
+    document.getElementById('success-modal-title').innerText = title;
+    document.getElementById('success-modal-message').innerText = message;
+    
+    const ticketContainer = document.getElementById('ticket-info-container');
+    if (ticketNumber) {
+        document.getElementById('display-ticket-number').innerText = ticketNumber;
+        const instr = isLoggedIn 
+            ? 'This request has been added to your Support Inbox. You can track its progress there.' 
+            : 'Please copy and save this number. You will need it to track your request status.';
+        document.getElementById('ticket-instructions').innerText = instr;
+        ticketContainer.style.display = 'block';
+    } else {
+        ticketContainer.style.display = 'none';
+    }
+    
+    document.getElementById('success-modal-global').classList.add('active');
+}
+
+function closeSuccessModalGlobal() {
+    document.getElementById('success-modal-global').classList.remove('active');
+}
+</script>
+
 <script src="/php/Webdev/public/js/main.js?v=<?= time() ?>"></script>
 </body>
 </html>

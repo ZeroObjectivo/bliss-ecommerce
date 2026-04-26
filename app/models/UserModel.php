@@ -131,4 +131,20 @@ class UserModel {
         $this->db->bind(':id', $userId);
         return $this->db->execute();
     }
+
+    public function updateSecurityQuestions($id, $data) {
+        $this->db->query("UPDATE users SET 
+                         security_q1 = :q1, security_a1 = :a1, 
+                         security_q2 = :q2, security_a2 = :a2, 
+                         security_q3 = :q3, security_a3 = :a3 
+                         WHERE id = :id");
+        $this->db->bind(':q1', $data['security_q1']);
+        $this->db->bind(':a1', $data['security_a1']);
+        $this->db->bind(':q2', $data['security_q2']);
+        $this->db->bind(':a2', $data['security_a2']);
+        $this->db->bind(':q3', $data['security_q3']);
+        $this->db->bind(':a3', $data['security_a3']);
+        $this->db->bind(':id', $id);
+        return $this->db->execute();
+    }
 }

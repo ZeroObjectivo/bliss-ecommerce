@@ -39,97 +39,166 @@
 
         <!-- Main Content -->
         <main class="profile-content">
+            <?php if(!$data['has_security']): ?>
+                <div class="security-warning-banner" style="background: #fff7ed; border: 1px solid #ffedd5; border-radius: 16px; padding: 20px; margin-bottom: var(--spacing-6); display: flex; gap: 15px; align-items: start;">
+                    <div style="background: #f97316; color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    </div>
+                    <div>
+                        <h4 style="color: #9a3412; font-weight: 800; font-size: 0.95rem; margin-bottom: 4px;">Security Action Required</h4>
+                        <p style="color: #c2410c; font-size: 0.85rem; line-height: 1.5; margin: 0;">You haven't set up your security questions. These are required to recover your account if you forget your password. Please set them below.</p>
+                    </div>
+                </div>
+            <?php endif; ?>
+
             <!-- Mobile-Friendly Profile Picture Section -->
-            <section class="profile-section profile-picture-main-section">
-                <h3>Profile Picture</h3>
-                <div class="profile-picture-edit-card">
-                    <div class="avatar-wrapper-main">
-                        <?php if($data['user']['profile_picture']): ?>
-                            <img src="/php/Webdev/public/<?= $data['user']['profile_picture'] ?>" alt="Avatar" class="main-avatar-preview">
-                        <?php else: ?>
-                            <div class="avatar-placeholder-main"><?= strtoupper(substr($data['user']['name'], 0, 1)) ?></div>
-                        <?php endif; ?>
-                    </div>
-                    <div class="picture-actions">
-                        <p class="picture-tip">Upload a high-quality image to personalize your account.</p>
-                        <form action="/php/Webdev/public/profile/update_avatar" method="POST" enctype="multipart/form-data">
-                            <label for="profile_picture_main" class="btn btn-secondary btn-sm" style="cursor: pointer;">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-                                Change Picture
-                            </label>
-                            <input type="file" name="profile_picture" id="profile_picture_main" hidden onchange="this.form.submit()">
-                        </form>
+            <section class="profile-section collapsible-section active">
+                <div class="collapsible-header">
+                    <h3>Profile Picture</h3>
+                    <svg class="chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </div>
+                <div class="collapsible-body">
+                    <div class="profile-picture-edit-card">
+                        <div class="avatar-wrapper-main">
+                            <?php if($data['user']['profile_picture']): ?>
+                                <img src="/php/Webdev/public/<?= $data['user']['profile_picture'] ?>" alt="Avatar" class="main-avatar-preview">
+                            <?php else: ?>
+                                <div class="avatar-placeholder-main"><?= strtoupper(substr($data['user']['name'], 0, 1)) ?></div>
+                            <?php endif; ?>
+                        </div>
+                        <div class="picture-actions">
+                            <p class="picture-tip">Upload a high-quality image to personalize your account. (Max: 5MB)</p>
+                            <form action="/php/Webdev/public/profile/update_avatar" method="POST" enctype="multipart/form-data">                                <label for="profile_picture_main" class="btn btn-secondary btn-sm" style="cursor: pointer;">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                                    Change Picture
+                                </label>
+                                <input type="file" name="profile_picture" id="profile_picture_main" hidden onchange="this.form.submit()">
+                            </form>
+                        </div>
                     </div>
                 </div>
             </section>
 
-            <section class="profile-section">
-                <h3>Personal Information</h3>
-                <form action="/php/Webdev/public/profile/update_info" method="POST" class="profile-form">
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label>Full Name</label>
-                            <input type="text" name="name" value="<?= $data['user']['name'] ?>" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Username</label>
-                            <input type="text" name="username" value="<?= $data['user']['username'] ?>" placeholder="Choose a username">
-                        </div>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Save Changes</button>
-                </form>
-            </section>
-
-            <section class="profile-section">
-                <h3>Saved Addresses</h3>
-                <div class="address-grid">
-                    <?php foreach($data['addresses'] as $address): ?>
-                        <div class="address-card <?= $address['is_default'] ? 'default' : '' ?>">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                                <span class="badge" style="background: #f1f5f9; color: #475569;"><?= htmlspecialchars($address['category'] ?? 'Home Address') ?></span>
-                                <?php if($address['is_default']): ?>
-                                    <span class="badge">Default</span>
-                                <?php endif; ?>
+            <section class="profile-section collapsible-section">
+                <div class="collapsible-header">
+                    <h3>Personal Information</h3>
+                    <svg class="chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </div>
+                <div class="collapsible-body">
+                    <form action="/php/Webdev/public/profile/update_info" method="POST" class="profile-form">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Full Name</label>
+                                <input type="text" name="name" value="<?= $data['user']['name'] ?>" required>
                             </div>
-                            <p><?= $address['street_address'] ?></p>
-                            <p><?= $address['city'] ?>, <?= $address['province'] ?></p>
-                            <p><?= $address['postal_code'] ?></p>
-                            <div class="address-actions" style="margin-top: 15px;">
-                                <?php if(!$address['is_default']): ?>
-                                    <a href="/php/Webdev/public/profile/set_default_address/<?= $address['id'] ?>" class="text-sm">Set Default</a>
-                                <?php endif; ?>
-                                <button type="button" class="text-sm" onclick="openEditAddressModal(<?= $address['id'] ?>, '<?= htmlspecialchars($address['street_address'], ENT_QUOTES) ?>', '<?= htmlspecialchars($address['city'], ENT_QUOTES) ?>', '<?= htmlspecialchars($address['province'], ENT_QUOTES) ?>', '<?= htmlspecialchars($address['postal_code'], ENT_QUOTES) ?>', '<?= htmlspecialchars($address['category'] ?? 'Home Address', ENT_QUOTES) ?>')" style="background:none; border:none; padding:0; cursor:pointer; color: var(--primary-color);">Edit</button>
-                                <a href="/php/Webdev/public/profile/delete_address/<?= $address['id'] ?>" class="text-sm text-error" onclick="return confirm('Delete this address?')">Delete</a>
+                            <div class="form-group">
+                                <label>Username</label>
+                                <input type="text" name="username" value="<?= $data['user']['username'] ?>" placeholder="Choose a username">
                             </div>
                         </div>
-                    <?php endforeach; ?>
-                    
-                    <button class="add-address-card" onclick="document.getElementById('address-modal').classList.add('active')">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                        <span>Add New Address</span>
-                    </button>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </form>
                 </div>
             </section>
 
-            <section class="profile-section">
-                <h3>Change Password</h3>
-                <form action="/php/Webdev/public/profile/update_password" method="POST" class="profile-form">
-                    <div class="form-group">
-                        <label>Current Password</label>
-                        <input type="password" name="current_password" required>
+            <section class="profile-section collapsible-section">
+                <div class="collapsible-header">
+                    <h3>Saved Addresses</h3>
+                    <svg class="chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </div>
+                <div class="collapsible-body">
+                    <div class="address-grid">
+                        <?php foreach($data['addresses'] as $address): ?>
+                            <div class="address-card <?= $address['is_default'] ? 'default' : '' ?>">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                    <span class="badge" style="background: #f1f5f9; color: #475569;"><?= htmlspecialchars($address['category'] ?? 'Home Address') ?></span>
+                                    <?php if($address['is_default']): ?>
+                                        <span class="badge">Default</span>
+                                    <?php endif; ?>
+                                </div>
+                                <p><?= $address['street_address'] ?></p>
+                                <p><?= $address['city'] ?>, <?= $address['province'] ?></p>
+                                <p><?= $address['postal_code'] ?></p>
+                                <div class="address-actions" style="margin-top: 15px;">
+                                    <?php if(!$address['is_default']): ?>
+                                        <a href="/php/Webdev/public/profile/set_default_address/<?= $address['id'] ?>" class="text-sm">Set Default</a>
+                                    <?php endif; ?>
+                                    <button type="button" class="text-sm" onclick="openEditAddressModal(<?= $address['id'] ?>, '<?= htmlspecialchars($address['street_address'], ENT_QUOTES) ?>', '<?= htmlspecialchars($address['city'], ENT_QUOTES) ?>', '<?= htmlspecialchars($address['province'], ENT_QUOTES) ?>', '<?= htmlspecialchars($address['postal_code'], ENT_QUOTES) ?>', '<?= htmlspecialchars($address['category'] ?? 'Home Address', ENT_QUOTES) ?>')" style="background:none; border:none; padding:0; cursor:pointer; color: var(--primary-color);">Edit</button>
+                                    <a href="/php/Webdev/public/profile/delete_address/<?= $address['id'] ?>" class="text-sm text-error" onclick="return confirm('Delete this address?')">Delete</a>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                        
+                        <button class="add-address-card" onclick="document.getElementById('address-modal').classList.add('active')">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                            <span>Add New Address</span>
+                        </button>
                     </div>
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label>New Password</label>
-                            <input type="password" name="new_password" required>
+                </div>
+            </section>
+
+            <section class="profile-section collapsible-section">
+                <div class="collapsible-header">
+                    <h3>Security Questions</h3>
+                    <svg class="chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </div>
+                <div class="collapsible-body">
+                    <p class="picture-tip" style="margin-bottom: 20px;">Use these questions to verify your identity if you lose access to your account.</p>
+                    <form action="/php/Webdev/public/profile/update_security" method="POST" class="profile-form">
+                        <?php 
+                        $questions = [
+                            "What was the name of your first pet?",
+                            "What is your mother's maiden name?",
+                            "What was the name of your elementary school?",
+                            "In what city were you born?",
+                            "What is your favorite movie?",
+                            "What was your first car?",
+                            "What is your favorite book?"
+                        ];
+                        ?>
+                        <div style="display: flex; flex-direction: column; gap: 20px;">
+                            <?php for($i=1; $i<=3; $i++): ?>
+                                <div class="form-group" style="background: #f8fafc; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0;">
+                                    <label style="font-weight: 700; color: #0f172a; margin-bottom: 10px; display: block;">Question <?= $i ?></label>
+                                    <select name="security_question_<?= $i ?>" required style="width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 10px; background: white; margin-bottom: 12px;">
+                                        <option value="" disabled <?= empty($data['user']["security_q$i"]) ? 'selected' : '' ?>>Select a question</option>
+                                        <?php foreach($questions as $q): ?>
+                                            <option value="<?= htmlspecialchars($q) ?>" <?= ($data['user']["security_q$i"] == $q) ? 'selected' : '' ?>><?= htmlspecialchars($q) ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                    <input type="text" name="security_answer_<?= $i ?>" required value="<?= htmlspecialchars($data['user']["security_a$i"] ?? '') ?>" placeholder="Your answer" style="width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 10px;">
+                                </div>
+                            <?php endfor; ?>
                         </div>
+                        <button type="submit" class="btn btn-primary" style="margin-top: 20px;">Update Security Questions</button>
+                    </form>
+                </div>
+            </section>
+
+            <section class="profile-section collapsible-section">
+                <div class="collapsible-header">
+                    <h3>Change Password</h3>
+                    <svg class="chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </div>
+                <div class="collapsible-body">
+                    <form action="/php/Webdev/public/profile/update_password" method="POST" class="profile-form">
                         <div class="form-group">
-                            <label>Confirm New Password</label>
-                            <input type="password" name="confirm_password" required>
+                            <label>Current Password</label>
+                            <input type="password" name="current_password" required>
                         </div>
-                    </div>
-                    <button type="submit" class="btn btn-secondary">Update Password</button>
-                </form>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>New Password</label>
+                                <input type="password" name="new_password" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Confirm New Password</label>
+                                <input type="password" name="confirm_password" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-secondary">Update Password</button>
+                    </form>
+                </div>
             </section>
         </main>
     </div>
@@ -223,6 +292,93 @@ function openEditAddressModal(id, street, city, province, postalCode, category) 
     document.getElementById('edit_category').value = category;
     document.getElementById('edit-address-modal').classList.add('active');
 }
+
+// Collapsible Logic
+document.addEventListener('DOMContentLoaded', function() {
+    const headers = document.querySelectorAll('.collapsible-header');
+    headers.forEach(header => {
+        header.addEventListener('click', () => {
+            const section = header.parentElement;
+            const isActive = section.classList.contains('active');
+            
+            // Close all other sections (optional, remove if you want multiple open)
+            // document.querySelectorAll('.collapsible-section').forEach(s => s.classList.remove('active'));
+            
+            if (isActive) {
+                section.classList.remove('active');
+            } else {
+                section.classList.add('active');
+            }
+        });
+    });
+});
 </script>
+
+<style>
+.collapsible-section {
+    border: 1px solid #f1f5f9;
+    border-radius: 1.5rem;
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.collapsible-header {
+    padding: 1.5rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    background: white;
+    user-select: none;
+    transition: background 0.2s;
+}
+
+.collapsible-header:hover {
+    background: #f8fafc;
+}
+
+.collapsible-header h3 {
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    font-size: 0.85rem !important;
+}
+
+.collapsible-header .chevron {
+    transition: transform 0.3s ease;
+    color: #64748b;
+}
+
+.collapsible-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0, 1, 0, 1);
+    opacity: 0;
+    padding: 0 2rem;
+}
+
+.collapsible-section.active {
+    border-color: #e2e8f0;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.collapsible-section.active .collapsible-header {
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.collapsible-section.active .collapsible-body {
+    max-height: 2000px; /* Large enough to fit content */
+    opacity: 1;
+    padding: 2rem;
+    transition: all 0.3s cubic-bezier(1, 0, 1, 0);
+}
+
+.collapsible-section.active .chevron {
+    transform: rotate(180deg);
+    color: #000;
+}
+</style>
 
 <link rel="stylesheet" href="/php/Webdev/public/css/profile.css">
