@@ -35,6 +35,12 @@
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
+html, body {
+    overflow-x: hidden;
+    width: 100%;
+    position: relative;
+}
+
 body {
     background-color: var(--bg-color);
     color: var(--text-primary);
@@ -388,7 +394,7 @@ a {
     height: 400vh; /* Increased for smoother pacing */
     background: #000;
     margin: 0;
-    overflow: clip;
+    overflow: visible; /* Changed from clip/hidden to ensure sticky works on all mobile browsers */
 }
 
 /* Scroll Progress Indicator (Dots) */
@@ -427,12 +433,14 @@ a {
     position: sticky;
     top: 0;
     height: 100vh;
+    height: 100dvh; /* Dynamic viewport height */
     width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
     z-index: 1;
+    pointer-events: none; /* Let touches pass through to text layer or container */
 }
 
 .sticky-image-container {
@@ -443,6 +451,7 @@ a {
     align-items: center;
     justify-content: center;
     perspective: 1000px; /* For 3D rotation */
+    pointer-events: none;
 }
 
 .sticky-image-container img {
@@ -450,7 +459,7 @@ a {
     max-height: 90%;
     object-fit: contain;
     transform: scale(1.0) rotateX(0deg) rotateY(0deg);
-    transition: transform 0.2s cubic-bezier(0.1, 0, 0.3, 1);
+    /* Transition removed to prevent fighting with JS scroll updates */
     z-index: 5;
     filter: drop-shadow(0 30px 60px rgba(0,0,0,0.8));
 }
@@ -464,7 +473,7 @@ a {
     filter: blur(80px);
     z-index: 2;
     transform: scale(0.8);
-    transition: all 0.2s linear;
+    /* Transition removed for smoother scroll-linked animation */
 }
 
 .visual-overlay {
@@ -490,7 +499,7 @@ a {
     z-index: 2;
     user-select: none;
     line-height: 1;
-    transition: transform 0.1s linear, opacity 0.5s ease;
+    /* Transition removed to allow instantaneous JS updates during scroll */
 }
 
 /* Floating Particle Elements */
@@ -510,6 +519,7 @@ a {
 
 .scrolling-text-block {
     height: 100vh;
+    height: 100dvh;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -517,6 +527,7 @@ a {
     text-align: center;
     padding: 0 var(--spacing-6);
     color: white;
+    pointer-events: none; /* Block container is non-blocking to allow swipes to reach body */
 }
 
 .glass-panel {
@@ -534,6 +545,7 @@ a {
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    pointer-events: auto; /* Re-enable for buttons inside the panel */
 }
 
 .hero-title {
@@ -813,6 +825,9 @@ a {
 /* Featured Section */
 .featured-section {
     padding: var(--spacing-8) 0;
+    position: relative;
+    z-index: 10;
+    background: var(--bg-color); /* Ensure it has a solid background to cover sticky hero */
 }
 
 .section-header {
@@ -1120,16 +1135,18 @@ a {
         -webkit-backdrop-filter: blur(24px);
         z-index: 5000;
         padding: 0;
-        transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.4s;
         box-shadow: -10px 0 40px rgba(0, 0, 0, 0.1);
         overflow-y: auto;
         max-height: none;
         border-bottom: none;
         pointer-events: auto !important;
+        visibility: hidden; /* Prevent interaction when closed */
     }
 
     .nav-links.open {
         right: 0;
+        visibility: visible;
     }
 
     .mobile-menu-header {
@@ -1260,6 +1277,109 @@ a {
     }
     .profile-name {
         max-width: 80px; /* Reduced max-width for name */
+    }
+
+    /* Hero Section Mobile Refinement - Natural Stacked Layout */
+    .apple-sticky-container {
+        height: auto !important; /* Disable massive scroll height */
+        min-height: unset !important;
+        display: flex !important;
+        flex-direction: column !important; /* Stack image then cards */
+        padding-top: 10vh !important; /* Spacing from top nav */
+        padding-bottom: var(--spacing-8);
+        overflow: visible !important;
+        background: #000 !important; /* Solid background to avoid harsh gradient splits */
+    }
+    
+    .sticky-visual {
+        position: relative !important; /* Disable sticky behavior */
+        top: 0 !important;
+        height: auto !important;
+        width: 100% !important;
+        display: block !important;
+        z-index: 5;
+        pointer-events: auto !important;
+        margin-bottom: var(--spacing-4);
+    }
+
+    .sticky-image-container {
+        position: relative !important;
+        height: auto !important;
+        min-height: 200px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+    }
+
+    .sticky-image-container img {
+        max-width: 80% !important; /* Requested sizing */
+        height: auto !important;
+        margin: 0 auto !important;
+        transform: none !important; /* Disable JS transforms */
+        position: relative !important;
+        z-index: 10 !important;
+    }
+
+    .scrolling-text-content {
+        position: relative !important;
+        z-index: 10;
+        margin-top: 0 !important; /* Reset overlap */
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-4);
+    }
+
+    .scrolling-text-block {
+        height: auto !important;
+        min-height: unset !important;
+        display: block !important;
+        padding: 0 !important;
+        pointer-events: auto !important;
+    }
+    
+    .glass-panel {
+        width: 92% !important; /* Requested sizing */
+        max-width: 92% !important;
+        padding: var(--spacing-6) var(--spacing-4) !important;
+        border-radius: 24px;
+        margin: 20px auto !important; /* Requested spacing */
+        pointer-events: auto;
+        background: rgba(15, 23, 42, 0.9) !important; /* High contrast dark */
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+
+    /* Contrast Fix for "Nike Engineering" (Hero Badge) */
+    .hero-badge {
+        color: #0071e3 !important; /* Requested bright blue color */
+        background: rgba(255, 255, 255, 0.1) !important;
+        border-color: rgba(0, 113, 227, 0.3) !important;
+        font-weight: 800 !important;
+    }
+    
+    .hero-title {
+        font-size: 2.5rem !important;
+        line-height: 1.1;
+        margin-bottom: var(--spacing-2);
+    }
+
+    .huge-bg-text {
+        display: none !important; /* Hide massive text to avoid clutter in stacked layout */
+    }
+
+    .product-glow {
+        width: 100vw !important;
+        height: 100vw !important;
+        top: 50% !important;
+        left: 50% !important;
+        transform: translate(-50%, -50%) !important;
+        opacity: 0.3 !important;
+    }
+
+    .scroll-progress-nav {
+        display: none !important;
     }
 }
 

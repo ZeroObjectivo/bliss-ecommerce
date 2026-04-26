@@ -281,45 +281,88 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        window.addEventListener('scroll', () => {
-            const containerTop = stickyContainer.offsetTop;
+        let isScrolling = false;
+        const updateHero = () => {
+            const rect = stickyContainer.getBoundingClientRect();
             const containerHeight = stickyContainer.offsetHeight;
-            const scrollY = window.scrollY;
             const viewportHeight = window.innerHeight;
-            let progress = (scrollY - containerTop) / (containerHeight - viewportHeight);
+            const header = document.querySelector('.main-header');
+            const headerHeight = header ? header.offsetHeight : 0;
+            
+            // Progress is 0 when top of container reaches top of viewport
+            let progress = -rect.top / (containerHeight - viewportHeight);
             progress = Math.max(0, Math.min(1, progress));
-            if (progress > 0 && progress < 1) stickyContainer.classList.add('is-active');
-            else stickyContainer.classList.remove('is-active');
-            if (stickyImg) {
-                const scale = 0.95 + (progress * 0.25);
-                const rotateX = (progress * 20) - 10;
-                const rotateY = (progress * 30) - 15;
-                stickyImg.style.transform = `scale(${scale}) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+
+            // Section is active as long as we are within its scroll range
+            // On mobile we extend the range slightly to prevent early disappearance
+            const isMobile = window.innerWidth <= 768;
+            const activeThreshold = isMobile ? 0.99 : 0.98;
+
+            if (rect.top <= headerHeight && progress < activeThreshold) {
+                stickyContainer.classList.add('is-active');
+            } else {
+                stickyContainer.classList.remove('is-active');
             }
+
+            if (stickyImg) {
+                const scaleBase = isMobile ? 0.85 : 0.95;
+                const scaleAmount = isMobile ? 0.3 : 0.25;
+                const scale = scaleBase + (progress * scaleAmount);
+                
+                // Parallax movement for mobile to make it feel less "fixed"
+                const yOffset = isMobile ? (progress * -100) : 0;
+                
+                const rotateX = (progress * 15) - 7.5;
+                const rotateY = (progress * 20) - 10;
+                stickyImg.style.transform = `translateY(${yOffset}px) scale(${scale}) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+            }
+
             if (productGlow) {
                 const glowScale = 0.8 + (progress * 0.6);
-                const glowOpacity = 0.1 + (progress * 0.5);
-                productGlow.style.transform = `scale(${glowScale})`;
+                const glowOpacity = isMobile ? (0.2 + (progress * 0.4)) : (0.1 + (progress * 0.5));
+                const glowY = isMobile ? (progress * -80) : 0;
+                productGlow.style.transform = `translateY(${glowY}px) scale(${glowScale})`;
                 productGlow.style.opacity = glowOpacity;
             }
+
             if (hugeBgText) {
-                const bgScale = 1 + (progress * 0.4);
-                const bgOpacity = progress < 0.5 ? 1 : 1 * (1 - (progress - 0.5) * 2); 
-                hugeBgText.style.transform = `scale(${bgScale})`;
-                hugeBgText.style.opacity = Math.max(0, bgOpacity);
+                const bgScale = 1 + (progress * 0.5);
+                const bgY = isMobile ? (progress * -150) : 0; // "BLISS" moves fastest for parallax
+                // Text fades out towards the end
+                const bgOpacity = progress < 0.5 ? 0.15 : Math.max(0, 0.15 - (progress - 0.5) * 0.5);
+                hugeBgText.style.transform = `translateY(${bgY}px) scale(${bgScale})`;
+                hugeBgText.style.opacity = bgOpacity;
             }
+
             const particles = stickyContainer.querySelectorAll('.particle');
             particles.forEach((p, i) => {
                 const speed = 0.2 + (i * 0.05);
                 const yOffset = progress * 200 * speed;
                 p.style.transform = `translateY(-${yOffset}px)`;
             });
-            const step = Math.min(progressDots.length - 1, Math.floor(progress * progressDots.length));
-            progressDots.forEach((dot, index) => {
-                if (index === step) dot.classList.add('active');
-                else dot.classList.remove('active');
-            });
-        });
+
+            if (progressDots.length > 0) {
+                const step = Math.min(progressDots.length - 1, Math.floor(progress * progressDots.length));
+                progressDots.forEach((dot, index) => {
+                    dot.classList.toggle('active', index === step);
+                });
+            }
+
+            isScrolling = false;
+        };
+
+        window.addEventListener('scroll', () => {
+            if (!isScrolling) {
+                requestAnimationFrame(updateHero);
+                isScrolling = true;
+            }
+        }, { passive: true });
+
+        // Initial call to set positions
+        updateHero();
+
+        // Handle window resize for dynamic viewport height (mobile)
+        window.addEventListener('resize', updateHero, { passive: true });
     }
 
     if (revealElements.length > 0) {

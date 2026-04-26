@@ -75,7 +75,7 @@
                                      data-status="<?= $rowStatus ?>" 
                                      data-archived="<?= $msg['is_archived_user'] ?>"
                                      onclick="showUserTicket(<?= htmlspecialchars(json_encode($msg)) ?>, this)"
-                                     style="display: <?= $isVisible ? 'flex' : 'none' ?>;">
+                                     style="<?= $isVisible ? 'display: flex;' : 'display: none;' ?>">
                                     <div class="ticket-item-info">
                                         <div class="ticket-meta">
                                             <span class="ticket-id"><?= $msg['ticket_number'] ?: '#TCK-OLD' ?></span>
@@ -86,7 +86,7 @@
                                                 <span class="status-dot <?= $rowStatus ?>"></span>
                                             </div>
                                         </div>
-                                        <div class="ticket-title"><?= htmlspecialchars($msg['subject']) ?></div>
+                                        <div class="ticket-title" title="<?= htmlspecialchars($msg['subject']) ?>"><?= htmlspecialchars($msg['subject']) ?></div>
                                         <div class="ticket-date"><?= date('M d, Y', strtotime($msg['updated_at'])) ?></div>
                                     </div>
                                 </div>
@@ -167,7 +167,7 @@
 .btn-new-ticket:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); background: #1e293b; }
 
 /* Messenger Layout */
-.messenger-layout { display: flex; height: 600px; background: white; position: relative; border-radius: 0 0 1rem 1rem; }
+.messenger-layout { display: flex; height: 600px; background: white; position: relative; border-radius: 0 0 1rem 1rem; overflow: hidden; }
 
 /* Messenger Sidebar (Inner) */
 .messenger-sidebar { width: 300px; border-right: 1px solid #f1f5f9; display: flex; flex-direction: column; background: #fafafa; flex-shrink: 0; }
@@ -246,30 +246,6 @@
 .modal-overlay.active { display: flex; animation: modalFadeIn 0.3s ease; }
 @keyframes modalFadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-/* Responsive Messenger */
-@media (max-width: 768px) {
-    .inbox-header-row { padding: 20px; flex-direction: column; align-items: stretch; gap: 15px; }
-    .inbox-tabs-wrapper { flex-direction: column; align-items: stretch; }
-    .inbox-tabs-wrapper > div { justify-content: center; }
-    .btn-new-ticket { width: 100%; justify-content: center; margin-left: 0; }
-    
-    .messenger-layout { height: calc(100vh - 180px); min-height: 500px; }
-    .messenger-sidebar { width: 100%; position: absolute; inset: 0; z-index: 10; border-right: none; }
-    .messenger-view { width: 100%; }
-    
-    .back-list-btn { display: block; }
-    .detail-header { padding: 15px 20px; }
-    .chat-thread { padding: 20px 15px; }
-    .chat-footer { padding: 15px; }
-    
-    .msg-group { max-width: 90%; }
-}
-
-@media (max-width: 480px) {
-    .header-text h3 { font-size: 1.25rem; }
-    .detail-info h4 { font-size: 1rem; }
-}
-
 .custom-scrollbar::-webkit-scrollbar { width: 6px; }
 .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
 .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
@@ -298,7 +274,14 @@ function showUserTicket(msg, el) {
     document.getElementById('no-ticket-selected').style.display = 'none';
     const detail = document.getElementById('ticket-detail-view');
     detail.style.display = 'flex';
-    if (window.innerWidth <= 768) toggleMessengerSidebar(false);
+    
+    if (window.innerWidth <= 768) {
+        toggleMessengerSidebar(false);
+        // Explicitly ensure the view parent is active
+        const messengerView = document.querySelector('.messenger-view');
+        if(messengerView) messengerView.classList.add('active');
+    }
+
     document.getElementById('view-subject').innerText = msg.subject;
     document.getElementById('reply-ticket-id').value = msg.id;
     const pill = document.getElementById('view-status-pill');
@@ -364,8 +347,15 @@ function showUserTicket(msg, el) {
 
 function toggleMessengerSidebar(show) {
     const sidebar = document.querySelector('.messenger-sidebar');
-    if (!sidebar) return;
-    sidebar.style.display = show ? 'flex' : 'none';
+    const view = document.querySelector('.messenger-view');
+    if (!sidebar || !view) return;
+    if (show) {
+        sidebar.classList.remove('hidden');
+        view.classList.remove('active');
+    } else {
+        sidebar.classList.add('hidden');
+        view.classList.add('active');
+    }
 }
 
 function filterUserInbox(tab) {

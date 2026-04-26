@@ -1,5 +1,5 @@
 <?php if(!empty($data['featured'])): ?>
-    <section class="apple-sticky-container" style="background: <?= $data['featured']['bg_gradient'] ?? '#000' ?>;">
+    <section class="apple-sticky-container">
         <!-- Scroll Navigation Dots -->
         <div class="scroll-progress-nav">
             <div class="progress-dot active"></div>
@@ -8,7 +8,7 @@
         </div>
 
         <!-- The Sticky Product Visual -->
-        <div class="sticky-visual">
+        <div class="sticky-visual" style="background: <?= $data['featured']['bg_gradient'] ?? '#000' ?>;">
             <div class="sticky-image-container">
                 <div class="product-glow" id="product-glow"></div>
                 <div class="huge-bg-text" id="huge-bg-text">BLISS</div>
