@@ -98,6 +98,43 @@ class Profile extends Controller {
         }
     }
 
+    public function update_avatar_ajax() {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['profile_picture'])) {
+            $file = $_FILES['profile_picture'];
+            
+            // Check file size (5MB)
+            $maxSize = 5 * 1024 * 1024;
+            if ($file['size'] > $maxSize) {
+                echo json_encode(['success' => false, 'error' => 'File size exceeds 5MB limit.']);
+                exit;
+            }
+
+            $target_dir = "uploads/profiles/";
+            if (!is_dir($target_dir)) {
+                mkdir($target_dir, 0777, true);
+            }
+
+            // Always png since we generate it from canvas
+            $new_name = time() . "_" . $_SESSION['user_id'] . ".png";
+            $target_file = $target_dir . $new_name;
+
+            if (move_uploaded_file($file['tmp_name'], $target_file)) {
+                $userModel = $this->model('UserModel');
+                $userModel->updateProfilePicture($_SESSION['user_id'], $target_file);
+                $_SESSION['user_picture'] = $target_file;
+                
+                echo json_encode([
+                    'success' => true, 
+                    'path' => $target_file,
+                    'message' => 'Profile picture updated successfully.'
+                ]);
+            } else {
+                echo json_encode(['success' => false, 'error' => 'Failed to save uploaded image.']);
+            }
+            exit;
+        }
+    }
+
     public function update_password() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $userModel = $this->model('UserModel');

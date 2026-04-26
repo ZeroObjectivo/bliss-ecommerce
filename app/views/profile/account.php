@@ -1,3 +1,7 @@
+<!-- Cropper.js Dependencies -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+
 <div class="container py-8">
     <!-- Sidebar Overlay for Mobile -->
     <div class="sidebar-overlay" id="sidebar-overlay"></div>
@@ -22,7 +26,7 @@
                         <label for="profile_picture" class="avatar-edit-btn">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
                         </label>
-                        <input type="file" name="profile_picture" id="profile_picture" hidden onchange="this.form.submit()">
+                        <input type="file" name="profile_picture" id="profile_picture" hidden>
                     </form>
                 </div>
                 <h2 class="user-name"><?= $data['user']['name'] ?></h2>
@@ -68,11 +72,12 @@
                         </div>
                         <div class="picture-actions">
                             <p class="picture-tip">Upload a high-quality image to personalize your account. (Max: 5MB)</p>
-                            <form action="/php/Webdev/public/profile/update_avatar" method="POST" enctype="multipart/form-data">                                <label for="profile_picture_main" class="btn btn-secondary btn-sm" style="cursor: pointer;">
+                            <form action="/php/Webdev/public/profile/update_avatar" method="POST" enctype="multipart/form-data">
+                                <label for="profile_picture_main" class="btn btn-secondary btn-sm" style="cursor: pointer;">
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
                                     Change Picture
                                 </label>
-                                <input type="file" name="profile_picture" id="profile_picture_main" hidden onchange="this.form.submit()">
+                                <input type="file" name="profile_picture" id="profile_picture_main" hidden>
                             </form>
                         </div>
                     </div>
@@ -282,7 +287,142 @@
     </div>
 </div>
 
+<!-- Crop Modal -->
+<div id="crop-modal" class="modal-overlay">
+    <div class="modal-content glass-premium-modal" style="max-width: 500px;">
+        <div class="modal-header">
+            <h3>Crop Profile Picture</h3>
+            <button onclick="closeCropModal()">&times;</button>
+        </div>
+        <div style="padding: 20px;">
+            <div style="max-height: 400px; overflow: hidden; border-radius: 12px; background: #f8fafc; margin-bottom: 25px;">
+                <img id="image-to-crop" style="max-width: 100%; display: block;">
+            </div>
+            <div style="display: flex; gap: 12px;">
+                <button type="button" onclick="closeCropModal()" class="btn btn-secondary" style="flex: 1;">Cancel</button>
+                <button type="button" id="apply-crop-btn" class="btn btn-primary" style="flex: 2;">Apply & Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
+let cropper = null;
+
+function initCropper(file) {
+    if (!file.type.startsWith('image/')) {
+        window.showToast('Please select a valid image file.', 'error');
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const image = document.getElementById('image-to-crop');
+        image.src = e.target.result;
+        document.getElementById('crop-modal').classList.add('active');
+        
+        if (cropper) {
+            cropper.destroy();
+        }
+        
+        // Wait for modal transition then init cropper
+        setTimeout(() => {
+            cropper = new Cropper(image, {
+                aspectRatio: 1,
+                viewMode: 2,
+                dragMode: 'move',
+                autoCropArea: 1,
+                restore: false,
+                guides: true,
+                center: true,
+                highlight: false,
+                cropBoxMovable: true,
+                cropBoxResizable: true,
+                toggleDragModeOnDblclick: false,
+            });
+        }, 300);
+    };
+    reader.readAsDataURL(file);
+}
+
+function closeCropModal() {
+    document.getElementById('crop-modal').classList.remove('active');
+    if (cropper) {
+        cropper.destroy();
+        cropper = null;
+    }
+}
+
+// Intercept file inputs
+document.getElementById('profile_picture')?.addEventListener('change', function(e) {
+    if (this.files && this.files[0]) initCropper(this.files[0]);
+    this.value = ''; // Reset input so it triggers again on same file
+});
+
+document.getElementById('profile_picture_main')?.addEventListener('change', function(e) {
+    if (this.files && this.files[0]) initCropper(this.files[0]);
+    this.value = ''; // Reset input
+});
+
+document.getElementById('apply-crop-btn')?.addEventListener('click', function() {
+    if (!cropper) return;
+    
+    const btn = this;
+    const originalText = btn.innerText;
+    btn.disabled = true;
+    btn.innerText = 'Processing...';
+    
+    cropper.getCroppedCanvas({
+        width: 500,
+        height: 500
+    }).toBlob((blob) => {
+        if (!blob) {
+            window.showToast('Error generating image.', 'error');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('profile_picture', blob, 'avatar.png');
+        
+        fetch('/php/Webdev/public/profile/update_avatar_ajax', {
+            method: 'POST',
+            body: formData,
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                // Update all previews
+                const newSrc = '/php/Webdev/public/' + data.path + '?v=' + new Date().getTime();
+                document.querySelectorAll('.main-avatar-preview, #avatar-preview').forEach(img => {
+                    img.src = newSrc;
+                });
+                
+                // Handle placeholders
+                document.querySelectorAll('.avatar-placeholder-main, .avatar-placeholder').forEach(ph => {
+                    const img = document.createElement('img');
+                    img.src = newSrc;
+                    img.className = ph.className.replace('placeholder', 'preview');
+                    ph.replaceWith(img);
+                });
+
+                window.showToast('Profile picture updated successfully!');
+                closeCropModal();
+            } else {
+                window.showToast(data.error || 'Failed to update avatar.', 'error');
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            window.showToast('An unexpected error occurred.', 'error');
+        })
+        .finally(() => {
+            btn.disabled = false;
+            btn.innerText = originalText;
+        });
+    }, 'image/png');
+});
+
 function openEditAddressModal(id, street, city, province, postalCode, category) {
     document.getElementById('edit-address-form').action = '/php/Webdev/public/profile/edit_address/' + id;
     document.getElementById('edit_street_address').value = street;
