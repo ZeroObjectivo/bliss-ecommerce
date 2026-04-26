@@ -115,7 +115,13 @@
         <!-- Product Grid -->
         <main class="catalog-main">
             <div class="catalog-header">
-                <h2><?= htmlspecialchars($data['title']) ?></h2>
+                <div class="header-left-group">
+                    <button type="button" id="desktop-filter-toggle" class="desktop-filter-toggle">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
+                        <span>Hide Filters</span>
+                    </button>
+                    <h2><?= htmlspecialchars($data['title']) ?></h2>
+                </div>
                 <div class="sort-by">
                     <select id="catalog-sort">
                         <option value="featured">Sort By: Featured</option>
@@ -151,6 +157,53 @@
     display: flex;
     gap: var(--spacing-6);
     padding-top: var(--spacing-6);
+}
+
+.header-left-group {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-4);
+}
+
+.desktop-filter-toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: white;
+    border: 1px solid var(--glass-border);
+    padding: 10px 20px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.desktop-filter-toggle:hover {
+    background: #f8fafc;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+}
+
+.desktop-filter-toggle svg {
+    color: var(--primary-color);
+}
+
+.catalog-page.sidebar-hidden .catalog-sidebar {
+    display: none !important;
+}
+
+.catalog-page.sidebar-hidden .catalog-main {
+    flex: 1;
+    width: 100%;
+}
+
+@media (min-width: 1200px) {
+    .catalog-page.sidebar-hidden .product-grid {
+        grid-template-columns: repeat(4, 1fr) !important;
+    }
 }
 
 .mobile-filter-bar {
@@ -342,6 +395,21 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             e.stopPropagation();
             toggleFilter(false);
+        });
+    }
+
+    // Desktop Filter Toggle
+    const desktopFilterToggle = document.getElementById('desktop-filter-toggle');
+    if (desktopFilterToggle) {
+        desktopFilterToggle.addEventListener('click', () => {
+            const catalogPage = document.querySelector('.catalog-page');
+            catalogPage.classList.toggle('sidebar-hidden');
+            const span = desktopFilterToggle.querySelector('span');
+            if (catalogPage.classList.contains('sidebar-hidden')) {
+                span.innerText = 'Show Filters';
+            } else {
+                span.innerText = 'Hide Filters';
+            }
         });
     }
 
