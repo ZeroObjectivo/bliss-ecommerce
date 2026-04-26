@@ -851,6 +851,20 @@
     .address-grid {
         grid-template-columns: 1fr;
     }
+
+    .order-details-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .item-row {
+        gap: 1rem;
+    }
+
+    .item-subtotal {
+        text-align: left !important;
+        margin-top: 0.5rem;
+    }
 }
 
 /* Tablet: Adjustments for 2-column layout */
