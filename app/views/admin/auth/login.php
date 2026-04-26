@@ -7,25 +7,34 @@
     <link rel="stylesheet" href="/php/Webdev/public/css/style.css">
     <link rel="stylesheet" href="/php/Webdev/public/css/auth.css">
     <style>
+        @keyframes gradient-animation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
         body {
-            background: #0f172a;
             display: flex;
             align-items: center;
             justify-content: center;
             min-height: 100vh;
             margin: 0;
             font-family: 'Inter', -apple-system, sans-serif;
+            color: white;
+            background: linear-gradient(-45deg, #0f172a, #1e293b, #334155, #1d4ed8);
+            background-size: 400% 400%;
+            animation: gradient-animation 15s ease infinite;
         }
+
         .admin-auth-card {
-            background: rgba(30, 41, 59, 0.7);
-            backdrop-filter: blur(20px);
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(25px) saturate(180%);
             border: 1px solid rgba(255, 255, 255, 0.1);
             padding: 40px;
             border-radius: 24px;
             width: 100%;
             max-width: 400px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            color: white;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
         }
         .admin-auth-card h2 {
             font-size: 1.8rem;
@@ -55,14 +64,16 @@
             width: 100%;
             margin-bottom: 20px;
             font-size: 1rem;
+            transition: all 0.2s;
         }
         .form-group input:focus {
             outline: none;
             border-color: #3b82f6;
-            background: rgba(15, 23, 42, 0.8);
+            background: rgba(30, 41, 59, 0.8);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
         }
         .btn-admin-login {
-            background: #2563eb;
+            background: linear-gradient(to right, #3b82f6, #6366f1);
             color: white;
             border: none;
             padding: 16px;
@@ -71,12 +82,13 @@
             font-weight: 700;
             font-size: 1rem;
             cursor: pointer;
-            transition: all 0.2s;
-            box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px -5px rgba(59, 130, 246, 0.3);
         }
         .btn-admin-login:hover {
-            background: #1d4ed8;
-            transform: translateY(-1px);
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 15px 25px -5px rgba(59, 130, 246, 0.4);
+            filter: brightness(1.1);
         }
         .error-msg {
             background: rgba(239, 68, 68, 0.1);
@@ -99,10 +111,15 @@
             <div class="error-msg">Invalid credentials or insufficient permissions.</div>
         <?php endif; ?>
 
-        <?php if(isset($_GET['error']) && $_GET['error'] == 'suspended'): ?>
+        <?php if(isset($_GET['status']) && $_GET['status'] == 'suspended'): ?>
             <div class="error-msg" style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: #f87171;">
-                This administrator account is currently suspended.<br>
-                Please contact the system administrator.
+                Your account has been suspended.
+            </div>
+        <?php endif; ?>
+
+        <?php if(isset($_GET['status']) && $_GET['status'] == 'password_reset'): ?>
+            <div class="error-msg" style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); color: #10b981;">
+                A password reset was initiated. Please use your new password or contact support.
             </div>
         <?php endif; ?>
 
