@@ -57,26 +57,24 @@ foreach($tabs as $tab):
                     <td>
                         <div style="display: flex; gap: 8px; align-items: center;">
                             <a href="/php/Webdev/public/admin/customer_detail/<?= $user['id'] ?>" class="btn-admin" style="background: var(--admin-card); border: 1px solid var(--admin-border); color: var(--admin-text-main); padding: 6px 10px; font-size: 0.75rem; text-decoration: none;">View</a>
-                            <form method="POST" action="/php/Webdev/public/superadmin/customer_status" style="margin:0;">
-                                <input type="hidden" name="user_id" value="<?= $user['id'] ?>">
-                                <input type="hidden" name="current_status" value="<?= $user['status'] ?>">
-                                <button type="submit" class="btn-admin" style="background: var(--admin-card); border: 1px solid var(--admin-border); color: var(--admin-text-main); padding: 6px 10px; font-size: 0.75rem;">
-                                    <?= $user['status'] == 'active' ? 'Suspend' : 'Activate' ?>
-                                </button>
-                            </form>
-                            
-                            <form method="POST" action="/php/Webdev/public/superadmin/customer_reset_pass" style="margin:0;">
-                                <input type="hidden" name="user_id" value="<?= $user['id'] ?>">
-                                <button type="submit" class="btn-admin" style="background: var(--admin-card); border: 1px solid var(--admin-border); color: var(--admin-accent); padding: 6px 10px; font-size: 0.75rem;">Reset Pass</button>
-                            </form>
 
                             <?php if ($_SESSION['admin_role'] === 'superadmin'): ?>
-                                <a href="/php/Webdev/public/superadmin/customer_delete/<?= $user['id'] ?>" 
-                                   class="btn-admin btn-admin-danger" 
-                                   onclick="return confirm('Delete this customer permanently?')"
-                                   style="padding: 6px 10px; font-size: 0.75rem;">
-                                    Delete
-                                </a>
+                                <form method="POST" action="/php/Webdev/public/superadmin/customer_status" style="margin:0;">
+                                    <input type="hidden" name="user_id" value="<?= $user['id'] ?>">
+                                    <input type="hidden" name="current_status" value="<?= $user['status'] ?>">
+                                    <button type="submit" class="btn-admin" style="background: var(--admin-card); border: 1px solid var(--admin-border); color: <?= $user['status'] == 'active' ? 'var(--admin-warning)' : 'var(--admin-success)' ?>; padding: 6px 10px; font-size: 0.75rem;">
+                                        <?= $user['status'] == 'active' ? 'Suspend' : 'Activate' ?>
+                                    </button>
+                                </form>
+                                <form method="POST" action="/php/Webdev/public/superadmin/customer_reset_pass" style="margin:0;">
+                                    <input type="hidden" name="user_id" value="<?= $user['id'] ?>">
+                                    <button type="submit" class="btn-admin" style="background: var(--admin-card); border: 1px solid var(--admin-border); color: var(--admin-accent); padding: 6px 10px; font-size: 0.75rem;">Reset Pass</button>
+                                </form>
+                                <form method="POST" action="/php/Webdev/public/superadmin/customer_delete/<?= $user['id'] ?>" onsubmit="return confirm('This will permanently delete the customer and all associated data. This cannot be undone. Continue?');" style="margin:0;">
+                                    <button type="submit" class="btn-admin btn-admin-danger" style="padding: 6px 10px; font-size: 0.75rem;">
+                                        Delete
+                                    </button>
+                                </form>
                             <?php endif; ?>
                         </div>
                     </td>

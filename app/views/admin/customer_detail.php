@@ -67,13 +67,15 @@
                 </div>
             </div>
 
-            <form method="POST" action="/php/Webdev/public/superadmin/customer_status" style="width: 100%;">
-                <input type="hidden" name="user_id" value="<?= $data['customer']['id'] ?>">
-                <input type="hidden" name="current_status" value="<?= $data['customer']['status'] ?>">
-                <button type="submit" class="btn-admin w-100" style="padding: 12px; border-radius: 12px; background: <?= $data['customer']['status'] == 'active' ? 'white' : 'var(--admin-success)' ?>; color: <?= $data['customer']['status'] == 'active' ? 'var(--admin-danger)' : 'white' ?>; border: 1px solid <?= $data['customer']['status'] == 'active' ? 'var(--admin-danger)' : 'var(--admin-success)' ?>; font-weight: 700;">
-                    <?= $data['customer']['status'] == 'active' ? 'Suspend Account' : 'Activate Account' ?>
-                </button>
-            </form>
+            <?php if ($_SESSION['admin_role'] === 'superadmin'): ?>
+                <form method="POST" action="/php/Webdev/public/superadmin/customer_status" style="width: 100%;">
+                    <input type="hidden" name="user_id" value="<?= $data['customer']['id'] ?>">
+                    <input type="hidden" name="current_status" value="<?= $data['customer']['status'] ?>">
+                    <button type="submit" class="btn-admin w-100" style="padding: 12px; border-radius: 12px; background: <?= $data['customer']['status'] == 'active' ? 'white' : 'var(--admin-success)' ?>; color: <?= $data['customer']['status'] == 'active' ? 'var(--admin-danger)' : 'white' ?>; border: 1px solid <?= $data['customer']['status'] == 'active' ? 'var(--admin-danger)' : 'var(--admin-success)' ?>; font-weight: 700;">
+                        <?= $data['customer']['status'] == 'active' ? 'Suspend Account' : 'Activate Account' ?>
+                    </button>
+                </form>
+            <?php endif; ?>
         </div>
 
         <div class="admin-card">
