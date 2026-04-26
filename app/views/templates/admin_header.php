@@ -29,7 +29,7 @@
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
                 Dashboard
             </a>
-            <?php if ($_SESSION['user_role'] === 'superadmin'): ?>
+            <?php if ($_SESSION['admin_role'] === 'superadmin'): ?>
             <a href="/php/Webdev/public/superadmin/products" class="<?= strpos($_SERVER['REQUEST_URI'], '/superadmin/products') !== false ? 'active' : '' ?>">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
                 Products
@@ -64,10 +64,10 @@
         </nav>
         <div class="sidebar-footer">
             <div class="user-info">
-                <span><?= htmlspecialchars($_SESSION['user_name']) ?></span>
-                <small><?= htmlspecialchars(ucfirst($_SESSION['user_role'])) ?></small>
+                <span><?= htmlspecialchars($_SESSION['admin_name']) ?></span>
+                <small><?= htmlspecialchars(ucfirst($_SESSION['admin_role'])) ?></small>
             </div>
-            <a href="/php/Webdev/public/auth/logout" class="logout-btn">
+            <a href="/php/Webdev/public/adminauth/logout" class="logout-btn">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
             </a>
         </div>

@@ -1,9 +1,18 @@
 <?php
 class SuperAdmin extends Controller {
     public function __construct() {
-        // Strict SuperAdmin Middleware
-        if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'superadmin') {
-            header("Location: /php/Webdev/public/admin");
+        // Auto-bridge customer session to admin session if user is superadmin
+        if (!isset($_SESSION['admin_id']) && isset($_SESSION['user_id']) && isset($_SESSION['user_role'])) {
+            if ($_SESSION['user_role'] === 'superadmin') {
+                $_SESSION['admin_id'] = $_SESSION['user_id'];
+                $_SESSION['admin_name'] = $_SESSION['user_name'];
+                $_SESSION['admin_role'] = $_SESSION['user_role'];
+            }
+        }
+
+        // Strict SuperAdmin Middleware using separated admin session
+        if (!isset($_SESSION['admin_role']) || $_SESSION['admin_role'] !== 'superadmin') {
+            header("Location: /php/Webdev/public/adminauth/login");
             exit;
         }
     }
