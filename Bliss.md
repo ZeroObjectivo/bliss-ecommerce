@@ -4,7 +4,7 @@ Updated from the current codebase on 2026-04-25.
 
 ## 1. Executive Summary
 
-BLISS is a custom PHP + MySQL e-commerce website built without Laravel, Symfony, Composer packages, or a frontend build step. It follows a hand-rolled MVC structure:
+BLISS is a custom PHP + MySQL e-commerce website built follows a hand-rolled MVC structure:
 
 - Apache serves `public/`
 - `public/.htaccess` rewrites requests into `public/index.php`
