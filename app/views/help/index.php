@@ -165,14 +165,25 @@
         </section>
 
         <section class="contact-cta">
-            <h2>Still need help?</h2>
-            <p>Our support team is available 24/7 to assist you with any questions.</p>
-            <div class="contact-buttons">
-                <?php if(isset($_SESSION['user_id'])): ?>
-                    <button onclick="document.getElementById('contact-modal').classList.add('active')" class="btn btn-primary btn-large">Write to Us</button>
-                <?php else: ?>
-                    <a href="/php/Webdev/public/auth/login" class="btn btn-primary btn-large">Sign in to Write to Us</a>
-                <?php endif; ?>
+            <h2 style="font-weight: 900; letter-spacing: -0.02em;">Still need help?</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 30px;">Our support team is available 24/7 to assist you with any questions.</p>
+            <div class="contact-buttons" style="display: flex; gap: 20px; justify-content: center; align-items: center; flex-wrap: wrap;">
+                <button onclick="document.getElementById('contact-modal').classList.add('active')" class="btn btn-primary btn-large" style="padding: 18px 40px; border-radius: 16px; font-weight: 800; box-shadow: 0 20px 40px -10px rgba(0,0,0,0.2);">Write to Us</button>
+                
+                <div style="display: flex; align-items: center; gap: 15px; background: rgba(0,0,0,0.03); padding: 8px 8px 8px 25px; border-radius: 20px; border: 1px solid rgba(0,0,0,0.05);">
+                    <span style="font-size: 0.9rem; font-weight: 600; color: var(--text-secondary);">Already submitted a concern?</span>
+                    <?php if(isset($_SESSION['user_id'])): ?>
+                        <a href="/php/Webdev/public/profile/inbox" class="btn" style="background: white; color: black; border: 1px solid #e2e8f0; text-decoration: none; font-weight: 700; padding: 10px 20px; border-radius: 14px; display: inline-flex; align-items: center; gap: 8px; font-size: 0.85rem; transition: all 0.2s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 10px 20px -5px rgba(0,0,0,0.1)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                            Check Inbox
+                        </a>
+                    <?php else: ?>
+                        <a href="/php/Webdev/public/help/track_ticket" class="btn" style="background: white; color: black; border: 1px solid #e2e8f0; text-decoration: none; font-weight: 700; padding: 10px 20px; border-radius: 14px; display: inline-flex; align-items: center; gap: 8px; font-size: 0.85rem; transition: all 0.2s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 10px 20px -5px rgba(0,0,0,0.1)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15.33V21a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-5.67"></path><path d="M7 11l5 5 5-5"></path><line x1="12" y1="4" x2="12" y2="16"></line></svg>
+                            Track Request
+                        </a>
+                    <?php endif; ?>
+                </div>
             </div>
         </section>
     </div>
@@ -186,11 +197,19 @@
             <button onclick="document.getElementById('contact-modal').classList.remove('active')" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
         </div>
         <form id="help-contact-form" action="/php/Webdev/public/help/send_concern" method="POST">
+            <?php if(!isset($_SESSION['user_id'])): ?>
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #000;">Email Address</label>
+                    <input type="email" name="email" required style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;" placeholder="your@email.com">
+                    <small style="color: #666; font-size: 0.75rem;">Required for guests and suspended accounts.</small>
+                </div>
+            <?php endif; ?>
             <div style="margin-bottom: 20px;">
                 <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #000;">Subject</label>
                 <select name="subject" required style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; background: white; cursor: pointer;">
                     <option value="" disabled selected>Select your concern</option>
                     <option value="Order Inquiry">Order Inquiry</option>
+                    <option value="Account Suspension Appeal">Account Suspension Appeal</option>
                     <option value="Returns & Refunds">Returns & Refunds</option>
                     <option value="Account Issues">Account Issues</option>
                     <option value="Product Information">Product Information</option>

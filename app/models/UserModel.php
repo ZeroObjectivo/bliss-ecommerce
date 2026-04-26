@@ -125,4 +125,10 @@ class UserModel {
         $this->db->bind(':user_id', $userId);
         return $this->db->execute();
     }
+
+    public function updateLastLogin($userId) {
+        $this->db->query("UPDATE users SET last_login = NOW() WHERE id = :id");
+        $this->db->bind(':id', $userId);
+        return $this->db->execute();
+    }
 }

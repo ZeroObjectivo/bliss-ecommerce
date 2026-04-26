@@ -7,6 +7,10 @@ class AdminAuth extends Controller {
                 $_SESSION['admin_id'] = $_SESSION['user_id'];
                 $_SESSION['admin_name'] = $_SESSION['user_name'];
                 $_SESSION['admin_role'] = $_SESSION['user_role'];
+
+                // Update last login for admin bridge
+                $userModelObj = $this->model('UserModel');
+                $userModelObj->updateLastLogin($_SESSION['admin_id']);
             }
         }
 
@@ -24,10 +28,20 @@ class AdminAuth extends Controller {
             $user = $userModel->findUserByEmail($_POST['email']);
 
             if ($user && ($user['role'] === 'admin' || $user['role'] === 'superadmin') && password_verify($_POST['password'], $user['password'])) {
+                // Check if admin is suspended
+                if ($user['status'] === 'inactive') {
+                    header("Location: /php/Webdev/public/adminauth/login?error=suspended");
+                    exit;
+                }
+
                 $_SESSION['admin_id'] = $user['id'];
                 $_SESSION['admin_name'] = $user['name'];
                 $_SESSION['admin_role'] = $user['role'];
                 
+                // Update last login
+                $userModelObj = $this->model('UserModel');
+                $userModelObj->updateLastLogin($user['id']);
+
                 header("Location: /php/Webdev/public/admin");
                 exit;
             } else {

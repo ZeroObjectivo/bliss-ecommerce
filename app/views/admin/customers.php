@@ -56,6 +56,7 @@ foreach($tabs as $tab):
                     </td>
                     <td>
                         <div style="display: flex; gap: 8px; align-items: center;">
+                            <a href="/php/Webdev/public/admin/customer_detail/<?= $user['id'] ?>" class="btn-admin" style="background: var(--admin-card); border: 1px solid var(--admin-border); color: var(--admin-text-main); padding: 6px 10px; font-size: 0.75rem; text-decoration: none;">View</a>
                             <form method="POST" action="/php/Webdev/public/superadmin/customer_status" style="margin:0;">
                                 <input type="hidden" name="user_id" value="<?= $user['id'] ?>">
                                 <input type="hidden" name="current_status" value="<?= $user['status'] ?>">

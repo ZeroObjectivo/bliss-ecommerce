@@ -9,8 +9,9 @@ class MessageModel {
 
     public function createMessage($data) {
         $ticket_number = 'TCK-' . strtoupper(substr(uniqid(), -8));
-        $this->db->query("INSERT INTO messages (user_id, ticket_number, subject, message, status, is_read_admin, is_read_user) VALUES (:user_id, :ticket_number, :subject, :message, 'active', 0, 1)");
-        $this->db->bind(':user_id', $data['user_id']);
+        $this->db->query("INSERT INTO messages (user_id, email, ticket_number, subject, message, status, is_read_admin, is_read_user) VALUES (:user_id, :email, :ticket_number, :subject, :message, 'active', 0, 1)");
+        $this->db->bind(':user_id', $data['user_id'] ?? null);
+        $this->db->bind(':email', $data['email'] ?? null);
         $this->db->bind(':ticket_number', $ticket_number);
         $this->db->bind(':subject', $data['subject']);
         $this->db->bind(':message', $data['message']);
@@ -21,9 +22,9 @@ class MessageModel {
     }
 
     public function getAllMessages($includeArchived = false) {
-        $sql = "SELECT m.*, u.name as user_name, u.email as user_email 
+        $sql = "SELECT m.*, COALESCE(u.name, 'Guest') as user_name, COALESCE(u.email, m.email) as user_email 
                 FROM messages m 
-                JOIN users u ON m.user_id = u.id";
+                LEFT JOIN users u ON m.user_id = u.id";
         
         if (!$includeArchived) {
             $sql .= " WHERE m.is_archived_admin = 0";
@@ -52,17 +53,26 @@ class MessageModel {
     public function addReply($message_id, $sender_id, $reply_text, $new_status) {
         $this->db->query("INSERT INTO message_replies (message_id, sender_id, reply_text) VALUES (:message_id, :sender_id, :reply_text)");
         $this->db->bind(':message_id', $message_id);
-        $this->db->bind(':sender_id', $sender_id);
+        $this->db->bind(':sender_id', $sender_id); // Can be NULL now
         $this->db->bind(':reply_text', $reply_text);
-        
+
         if ($this->db->execute()) {
-            // Determine who is replying to set unread status for the OTHER party
-            $this->db->query("SELECT role FROM users WHERE id = :sender_id");
-            $this->db->bind(':sender_id', $sender_id);
-            $user = $this->db->single();
-            
-            $is_read_user = ($user['role'] !== 'user') ? 0 : 1;
-            $is_read_admin = ($user['role'] === 'user') ? 0 : 1;
+            // Determine unread status
+            $is_read_user = 0;
+            $is_read_admin = 0;
+
+            if ($sender_id) {
+                $this->db->query("SELECT role FROM users WHERE id = :sender_id");
+                $this->db->bind(':sender_id', $sender_id);
+                $user = $this->db->single();
+
+                $is_read_user = ($user['role'] !== 'user') ? 0 : 1;
+                $is_read_admin = ($user['role'] === 'user') ? 0 : 1;
+            } else {
+                // Guest reply
+                $is_read_user = 1;
+                $is_read_admin = 0;
+            }
 
             $this->db->query("UPDATE messages SET status = :status, updated_at = CURRENT_TIMESTAMP, is_read_user = :is_read_user, is_read_admin = :is_read_admin WHERE id = :id");
             $this->db->bind(':status', $new_status);
@@ -75,9 +85,9 @@ class MessageModel {
     }
 
     public function getReplies($message_id) {
-        $this->db->query("SELECT r.*, u.name as sender_name, u.role as sender_role
+        $this->db->query("SELECT r.*, COALESCE(u.name, 'Guest') as sender_name, COALESCE(u.role, 'user') as sender_role
                          FROM message_replies r
-                         JOIN users u ON r.sender_id = u.id
+                         LEFT JOIN users u ON r.sender_id = u.id
                          WHERE r.message_id = :message_id
                          ORDER BY r.created_at ASC");
         $this->db->bind(':message_id', $message_id);
@@ -85,9 +95,9 @@ class MessageModel {
     }
 
     public function getNewReplies($message_id, $last_id) {
-        $this->db->query("SELECT r.*, u.name as sender_name, u.role as sender_role
+        $this->db->query("SELECT r.*, COALESCE(u.name, 'Guest') as sender_name, COALESCE(u.role, 'user') as sender_role
                          FROM message_replies r
-                         JOIN users u ON r.sender_id = u.id
+                         LEFT JOIN users u ON r.sender_id = u.id
                          WHERE r.message_id = :message_id AND r.id > :last_id
                          ORDER BY r.created_at ASC");
         $this->db->bind(':message_id', $message_id);
@@ -168,9 +178,9 @@ class MessageModel {
     }
 
     public function getMessageById($id) {
-        $this->db->query("SELECT m.*, u.name as user_name, u.email as user_email 
+        $this->db->query("SELECT m.*, COALESCE(u.name, 'Guest') as user_name, COALESCE(u.email, m.email) as user_email 
                          FROM messages m 
-                         JOIN users u ON m.user_id = u.id 
+                         LEFT JOIN users u ON m.user_id = u.id 
                          WHERE m.id = :id");
         $this->db->bind(':id', $id);
         return $this->db->single();
@@ -193,5 +203,18 @@ class MessageModel {
         $this->db->query("UPDATE messages SET status = 'closed' WHERE id = :id");
         $this->db->bind(':id', $id);
         return $this->db->execute();
+    }
+
+    public function getMessageByTicket($ticket_number, $email) {
+        // We check either the messages.email OR the users.email if user_id is set
+        $this->db->query("SELECT m.*, COALESCE(u.name, 'Guest') as user_name, COALESCE(u.email, m.email) as user_email 
+                         FROM messages m 
+                         LEFT JOIN users u ON m.user_id = u.id 
+                         WHERE m.ticket_number = :ticket_number 
+                         AND (m.email = :email OR u.email = :email2)");
+        $this->db->bind(':ticket_number', $ticket_number);
+        $this->db->bind(':email', $email);
+        $this->db->bind(':email2', $email);
+        return $this->db->single();
     }
 }

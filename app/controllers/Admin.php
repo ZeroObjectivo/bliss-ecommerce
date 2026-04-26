@@ -117,6 +117,28 @@ class Admin extends Controller {
         $this->view('templates/admin_footer');
     }
 
+    public function customer_detail($id) {
+        $userModel = $this->model('UserModel');
+        $orderModel = $this->model('OrderModel');
+        
+        $user = $userModel->getUserById($id);
+        if (!$user) {
+            header("Location: /php/Webdev/public/admin/customers");
+            exit;
+        }
+
+        $data = [
+            'title' => 'Customer Profile: ' . $user['name'],
+            'customer' => $user,
+            'addresses' => $userModel->getAddresses($id),
+            'orders' => $orderModel->getOrdersByUser($id)
+        ];
+
+        $this->view('templates/admin_header', $data);
+        $this->view('admin/customer_detail', $data);
+        $this->view('templates/admin_footer');
+    }
+
     public function orders() {
         $orderModel = $this->model('OrderModel');
         $allOrders = $orderModel->getAllOrders();

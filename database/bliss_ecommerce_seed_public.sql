@@ -39,6 +39,7 @@ CREATE TABLE `users` (
   `security_a2` varchar(255) DEFAULT NULL,
   `security_q3` varchar(255) DEFAULT NULL,
   `security_a3` varchar(255) DEFAULT NULL,
+  `last_login` datetime DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`)
@@ -145,7 +146,8 @@ CREATE TABLE `order_items` (
 
 CREATE TABLE `messages` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) NOT NULL,
+  `user_id` int(11) DEFAULT NULL,
+  `email` varchar(255) DEFAULT NULL,
   `ticket_number` varchar(50) DEFAULT NULL,
   `subject` varchar(255) NOT NULL,
   `message` text NOT NULL,
@@ -166,7 +168,7 @@ CREATE TABLE `messages` (
 CREATE TABLE `message_replies` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `message_id` int(11) NOT NULL,
-  `sender_id` int(11) NOT NULL,
+  `sender_id` int(11) DEFAULT NULL,
   `reply_text` text NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
@@ -203,10 +205,10 @@ CREATE TABLE `cart` (
   CONSTRAINT `cart_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-INSERT INTO `users` (`id`, `name`, `username`, `email`, `password`, `profile_picture`, `role`, `status`, `reset_token`, `reset_expires`, `security_q1`, `security_a1`, `security_q2`, `security_a2`, `security_q3`, `security_a3`, `created_at`) VALUES
-(1, 'Admin', 'BlissAdmin', 'admin@bliss.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, 'admin', 'active', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2026-04-01 09:00:00'),
-(2, 'Super Admin', 'TsuperAdmin', 'superadmin@bliss.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, 'superadmin', 'active', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2026-04-01 09:05:00'),
-(3, 'John Doe', 'johndoe', 'john@bliss.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, 'user', 'active', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2026-04-01 09:10:00');
+INSERT INTO `users` (`id`, `name`, `username`, `email`, `password`, `profile_picture`, `role`, `status`, `reset_token`, `reset_expires`, `security_q1`, `security_a1`, `security_q2`, `security_a2`, `security_q3`, `security_a3`, `last_login`, `created_at`) VALUES
+(1, 'Admin', 'BlissAdmin', 'admin@bliss.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, 'admin', 'active', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2026-04-01 09:00:00'),
+(2, 'Super Admin', 'TsuperAdmin', 'superadmin@bliss.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, 'superadmin', 'active', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2026-04-01 09:05:00'),
+(3, 'John Doe', 'johndoe', 'john@bliss.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, 'user', 'active', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2026-04-01 09:10:00');
 
 INSERT INTO `products` (`id`, `name`, `description`, `price`, `category`, `brand`, `sizes`, `image_main`, `created_at`) VALUES
 (1, 'Nike Air Max Phantom', 'Step into the future with lightweight comfort and a bold silhouette built for everyday wear.', 7000.00, 'Featured, Lifestyle', 'Nike', '{"US 7":0,"US 8":"0","US 9":"0","US 10":"0","US 11":"0","US 12":"0"}', '/php/Webdev/public/uploads/1777018682_1.png', '2026-03-01 09:00:00'),

@@ -99,6 +99,13 @@
             <div class="error-msg">Invalid credentials or insufficient permissions.</div>
         <?php endif; ?>
 
+        <?php if(isset($_GET['error']) && $_GET['error'] == 'suspended'): ?>
+            <div class="error-msg" style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: #f87171;">
+                This administrator account is currently suspended.<br>
+                Please contact the system administrator.
+            </div>
+        <?php endif; ?>
+
         <form action="/php/Webdev/public/adminauth/process_login" method="POST">
             <div class="form-group">
                 <label>Staff Email</label>

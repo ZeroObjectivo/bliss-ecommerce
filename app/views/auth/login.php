@@ -2,6 +2,14 @@
     <div class="auth-card glass-card">
         <h2>Welcome Back</h2>
         <p>Sign in to your BLISS account.</p>
+
+        <?php if(isset($_GET['error']) && $_GET['error'] == 'suspended'): ?>
+            <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: #f87171; padding: 12px; border-radius: 12px; margin-bottom: 20px; font-size: 0.85rem; text-align: center; line-height: 1.5;">
+                Your account has been suspended.<br>
+                Please <a href="/php/Webdev/public/help/contact" style="color: white; font-weight: 700; text-decoration: underline;">contact support</a> for assistance.
+            </div>
+        <?php endif; ?>
+
         <form action="/php/Webdev/public/auth/process_login" method="POST">
             <div class="form-group">
                 <label>Email Address</label>

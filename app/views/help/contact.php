@@ -7,6 +7,20 @@
             <span class="hero-badge">Get in Touch</span>
             <h1 class="hero-title">We'd love to hear from you.</h1>
             <p class="hero-subtitle">Whether you have a question about products, shipping, or anything else, our team is ready to answer all your questions.</p>
+            <div style="margin-top: 30px; display: flex; justify-content: center; align-items: center; gap: 15px; flex-wrap: wrap;">
+                <span style="font-size: 0.95rem; font-weight: 600; color: rgba(255,255,255,0.7);">Already submitted a concern?</span>
+                <?php if(isset($_SESSION['user_id'])): ?>
+                    <a href="/php/Webdev/public/profile/inbox" class="btn" style="background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.25); color: white; text-decoration: none; font-weight: 700; padding: 12px 25px; border-radius: 14px; display: inline-flex; align-items: center; gap: 10px; transition: all 0.3s ease;" onmouseover="this.style.background='white'; this.style.color='black'" onmouseout="this.style.background='rgba(255,255,255,0.15)'; this.style.color='white'">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                        Check My Inbox
+                    </a>
+                <?php else: ?>
+                    <a href="/php/Webdev/public/help/track_ticket" class="btn" style="background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.25); color: white; text-decoration: none; font-weight: 700; padding: 12px 25px; border-radius: 14px; display: inline-flex; align-items: center; gap: 10px; transition: all 0.3s ease;" onmouseover="this.style.background='white'; this.style.color='black'" onmouseout="this.style.background='rgba(255,255,255,0.15)'; this.style.color='white'">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15.33V21a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-5.67"></path><path d="M7 11l5 5 5-5"></path><line x1="12" y1="4" x2="12" y2="16"></line></svg>
+                        Track Existing Request
+                    </a>
+                <?php endif; ?>
+            </div>
         </header>
 
         <div class="contact-wrapper">
@@ -106,38 +120,53 @@
                         <p>Have a specific concern? Send us a message and we'll get back to you.</p>
                     </div>
 
-                    <?php if(isset($_SESSION['user_id'])): ?>
-                        <form id="contact-page-form" action="/php/Webdev/public/help/send_concern" method="POST">
-                            <input type="hidden" name="redirect" value="contact">
+                    <!-- Internal Action Block for existing concerns -->
+                    <div style="background: rgba(0,0,0,0.03); padding: 15px 20px; border-radius: 16px; border: 1px solid rgba(0,0,0,0.05); margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; gap: 15px;">
+                        <span style="font-size: 0.85rem; font-weight: 600; color: var(--text-secondary);">Already submitted a concern?</span>
+                        <?php if(isset($_SESSION['user_id'])): ?>
+                            <a href="/php/Webdev/public/profile/inbox" style="color: var(--accent-color); text-decoration: none; font-weight: 700; font-size: 0.85rem; display: flex; align-items: center; gap: 6px;">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                                Check My Inbox
+                            </a>
+                        <?php else: ?>
+                            <a href="/php/Webdev/public/help/track_ticket" style="color: var(--accent-color); font-weight: 700; text-decoration: none; font-size: 0.85rem; display: flex; align-items: center; gap: 6px;">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15.33V21a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-5.67"></path><path d="M7 11l5 5 5-5"></path><line x1="12" y1="4" x2="12" y2="16"></line></svg>
+                                Track Request
+                            </a>
+                        <?php endif; ?>
+                    </div>
+
+                    <form id="contact-page-form" action="/php/Webdev/public/help/send_concern" method="POST">
+                        <input type="hidden" name="redirect" value="contact">
+                        
+                        <?php if(!isset($_SESSION['user_id'])): ?>
                             <div class="form-group">
-                                <label>What can we help you with?</label>
-                                <select name="subject" required>
-                                    <option value="" disabled selected>Select a subject</option>
-                                    <option value="Order Inquiry">Order Inquiry</option>
-                                    <option value="Returns & Refunds">Returns & Refunds</option>
-                                    <option value="Account Issues">Account Issues</option>
-                                    <option value="Product Information">Product Information</option>
-                                    <option value="Technical Support">Technical Support</option>
-                                    <option value="Feedback">Feedback</option>
-                                    <option value="Other">Other</option>
-                                </select>
+                                <label>Email Address</label>
+                                <input type="email" name="email" required placeholder="your@email.com" style="width: 100%; padding: 14px 18px; border: 1px solid #e2e8f0; border-radius: 12px; background: rgba(255,255,255,0.5);">
+                                <small style="display: block; margin-top: 5px; color: var(--text-secondary); font-size: 0.75rem;">Required for guests and suspended accounts.</small>
                             </div>
-                            <div class="form-group">
-                                <label>Your Message</label>
-                                <textarea name="message" required placeholder="Tell us more about your concern..."></textarea>
-                            </div>
-                            <button type="submit" class="btn btn-primary btn-large w-full" style="justify-content: center;">Send Message</button>
-                        </form>
-                    <?php else: ?>
-                        <div class="login-required-notice">
-                            <div class="notice-icon">
-                                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>
-                            </div>
-                            <h3>Sign in to Message Us</h3>
-                            <p>To ensure we can track your request and provide the best support, please sign in to your account.</p>
-                            <a href="/php/Webdev/public/auth/login" class="btn btn-primary" style="padding: 12px 30px;">Sign In Now</a>
+                        <?php endif; ?>
+
+                        <div class="form-group">
+                            <label>What can we help you with?</label>
+                            <select name="subject" required>
+                                <option value="" disabled selected>Select a subject</option>
+                                <option value="Order Inquiry">Order Inquiry</option>
+                                <option value="Account Suspension Appeal">Account Suspension Appeal</option>
+                                <option value="Returns & Refunds">Returns & Refunds</option>
+                                <option value="Account Issues">Account Issues</option>
+                                <option value="Product Information">Product Information</option>
+                                <option value="Technical Support">Technical Support</option>
+                                <option value="Feedback">Feedback</option>
+                                <option value="Other">Other</option>
+                            </select>
                         </div>
-                    <?php endif; ?>
+                        <div class="form-group">
+                            <label>Your Message</label>
+                            <textarea name="message" required placeholder="Tell us more about your concern..."></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-large w-full" style="justify-content: center;">Send Message</button>
+                    </form>
                 </div>
             </div>
         </div>

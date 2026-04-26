@@ -20,11 +20,21 @@ class Auth extends Controller {
             $user = $userModel->findUserByEmail($_POST['email']);
 
             if ($user && password_verify($_POST['password'], $user['password'])) {
+                // Check if user is suspended
+                if ($user['status'] === 'inactive') {
+                    header("Location: /php/Webdev/public/auth/login?error=suspended");
+                    exit;
+                }
+
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['user_name'] = $user['name'];
                 $_SESSION['user_role'] = $user['role'];
                 $_SESSION['user_picture'] = $user['profile_picture'];
                 
+                // Update last login
+                $userModelObj = $this->model('UserModel');
+                $userModelObj->updateLastLogin($user['id']);
+
                 // Load favorites into session cache
                 $favoriteModel = $this->model('FavoriteModel');
                 $_SESSION['favorites_list'] = $favoriteModel->getUserFavoriteIds($user['id']);
