@@ -14,7 +14,7 @@ window.showToast = function(message, type = 'success') {
             <span class="toast-icon">${type === 'success' ? '✓' : '✕'}</span>
             <span class="toast-message">${message}</span>
         </div>
-        <button class="toast-close" style="background:none; border:none; color:inherit; opacity:0.5; cursor:pointer; font-size:1.2rem; padding: 0 0 0 15px;">&times;</button>
+        <button class="toast-close">&times;</button>
     `;
 
     toastContainer.appendChild(toast);

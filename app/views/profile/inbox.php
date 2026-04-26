@@ -374,24 +374,6 @@ function filterUserInbox(tab) {
     if (window.innerWidth <= 768) toggleMessengerSidebar(true);
 }
 
-function showDynamicAlert(message) {
-    const alertHtml = `<div class="alert alert-success-proper" id="success-alert"><div class="alert-icon-circle"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg></div><span class="alert-text">${message}</span><button class="alert-close-btn" onclick="closeSuccessAlert()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button><div class="alert-progress-bar"></div></div>`;
-    const div = document.createElement('div');
-    div.innerHTML = alertHtml.trim();
-    document.body.appendChild(div.firstChild);
-    setTimeout(() => { closeSuccessAlert(); }, 3000);
-}
-
-function closeSuccessAlert() {
-    const alert = document.getElementById('success-alert');
-    if(alert) {
-        alert.style.opacity = '0';
-        alert.style.transform = 'translateX(-50%) translateY(-20px)';
-        alert.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
-        setTimeout(() => alert.remove(), 400);
-    }
-}
-
 function appendTicketToSidebar(ticket) {
     const list = document.querySelector('.ticket-list');
     if (!list) return;
@@ -416,7 +398,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (data.success) {
                 document.getElementById('new-ticket-modal').classList.remove('active');
                 form.reset();
-                showDynamicAlert('Your concern has been successfully submitted to our support team.');
+                window.showToast('Your concern has been successfully submitted to our support team.');
                 if (document.querySelector('.empty-state-messenger')) { location.reload(); return; }
                 appendTicketToSidebar(data.ticket);
             } else alert('Failed to submit ticket.');
@@ -448,7 +430,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     activeItem.querySelector('.status-dot').className = 'status-dot active';
                     activeItem.dataset.status = 'active';
                 }
-                showDynamicAlert('Your reply has been transmitted successfully.');
+                window.showToast('Your reply has been transmitted successfully.');
             } else alert('Failed to send reply.');
         });
     });

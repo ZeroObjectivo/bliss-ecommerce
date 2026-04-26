@@ -12,16 +12,23 @@ document.addEventListener('DOMContentLoaded', function() {
             if (menuOverlay) menuOverlay.classList.toggle('active', show);
             if (mainHeader) mainHeader.classList.toggle('menu-open', show);
             
+            // Toggle body class for scroll prevention
+            document.body.classList.toggle('no-scroll', show);
+            
+            // Add slight delay for visibility to prevent flicker
             if (show) {
-                document.body.style.overflow = 'hidden';
-                document.documentElement.style.overflow = 'hidden';
+                navLinks.style.visibility = 'visible';
             } else {
-                document.body.style.overflow = '';
-                document.documentElement.style.overflow = '';
+                setTimeout(() => {
+                    if (!navLinks.classList.contains('open')) {
+                        navLinks.style.visibility = 'hidden';
+                    }
+                }, 400); // Match CSS transition duration
             }
         };
 
         mobileNavToggle.addEventListener('click', (e) => {
+            e.preventDefault();
             e.stopPropagation();
             const isOpen = navLinks.classList.contains('open');
             toggleMenu(!isOpen);
@@ -29,13 +36,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (closeMenuBtn) {
             closeMenuBtn.addEventListener('click', (e) => {
+                e.preventDefault();
                 e.stopPropagation();
                 toggleMenu(false);
             });
         }
 
         if (menuOverlay) {
-            menuOverlay.addEventListener('click', () => toggleMenu(false));
+            menuOverlay.addEventListener('click', (e) => {
+                e.preventDefault();
+                toggleMenu(false);
+            });
         }
 
         // Close on escape key
@@ -45,22 +56,16 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        // Highlight active link
-        const currentPath = window.location.pathname;
-        navLinks.querySelectorAll('a').forEach(link => {
-            if (link.getAttribute('href') === currentPath) {
-                link.classList.add('active');
-            } else {
-                link.classList.remove('active');
-            }
-        });
-
         // Close on link click
         navLinks.querySelectorAll('a').forEach(link => {
-            link.addEventListener('click', () => toggleMenu(false));
+            link.addEventListener('click', () => {
+                // Remove no-scroll before navigation
+                document.body.classList.remove('no-scroll');
+                toggleMenu(false);
+            });
         });
         
-        // Prevent clicks inside the drawer from closing it via bubbling if any parent has listener
+        // Prevent clicks inside the drawer from closing it via bubbling
         navLinks.addEventListener('click', (e) => {
             e.stopPropagation();
         });
