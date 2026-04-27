@@ -3,7 +3,7 @@
     <div class="inbox-header-section">
         <div class="header-left-group">
             <h2 class="page-title">Support Inbox</h2>
-            <div class="admin-tabs-pill">
+            <div class="admin-tabs-pill" style="overflow-x: auto; max-width: 100%; white-space: nowrap;">
                 <button class="tab-pill-btn active" id="tab-active" onclick="switchInboxTab('active')">Active</button>
                 <button class="tab-pill-btn" id="tab-resolved" onclick="switchInboxTab('resolved')">Resolved</button>
                 <button class="tab-pill-btn" id="tab-archived" onclick="switchInboxTab('archived')">Archived</button>
@@ -12,7 +12,7 @@
         <div class="header-right-group">
             <div class="search-pill">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                <input type="text" id="message-search" placeholder="Search customer or ticket..." onkeyup="filterMessages()">
+                <input type="text" id="message-search" placeholder="Search..." onkeyup="filterMessages()">
             </div>
         </div>
     </div>
@@ -60,7 +60,7 @@
     <!-- Main Messenger Layout -->
     <div class="messenger-wrapper" id="messenger-main">
         <!-- Sidebar: Ticket List -->
-        <aside class="messenger-sidebar" id="inbox-sidebar">
+        <aside class="messenger-sidebar active-panel" id="inbox-sidebar">
             <div class="sidebar-label">Conversations</div>
             <div class="ticket-scroller custom-scrollbar" style="display: flex; flex-direction: column;">
                 <?php if(empty($data['messages'])): ?>
@@ -115,7 +115,7 @@
             <div id="detail-view" class="chat-container" style="display: none;">
                 <header class="chat-header">
                     <div class="chat-header-left">
-                        <button class="mobile-back-btn" onclick="toggleSidebar(true)">
+                        <button class="mobile-back-btn" onclick="toggleInboxPanels(true)">
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
                         </button>
                         <div class="chat-meta">
@@ -226,7 +226,28 @@
 .send-btn { background: var(--admin-text-main); color: var(--admin-sidebar); border: none; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.2s; }
 .send-btn:hover { transform: scale(1.1); }
 .mobile-back-btn { display: none; background: transparent; border: none; color: var(--admin-text-main); cursor: pointer; }
-@media (max-width: 850px) { .messenger-sidebar { position: absolute; inset: 0; width: 100%; z-index: 20; } .mobile-back-btn { display: block; } .messenger-chat { width: 100%; } }
+@media (max-width: 850px) { 
+    .messenger-sidebar { 
+        position: absolute; 
+        inset: 0; 
+        width: 100%; 
+        z-index: 20; 
+        display: none;
+    } 
+    .messenger-sidebar.active-panel {
+        display: flex;
+    }
+    .mobile-back-btn { 
+        display: block; 
+    } 
+    .messenger-chat { 
+        width: 100%; 
+        display: none;
+    } 
+    .messenger-chat.active-panel {
+        display: flex;
+    }
+}
 .custom-scrollbar::-webkit-scrollbar { width: 6px; }
 .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
 .custom-scrollbar::-webkit-scrollbar-thumb { background: var(--admin-border); border-radius: 10px; }
@@ -258,7 +279,8 @@ function showDetail(msg, el) {
     document.getElementById('no-selection').style.display = 'none';
     document.getElementById('detail-view').style.display = 'flex';
 
-    if (window.innerWidth <= 850) toggleSidebar(false);
+    // Toggle panels: show chat, hide sidebar on mobile
+    toggleInboxPanels(false); // <--- Changed here
 
     document.getElementById('view-ticket-num').innerText = msg.ticket_number || '#TCK-OLD';
     document.getElementById('view-subject').innerText = msg.subject;
@@ -321,12 +343,24 @@ function showDetail(msg, el) {
     }, 4000);
 }
 
-function toggleSidebar(show) {
+// Function to toggle between sidebar and chat view on mobile
+function toggleInboxPanels(showSidebar) {
     const sidebar = document.getElementById('inbox-sidebar');
-    sidebar.style.transform = show ? 'translateX(0)' : 'translateX(-100%)';
-    if (!show) setTimeout(() => { sidebar.style.display = 'none'; }, 300);
-    else sidebar.style.display = 'flex';
+    const chat = document.getElementById('inbox-content');
+
+    if (window.innerWidth <= 850) { // Only apply on mobile
+        if (showSidebar) {
+            sidebar.classList.add('active-panel');
+            chat.classList.remove('active-panel');
+        } else {
+            sidebar.classList.remove('active-panel');
+            chat.classList.add('active-panel');
+        }
+    }
 }
+
+// Ensure toggleSidebar is called correctly by the mobile-back-btn
+document.querySelector('.mobile-back-btn')?.addEventListener('click', () => toggleInboxPanels(true)); // <--- New event listener
 
 function switchInboxTab(tab) {
     document.querySelectorAll('.tab-pill-btn').forEach(btn => btn.classList.remove('active'));
@@ -340,7 +374,7 @@ function switchInboxTab(tab) {
     });
     document.getElementById('no-selection').style.display = 'flex';
     document.getElementById('detail-view').style.display = 'none';
-    if (window.innerWidth <= 850) toggleSidebar(true);
+    if (window.innerWidth <= 850) toggleInboxPanels(true); // Show sidebar when switching tabs on mobile
 }
 
 function filterMessages() {

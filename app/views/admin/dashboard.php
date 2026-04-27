@@ -77,7 +77,7 @@
     </div>
 </div>
 
-<div class="dashboard-main-grid" style="display: grid; grid-template-columns: 2fr 1fr; gap: var(--spacing-3); margin-bottom: var(--spacing-4);">
+<div class="dashboard-main-grid">
     <!-- Left Column: Orders & Revenue -->
     <div style="display: flex; flex-direction: column; gap: var(--spacing-3);">
         <!-- Recent Orders -->
@@ -111,6 +111,28 @@
                                 </td>
                                 <td style="font-weight: 600;">₱<?= number_format($order['total_price'], 2) ?></td>
                             </tr>
+                            <div class="mobile-card order-card" data-date="<?= strtotime($order['created_at']) ?>" data-price="<?= $order['total_price'] ?>">
+                                <div class="card-header">
+                                    <div class="order-id" style="font-weight: 700; color: var(--admin-accent);">#<?= $order['id'] ?></div>
+                                    <div class="customer-info">
+                                        <div style="font-weight: 600; color: var(--admin-text-main);"><?= htmlspecialchars($order['user_name']) ?></div>
+                                    </div>
+                                    <div class="total-price" style="font-weight: 700;">₱<?= number_format($order['total_price'], 2) ?></div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="card-item">
+                                        <span class="label">Status:</span>
+                                        <span>
+                                            <span class="badge" style="background: <?= $order['status'] == 'delivered' ? 'rgba(16, 185, 129, 0.1)' : ($order['status'] == 'shipped' ? 'var(--admin-accent-soft)' : 'rgba(245, 158, 11, 0.1)') ?>; color: <?= $order['status'] == 'delivered' ? 'var(--admin-success)' : ($order['status'] == 'shipped' ? 'var(--admin-accent)' : 'var(--admin-warning)') ?>;">
+                                                <?= ucfirst($order['status']) ?>
+                                            </span>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="card-actions">
+                                    <a href="/php/Webdev/public/admin/order_detail/<?= $order['id'] ?>" class="btn-admin" style="background: var(--admin-card); border: 1px solid var(--admin-border); color: var(--admin-text-main);">Details</a>
+                                </div>
+                            </div>
                             <?php endforeach; ?>
                         <?php endif; ?>
                     </tbody>
@@ -121,9 +143,9 @@
         <!-- Revenue Breakdown -->
         <div class="admin-card">
             <h3 style="color: var(--admin-text-main); font-size: 0.9rem; margin-bottom: var(--spacing-3);">Revenue by Category</h3>
-            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px;">
+            <div class="revenue-grid">
                 <?php foreach($data['revenue_by_category'] as $cat => $rev): ?>
-                    <div style="background: var(--admin-bg-soft); padding: 15px; border-radius: 12px; border: 1px solid var(--admin-border);">
+                    <div class="revenue-item">
                         <div style="font-size: 0.75rem; font-weight: 700; color: var(--admin-text-muted); text-transform: uppercase; margin-bottom: 5px;"><?= $cat ?></div>
                         <div style="font-size: 1.1rem; font-weight: 800; color: var(--admin-text-main);">₱<?= number_format($rev, 0) ?></div>
                     </div>
@@ -140,7 +162,7 @@
                 <h3 style="color: var(--admin-text-main); font-size: 0.9rem; margin: 0;">Top Selling Products</h3>
             </div>
             <div style="padding: 15px;">
-                <div style="display: flex; flex-direction: column; gap: 12px;">
+                <div class="desktop-view-only" style="display: flex; flex-direction: column; gap: 12px;">
                     <?php foreach($data['top_selling'] as $item): ?>
                         <div style="display: flex; align-items: center; gap: 12px;">
                             <img src="<?= htmlspecialchars($item['image_main']) ?>" style="width: 36px; height: 36px; object-fit: cover; border-radius: 6px;">
@@ -149,6 +171,19 @@
                                 <div style="font-size: 0.7rem; color: var(--admin-text-muted);"><?= $item['sales_count'] ?> sales</div>
                             </div>
                         </div>
+                    <?php endforeach; ?>
+                </div>
+                <div class="mobile-card-list">
+                    <?php foreach($data['top_selling'] as $item): ?>
+                    <div class="mobile-card">
+                        <div class="card-header">
+                            <img src="<?= htmlspecialchars($item['image_main']) ?>" class="table-image" alt="Product">
+                            <div class="product-info">
+                                <h3><?= htmlspecialchars($item['name']) ?></h3>
+                                <p class="sales-count"><?= $item['sales_count'] ?> sales</p>
+                            </div>
+                        </div>
+                    </div>
                     <?php endforeach; ?>
                 </div>
             </div>
@@ -176,26 +211,54 @@
                 </h3>
             </div>
             <div style="padding: var(--spacing-3);">
-                <?php if(empty($data['low_stock_items'])): ?>
-                    <div style="text-align: center; color: var(--admin-success); padding: 1rem;">
-                        <p style="font-size: 0.8rem; font-weight: 600;">Stock levels healthy.</p>
-                    </div>
-                <?php else: ?>
-                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                <div class="desktop-view-only">
+                    <?php if(empty($data['low_stock_items'])): ?>
+                        <div style="text-align: center; color: var(--admin-success); padding: 1rem;">
+                            <p style="font-size: 0.8rem; font-weight: 600;">Stock levels healthy.</p>
+                        </div>
+                    <?php else: ?>
+                        <div style="display: flex; flex-direction: column; gap: 12px;">
+                            <?php foreach($data['low_stock_items'] as $item): ?>
+                                <?php 
+                                    $sizes = json_decode($item['sizes'], true);
+                                    $total = array_sum($sizes);
+                                    $statusColor = $total < 3 ? '#ef4444' : '#f59e0b';
+                                ?>
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <div style="width: 8px; height: 8px; background: <?= $statusColor ?>; border-radius: 50%;"></div>
+                                    <div style="font-size: 0.8rem; font-weight: 600; color: var(--admin-text-main); flex-grow: 1;"><?= htmlspecialchars($item['name']) ?></div>
+                                    <div style="font-size: 0.75rem; font-weight: 700; color: <?= $statusColor ?>;"><?= $total ?> units</div>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php endif; ?>
+                </div>
+                <div class="mobile-card-list">
+                    <?php if(empty($data['low_stock_items'])): ?>
+                        <div class="mobile-card">
+                            <div style="text-align: center; color: var(--admin-success); padding: 1rem;">
+                                <p style="font-size: 0.8rem; font-weight: 600;">Stock levels healthy.</p>
+                            </div>
+                        </div>
+                    <?php else: ?>
                         <?php foreach($data['low_stock_items'] as $item): ?>
                             <?php 
                                 $sizes = json_decode($item['sizes'], true);
                                 $total = array_sum($sizes);
                                 $statusColor = $total < 3 ? '#ef4444' : '#f59e0b';
                             ?>
-                            <div style="display: flex; align-items: center; gap: 12px;">
-                                <div style="width: 8px; height: 8px; background: <?= $statusColor ?>; border-radius: 50%;"></div>
-                                <div style="font-size: 0.8rem; font-weight: 600; color: var(--admin-text-main); flex-grow: 1;"><?= htmlspecialchars($item['name']) ?></div>
-                                <div style="font-size: 0.75rem; font-weight: 700; color: <?= $statusColor ?>;"><?= $total ?> units</div>
+                            <div class="mobile-card">
+                                <div class="card-header" style="border-bottom: none; padding-bottom: 0; margin-bottom: 0;">
+                                    <div style="width: 8px; height: 8px; background: <?= $statusColor ?>; border-radius: 50%;"></div>
+                                    <div class="product-info">
+                                        <h3><?= htmlspecialchars($item['name']) ?></h3>
+                                        <p class="stock-count" style="color: <?= $statusColor ?>;"><?= $total ?> units</p>
+                                    </div>
+                                </div>
                             </div>
                         <?php endforeach; ?>
-                    </div>
-                <?php endif; ?>
+                    <?php endif; ?>
+                </div>
             </div>
         </div>
 
@@ -205,23 +268,60 @@
                 <h3 style="color: var(--admin-text-main); font-size: 0.9rem; margin: 0;">Recent Customers</h3>
             </div>
             <div style="padding: 15px;">
-                <?php foreach($data['recent_customers'] as $c): ?>
-                    <div style="margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">
-                        <div style="width: 32px; height: 32px; background: var(--admin-bg-soft); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 800; color: var(--admin-accent); border: 1px solid var(--admin-border);">
-                            <?= strtoupper(substr($c['name'], 0, 1)) ?>
+                <div class="desktop-view-only">
+                    <?php foreach($data['recent_customers'] as $c): ?>
+                        <div style="margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">
+                            <div style="width: 32px; height: 32px; background: var(--admin-bg-soft); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 800; color: var(--admin-accent); border: 1px solid var(--admin-border);">
+                                <?= strtoupper(substr($c['name'], 0, 1)) ?>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.8rem; font-weight: 600;"><?= htmlspecialchars($c['name']) ?></div>
+                                <div style="font-size: 0.7rem; color: var(--admin-text-muted);"><?= htmlspecialchars($c['email']) ?></div>
+                            </div>
                         </div>
-                        <div>
-                            <div style="font-size: 0.8rem; font-weight: 600;"><?= htmlspecialchars($c['name']) ?></div>
-                            <div style="font-size: 0.7rem; color: var(--admin-text-muted);"><?= htmlspecialchars($c['email']) ?></div>
+                    <?php endforeach; ?>
+                </div>
+                <div class="mobile-card-list">
+                    <?php foreach($data['recent_customers'] as $c): ?>
+                        <div class="mobile-card customer-card">
+                            <div class="card-header" style="border-bottom: none; padding-bottom: 0; margin-bottom: 0;">
+                                <div style="width: 32px; height: 32px; background: var(--admin-bg-soft); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 800; color: var(--admin-accent); border: 1px solid var(--admin-border); flex-shrink: 0;">
+                                    <?= strtoupper(substr($c['name'], 0, 1)) ?>
+                                </div>
+                                <div class="customer-info">
+                                    <h3><?= htmlspecialchars($c['name']) ?></h3>
+                                    <p class="email"><?= htmlspecialchars($c['email']) ?></p>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                <?php endforeach; ?>
+                    <?php endforeach; ?>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
 <style>
+.dashboard-main-grid {
+    display: grid; 
+    grid-template-columns: 2fr 1fr; 
+    gap: var(--spacing-3); 
+    margin-bottom: var(--spacing-4);
+}
+
+.revenue-grid {
+    display: grid; 
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); 
+    gap: 15px;
+}
+
+.revenue-item {
+    background: var(--admin-bg-soft); 
+    padding: 15px; 
+    border-radius: 12px; 
+    border: 1px solid var(--admin-border);
+}
+
 .stat-card {
     display: flex;
     align-items: center;
@@ -319,5 +419,21 @@
 .info-tooltip-container:hover .info-tooltip {
     opacity: 1;
     transform: translateX(-50%) translateY(0);
+}
+
+@media (max-width: 1200px) {
+    .dashboard-main-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .quick-actions-grid {
+        grid-template-columns: 1fr !important;
+    }
+    
+    .revenue-grid {
+        grid-template-columns: 1fr;
+    }
 }
 </style>

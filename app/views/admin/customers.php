@@ -1,6 +1,6 @@
-<div class="orders-header-row" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-4);">
+<div class="flex-between" style="margin-bottom: var(--spacing-4);">
     <h2 style="margin: 0; font-size: 1.25rem;">Customer Management</h2>
-    <div class="admin-actions-group" style="display: flex; gap: 12px; align-items: center;">
+    <div class="admin-actions-group" style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
         <div class="admin-sort-container">
             <select id="customer-sort" onchange="sortCustomers()" class="admin-filter-control">
                 <option value="newest">Newest Joined</option>
@@ -10,17 +10,20 @@
             </select>
         </div>
         <div class="admin-search-container">
-            <input type="text" id="customer-search" placeholder="Search Name or Email..." 
+            <input type="text" id="customer-search" placeholder="Search Name..." 
                    class="admin-filter-control"
-                   onkeyup="filterCustomers()">
+                   onkeyup="filterCustomers()"
+                   style="width: 100%; max-width: 200px;">
         </div>
     </div>
 </div>
 
-<div class="admin-tabs" style="display: flex; gap: 8px; margin-bottom: var(--spacing-4); background: var(--admin-bg-soft); padding: 6px; border-radius: 12px; width: fit-content;">
-    <button class="btn-admin active" id="tab-all" onclick="switchCustomerTab('all')" style="background: transparent; color: var(--admin-text-muted); border: none;">All (<?= count($data['all']) ?>)</button>
-    <button class="btn-admin" id="tab-active" onclick="switchCustomerTab('active')" style="background: transparent; color: var(--admin-text-muted); border: none;">Active (<?= count($data['active']) ?>)</button>
-    <button class="btn-admin" id="tab-suspended" onclick="switchCustomerTab('suspended')" style="background: transparent; color: var(--admin-text-muted); border: none;">Suspended (<?= count($data['suspended']) ?>)</button>
+<div class="admin-tabs-container" style="overflow-x: auto; margin-bottom: var(--spacing-4); -webkit-overflow-scrolling: touch;">
+    <div class="admin-tabs" style="display: flex; gap: 8px; background: var(--admin-bg-soft); padding: 6px; border-radius: 12px; width: fit-content; min-width: 100%;">
+        <button class="btn-admin active" id="tab-all" onclick="switchCustomerTab('all')" style="background: transparent; color: var(--admin-text-muted); border: none; white-space: nowrap;">All (<?= count($data['all']) ?>)</button>
+        <button class="btn-admin" id="tab-active" onclick="switchCustomerTab('active')" style="background: transparent; color: var(--admin-text-muted); border: none; white-space: nowrap;">Active (<?= count($data['active']) ?>)</button>
+        <button class="btn-admin" id="tab-suspended" onclick="switchCustomerTab('suspended')" style="background: transparent; color: var(--admin-text-muted); border: none; white-space: nowrap;">Suspended (<?= count($data['suspended']) ?>)</button>
+    </div>
 </div>
 
 <!-- Customer Tables -->
@@ -43,7 +46,7 @@ foreach($tabs as $tab):
                 <tr><td colspan="4" style="text-align:center; padding: 3rem; color: var(--admin-text-muted);">No customers found.</td></tr>
             <?php else: ?>
                 <?php foreach($data[$tab] as $user): ?>
-                <tr class="customer-row" data-date="<?= strtotime($user['created_at']) ?>" data-name="<?= htmlspecialchars($user['name']) ?>">
+                <tr class="customer-row desktop-table-row" data-date="<?= strtotime($user['created_at']) ?>" data-name="<?= htmlspecialchars($user['name']) ?>">
                     <td>
                         <div style="font-weight: 600; color: var(--admin-text-main);"><?= htmlspecialchars($user['name']) ?></div>
                         <div style="font-size: 0.75rem; color: var(--admin-text-muted);"><?= htmlspecialchars($user['email']) ?></div>
@@ -55,7 +58,7 @@ foreach($tabs as $tab):
                         </span>
                     </td>
                     <td>
-                        <div style="display: flex; gap: 8px; align-items: center;">
+                        <div style="display: flex; gap: 8px;">
                             <a href="/php/Webdev/public/admin/customer_detail/<?= $user['id'] ?>" class="btn-admin" style="background: var(--admin-card); border: 1px solid var(--admin-border); color: var(--admin-text-main); padding: 6px 10px; font-size: 0.75rem; text-decoration: none;">View</a>
 
                             <?php if ($_SESSION['admin_role'] === 'superadmin'): ?>
@@ -79,6 +82,45 @@ foreach($tabs as $tab):
                         </div>
                     </td>
                 </tr>
+                <div class="mobile-card customer-card" data-date="<?= strtotime($user['created_at']) ?>" data-name="<?= htmlspecialchars($user['name']) ?>">
+                    <div class="card-header">
+                        <div class="customer-info">
+                            <h3><?= htmlspecialchars($user['name']) ?></h3>
+                            <p class="email"><?= htmlspecialchars($user['email']) ?></p>
+                        </div>
+                        <span class="badge" style="background: <?= $user['status'] == 'active' ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)' ?>; color: <?= $user['status'] == 'active' ? 'var(--admin-success)' : 'var(--admin-danger)' ?>;">
+                            <?= ucfirst($user['status']) ?>
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        <div class="card-item">
+                            <span class="label">Joined:</span>
+                            <span><?= date('M d, Y', strtotime($user['created_at'])) ?></span>
+                        </div>
+                    </div>
+                    <div class="card-actions">
+                        <a href="/php/Webdev/public/admin/customer_detail/<?= $user['id'] ?>" class="btn-admin" style="background: var(--admin-card); border: 1px solid var(--admin-border); color: var(--admin-text-main);">View</a>
+
+                        <?php if ($_SESSION['admin_role'] === 'superadmin'): ?>
+                            <form method="POST" action="/php/Webdev/public/superadmin/customer_status" style="margin:0;">
+                                <input type="hidden" name="user_id" value="<?= $user['id'] ?>">
+                                <input type="hidden" name="current_status" value="<?= $user['status'] ?>">
+                                <button type="submit" class="btn-admin" style="background: var(--admin-card); border: 1px solid var(--admin-border); color: <?= $user['status'] == 'active' ? 'var(--admin-warning)' : 'var(--admin-success)' ?>;">
+                                    <?= $user['status'] == 'active' ? 'Suspend' : 'Activate' ?>
+                                </button>
+                            </form>
+                            <form method="POST" action="/php/Webdev/public/superadmin/customer_reset_pass" style="margin:0;">
+                                <input type="hidden" name="user_id" value="<?= $user['id'] ?>">
+                                <button type="submit" class="btn-admin" style="background: var(--admin-card); border: 1px solid var(--admin-border); color: var(--admin-accent);">Reset Pass</button>
+                            </form>
+                            <form method="POST" action="/php/Webdev/public/superadmin/customer_delete/<?= $user['id'] ?>" onsubmit="return confirm('This will permanently delete the customer and all associated data. This cannot be undone. Continue?');" style="margin:0;">
+                                <button type="submit" class="btn-admin btn-admin-danger">
+                                    Delete
+                                </button>
+                            </form>
+                        <?php endif; ?>
+                    </div>
+                </div>
                 <?php endforeach; ?>
             <?php endif; ?>
         </tbody>

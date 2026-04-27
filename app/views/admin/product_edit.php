@@ -11,9 +11,9 @@
         <p style="opacity: 0.7; font-size: 0.9rem;">Modify details for <strong style="color: white;"><?= htmlspecialchars($data['product']['name']) ?></strong></p>
     </div>
 
-    <form action="/php/Webdev/public/superadmin/product_edit/<?= $data['product']['id'] ?>" method="POST" enctype="multipart/form-data" style="padding: 40px;">
+    <form action="/php/Webdev/public/superadmin/product_edit/<?= $data['product']['id'] ?>" method="POST" enctype="multipart/form-data" class="product-form">
         
-        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 40px;">
+        <div class="admin-grid-2-1">
             <!-- Left Side: Basic Info -->
             <div style="display: flex; flex-direction: column; gap: 25px;">
                 <div class="form-group-admin">
@@ -21,7 +21,7 @@
                     <input type="text" name="name" value="<?= htmlspecialchars($data['product']['name']) ?>" required style="font-size: 1.1rem; font-weight: 600; padding: 15px; border-radius: 12px;">
                 </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div class="admin-grid-1-1">
                     <div class="form-group-admin">
                         <label style="text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.75rem; color: var(--admin-text-muted);">Price (₱)</label>
                         <input type="number" step="0.01" name="price" value="<?= htmlspecialchars($data['product']['price']) ?>" required style="font-size: 1.1rem; font-weight: 700; color: var(--admin-accent); padding: 15px; border-radius: 12px;">
@@ -74,9 +74,9 @@
         <hr style="margin: 40px 0; border: none; border-top: 1px solid var(--admin-border);">
 
         <!-- Inventory & Categories -->
-        <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 40px;">
+        <div class="admin-grid-2-1">
             <div>
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
                     <label style="text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.75rem; color: var(--admin-text-muted); margin: 0;">Inventory by Size</label>
                     <div style="display: flex; gap: 10px; align-items: center;">
                         <input type="number" id="fill-all-input" placeholder="All" style="width: 60px; padding: 5px 10px; border-radius: 8px; border: 1px solid var(--admin-border); font-size: 0.85rem; font-weight: 600;">
@@ -84,7 +84,7 @@
                     </div>
                 </div>
                 <?php $sizesStock = json_decode($data['product']['sizes'], true) ?: []; ?>
-                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
+                <div class="admin-grid-3">
                     <?php for($i=7; $i<=12; $i++): ?>
                         <?php $sizeKey = "US " . $i; ?>
                         <div style="background: var(--admin-bg-soft); padding: 15px; border-radius: 12px; border: 1px solid var(--admin-border); display: flex; align-items: center; justify-content: space-between;">
@@ -121,7 +121,7 @@
             </div>
         </div>
 
-        <div style="margin-top: 50px; display: flex; gap: 15px;">
+        <div class="form-actions">
             <button type="submit" class="btn-admin btn-admin-primary" style="flex-grow: 2; padding: 18px; font-size: 1rem; border-radius: 14px; box-shadow: 0 10px 20px rgba(37, 99, 235, 0.2);">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
                 Update Product Details
@@ -132,3 +132,12 @@
         </div>
     </form>
 </div>
+
+<style>
+.product-form { padding: 40px; }
+.form-actions { margin-top: 50px; display: flex; gap: 15px; }
+@media (max-width: 600px) {
+    .product-form { padding: 20px; }
+    .form-actions { flex-direction: column; }
+}
+</style>

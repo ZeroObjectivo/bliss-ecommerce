@@ -21,8 +21,8 @@
         </div>
     </div>
 
-    <div style="padding: 40px; background: var(--admin-card);">
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-bottom: 40px;">
+    <div style="padding: 40px; background: var(--admin-card);" class="order-detail-body">
+        <div class="admin-grid-1-1" style="margin-bottom: 40px;">
             <!-- Customer & Shipping Info -->
             <div style="display: flex; flex-direction: column; gap: 20px;">
                 <div style="background: var(--admin-bg-soft); border: 1px solid var(--admin-border); border-radius: 16px; padding: 25px; flex-grow: 1;">
@@ -64,10 +64,10 @@
                 <div style="background: var(--admin-bg-soft); border: 1px solid var(--admin-border); border-radius: 16px; padding: 25px; height: 100%;">
                     <h3 style="font-size: 0.9rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: var(--admin-text-muted); margin-bottom: 20px;">Order Status</h3>
                     
-                    <?php if($data['order']['status'] == 'delivered' || $data['order']['status'] == 'cancelled'): ?>
+                    <?php if($data['order']['status'] == 'delivered' || $data['order']['status'] == 'completed' || $data['order']['status'] == 'cancelled'): ?>
                         <div style="text-align: center; padding: 20px; background: var(--admin-card); border-radius: 12px; border: 1px dashed var(--admin-border);">
                             <div style="font-size: 0.85rem; font-weight: 700; color: var(--admin-text-muted); text-transform: uppercase; margin-bottom: 10px;">Terminal State</div>
-                            <span class="badge" style="background: <?= $data['order']['status'] == 'delivered' ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)' ?>; color: <?= $data['order']['status'] == 'delivered' ? 'var(--admin-success)' : 'var(--admin-danger)' ?>; padding: 8px 20px; font-size: 0.9rem;">
+                            <span class="badge" style="background: <?= ($data['order']['status'] == 'delivered' || $data['order']['status'] == 'completed') ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)' ?>; color: <?= ($data['order']['status'] == 'delivered' || $data['order']['status'] == 'completed') ? 'var(--admin-success)' : 'var(--admin-danger)' ?>; padding: 8px 20px; font-size: 0.9rem;">
                                 <?= ucfirst($data['order']['status']) ?>
                             </span>
                             <p style="font-size: 0.8rem; color: var(--admin-text-muted); margin-top: 15px; line-height: 1.4;">This order is finalized and can no longer be updated.</p>
@@ -80,6 +80,7 @@
                                 <option value="processing" <?= $data['order']['status'] == 'processing' ? 'selected' : '' ?>>Processing</option>
                                 <option value="shipped" <?= $data['order']['status'] == 'shipped' ? 'selected' : '' ?>>Shipped</option>
                                 <option value="delivered" <?= $data['order']['status'] == 'delivered' ? 'selected' : '' ?>>Delivered</option>
+                                <option value="completed" <?= $data['order']['status'] == 'completed' ? 'selected' : '' ?>>Completed</option>
                                 <option value="cancelled" <?= $data['order']['status'] == 'cancelled' ? 'selected' : '' ?>>Cancelled</option>
                             </select>
                             <button type="submit" class="btn-admin btn-admin-primary" style="padding: 15px; border-radius: 10px; font-weight: 700;">Update Status</button>
@@ -129,3 +130,10 @@
         </div>
     </div>
 </div>
+
+<style>
+.order-detail-body { padding: 40px; }
+@media (max-width: 600px) {
+    .order-detail-body { padding: 20px; }
+}
+</style>

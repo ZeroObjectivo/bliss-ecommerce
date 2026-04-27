@@ -18,11 +18,17 @@
 </head>
 <body class="admin-body">
 
+<!-- Sidebar Backdrop (Mobile Only) -->
+<div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+
 <div class="admin-layout">
     <!-- Vertical Sidebar Navigation -->
-    <aside class="admin-sidebar">
+    <aside class="admin-sidebar" id="admin-sidebar">
         <div class="sidebar-brand">
             <h2>BLISS <span class="badge">admin</span></h2>
+            <button class="sidebar-close" id="sidebar-close">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
         </div>
         <nav class="sidebar-nav">
             <a href="/php/Webdev/public/admin" class="<?= rtrim($_SERVER['REQUEST_URI'], '/') === '/php/Webdev/public/admin' ? 'active' : '' ?>">
@@ -76,10 +82,20 @@
     <!-- Main Content Area -->
     <main class="admin-main">
         <header class="admin-topbar">
-            <h1><?= isset($data['title']) ? $data['title'] : 'Dashboard' ?></h1>
-            <div class="topbar-actions" style="display: flex; gap: 12px; align-items: center;">
-                <button id="theme-toggle" class="btn-storefront" style="padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; width: 38px; height: 38px; cursor: pointer;">
-                    <svg class="sun-icon" style="display: none;" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+            <div class="topbar-left">
+                <div class="topbar-brand">
+                    BLISS <span class="badge">admin</span>
+                </div>
+                <button class="sidebar-toggle" id="sidebar-toggle">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+                </button>
+            </div>
+
+            <h1 class="topbar-title"><?= isset($data['title']) ? $data['title'] : 'Dashboard' ?></h1>
+
+            <div class="topbar-actions">
+                <button id="theme-toggle" class="theme-toggle-btn">
+                    <svg class="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
                     <svg class="moon-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
                 </button>
                 <a href="/php/Webdev/public/" target="_blank" class="btn-storefront">View Store</a>
@@ -87,6 +103,23 @@
         </header>
 
         <script>
+            // Sidebar Toggle Logic
+            const sidebar = document.getElementById('admin-sidebar');
+            const sidebarToggle = document.getElementById('sidebar-toggle');
+            const sidebarClose = document.getElementById('sidebar-close');
+            const sidebarBackdrop = document.getElementById('sidebar-backdrop');
+
+            function toggleSidebar() {
+                sidebar.classList.toggle('open');
+                sidebarBackdrop.classList.toggle('active');
+                document.body.style.overflow = sidebar.classList.contains('open') ? 'hidden' : '';
+            }
+
+            if (sidebarToggle) sidebarToggle.addEventListener('click', toggleSidebar);
+            if (sidebarClose) sidebarClose.addEventListener('click', toggleSidebar);
+            if (sidebarBackdrop) sidebarBackdrop.addEventListener('click', toggleSidebar);
+
+            // Theme Toggle Logic
             const themeToggle = document.getElementById('theme-toggle');
             const sunIcon = themeToggle.querySelector('.sun-icon');
             const moonIcon = themeToggle.querySelector('.moon-icon');

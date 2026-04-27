@@ -69,12 +69,15 @@
     min-height: 100vh;
 }
 
+/* --- Responsive Layout Core (Mobile-First) --- */
 .admin-layout {
     display: flex;
-    width: 100%;
+    flex-direction: column;
+    min-height: 100vh;
+    overflow-x: hidden; /* Strictly prevent horizontal scroll */
 }
 
-/* Sidebar */
+/* Sidebar: Off-canvas by default */
 .admin-sidebar {
     width: 260px;
     background-color: var(--admin-sidebar);
@@ -85,7 +88,14 @@
     height: 100vh;
     left: 0;
     top: 0;
-    z-index: 100;
+    z-index: 1000;
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.admin-sidebar.open {
+    transform: translateX(0);
+    box-shadow: 10px 0 30px rgba(0, 0, 0, 0.1);
 }
 
 .sidebar-brand {
@@ -93,6 +103,7 @@
     border-bottom: 1px solid var(--admin-border);
     display: flex;
     align-items: center;
+    justify-content: space-between;
     height: 70px;
 }
 
@@ -103,6 +114,34 @@
     align-items: center;
     gap: 8px;
     color: var(--admin-text-main);
+}
+
+.sidebar-close {
+    display: none;
+    background: transparent;
+    border: 1px solid var(--admin-border);
+    color: var(--admin-text-muted);
+    cursor: pointer;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sidebar-close:hover {
+    background: var(--admin-bg-soft);
+    color: var(--admin-text-main);
+    border-color: var(--admin-text-muted);
+    transform: rotate(90deg);
+}
+
+.sidebar-close svg {
+    width: 18px;
+    height: 18px;
 }
 
 .sidebar-brand .badge {
@@ -181,13 +220,15 @@
     color: var(--admin-danger);
 }
 
-/* Main Area */
+/* Main Content: 100% width by default */
 .admin-main {
-    flex-grow: 1;
-    margin-left: 260px;
+    flex: 1;
     display: flex;
     flex-direction: column;
     min-width: 0;
+    width: 100%;
+    position: relative;
+    background-color: var(--admin-bg);
 }
 
 .admin-topbar {
@@ -196,38 +237,190 @@
     align-items: center;
     padding: 0 var(--spacing-4);
     border-bottom: 1px solid var(--admin-border);
-    background: var(--admin-sidebar);
+    background: rgba(var(--admin-sidebar-rgb, 255, 255, 255), 0.8);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     height: 70px;
     position: sticky;
     top: 0;
     z-index: 90;
+    width: 100%;
+    box-sizing: border-box;
+    gap: var(--spacing-4);
 }
 
-.admin-topbar h1 {
-    font-size: 1.1rem;
+[data-theme="dark"] .admin-topbar {
+    background: rgba(24, 24, 27, 0.8);
+}
+
+.topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex: 1;
+    min-width: 0;
+}
+
+.topbar-brand {
+    font-size: 1rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--admin-text-main);
+    text-decoration: none;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.topbar-brand .badge {
+    background: var(--admin-accent);
+    color: #fff;
+    font-size: 0.55rem;
+    padding: 2px 5px;
+    border-radius: 4px;
+    letter-spacing: 0.05em;
+    font-weight: 700;
+}
+
+.topbar-title {
+    font-size: 1rem;
     font-weight: 600;
     color: var(--admin-text-main);
+    text-align: center;
+    flex: 1.5;
+    margin: 0;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 0 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    justify-content: flex-end;
+    flex: 1;
+}
+
+.theme-toggle-btn {
+    padding: 0;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    cursor: pointer;
+    background: transparent;
+    border: 1px solid var(--admin-border);
+    color: var(--admin-text-muted);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    flex-shrink: 0;
+}
+
+.theme-toggle-btn:hover {
+    background: var(--admin-bg-soft);
+    color: var(--admin-text-main);
+    border-color: var(--admin-text-muted);
 }
 
 .btn-storefront {
-    padding: 8px 16px;
+    padding: 0 16px;
+    height: 38px;
     border: 1px solid var(--admin-border);
-    border-radius: var(--radius-md);
+    border-radius: 10px;
     color: var(--admin-text-main);
     text-decoration: none;
-    font-size: 0.85rem;
-    font-weight: 500;
-    transition: all 0.2s;
-    background: var(--admin-sidebar);
+    font-size: 0.8rem;
+    font-weight: 600;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    background: var(--admin-card);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .btn-storefront:hover {
     background: var(--admin-bg-soft);
+    border-color: var(--admin-text-muted);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+}
+
+@media (max-width: 768px) {
+    .admin-topbar {
+        height: auto;
+        padding: var(--spacing-4);
+        flex-direction: column;
+        align-items: stretch;
+        gap: var(--spacing-3);
+    }
+
+    .topbar-left {
+        width: 100%;
+        justify-content: space-between;
+        order: 1;
+        flex: none;
+    }
+
+    .topbar-title {
+        width: 100%;
+        order: 2;
+        flex: none;
+        padding: var(--spacing-2) 0;
+        border-top: 1px solid var(--admin-border);
+        border-bottom: 1px solid var(--admin-border);
+        justify-content: center;
+        text-align: center;
+        font-size: 1.1rem;
+    }
+
+    .topbar-actions {
+        width: 100%;
+        order: 3;
+        flex: none;
+        justify-content: center;
+        gap: var(--spacing-3);
+    }
+
+    .topbar-brand {
+        font-size: 1.1rem;
+    }
+}
+
+.sidebar-toggle {
+    background: transparent;
+    border: none;
+    color: var(--admin-text-muted);
+    cursor: pointer;
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+
+.sidebar-toggle:hover {
+    background: var(--admin-bg-soft);
+    color: var(--admin-text-main);
 }
 
 .admin-content {
     padding: var(--spacing-4);
     flex-grow: 1;
+    width: 100%;
 }
 
 /* Cards & Overview */
@@ -266,7 +459,7 @@
     background: var(--admin-card);
     border: 1px solid var(--admin-border);
     border-radius: var(--radius-lg);
-    overflow: hidden;
+    overflow-x: auto;
     box-shadow: var(--shadow-sm);
 }
 
@@ -274,6 +467,7 @@
     width: 100%;
     border-collapse: collapse;
     text-align: left;
+    min-width: 600px;
 }
 
 .admin-table th, .admin-table td {
@@ -319,6 +513,7 @@
     padding: var(--spacing-4);
     max-width: 700px;
     box-shadow: var(--shadow-sm);
+    width: 100%;
 }
 
 .form-group-admin {
@@ -467,11 +662,36 @@ input.admin-filter-control {
     flex-shrink: 0;
 }
 
-/* Layout Utilities */
-.flex-between { display: flex; justify-content: space-between; align-items: center; }
-.gap-2 { gap: 8px; }
-.gap-3 { gap: 16px; }
-.mt-4 { margin-top: 32px; }
+/* Utility Grid Classes */
+.admin-grid-2-1 {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: var(--spacing-4);
+}
+
+.admin-grid-1-1 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-3);
+}
+
+.admin-grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-2);
+}
+
+@media (max-width: 900px) {
+    .admin-grid-2-1, .admin-grid-1-1 {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+    .admin-grid-3 {
+        grid-template-columns: 1fr;
+    }
+}
 
 /* Proper Alerts */
 .alert-success-proper {
@@ -548,137 +768,250 @@ input.admin-filter-control {
     to { opacity: 1; transform: translateX(-50%) translateY(0); }
 }
 
-/* --- Responsive Adjustments for Admin Layout --- */
-
-/* Mobile: 1 column layout, sidebar hidden */
-@media (max-width: 768px) {
-    .admin-layout {
-        flex-direction: column; /* Stack sidebar and main content */
-    }
-
+/* --- Desktop Layout Overrides (min-width: 1025px) --- */
+@media (min-width: 1025px) {
     .admin-sidebar {
-        position: static; /* Remove fixed positioning */
-        width: 100%; /* Full width */
-        height: auto;
-        border-right: none;
-        border-bottom: 1px solid var(--admin-border);
-        transform: translateX(-100%); /* Initially hide sidebar */
-        transition: transform 0.3s ease;
-        z-index: 101; /* Above main content */
-    }
-
-    .admin-sidebar.open { /* Assuming a class to toggle visibility */
-        transform: translateX(0);
+        transform: translateX(0); /* Always visible */
+        position: fixed; /* Keep it fixed on desktop */
     }
 
     .admin-main {
-        margin-left: 0; /* Remove margin-left */
-        width: 100%; /* Take full width */
+        padding-left: 260px; /* Offset for fixed sidebar */
+        width: 100%;
+        margin-left: 0;
     }
 
-    .admin-topbar {
-        padding: 0 var(--spacing-3);
-        justify-content: center; /* Center content if no title on mobile */
-        height: 60px; /* Slightly smaller height */
+    /* Branding visible on desktop as requested */
+    .topbar-brand {
+        display: flex;
+    }
+
+    .topbar-left {
+        flex: 1;
+        justify-content: flex-start;
+    }
+
+    .topbar-title {
+        text-align: center;
+        flex: 1.5;
+        font-size: 1.1rem;
+        justify-content: center;
+        display: flex;
+    }
+
+    .topbar-actions {
+        flex: 1;
+        justify-content: flex-end;
+    }
+
+    /* Hide mobile-only elements */
+    .sidebar-toggle,
+    .sidebar-close,
+    .sidebar-backdrop {
+        display: none !important;
+    }
+    .admin-layout {
+        flex-direction: row;
+    }
+}
+
+/* Tablet/Small Desktop tweaks */
+@media (max-width: 1024px) {
+    .sidebar-toggle {
+        display: flex; /* Show the toggle button on mobile */
+    }
+    .sidebar-close {
+        display: block;
+    }
+    .sidebar-brand {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
     }
     .admin-topbar h1 {
-        font-size: 1rem;
+        font-size: 0.95rem;
     }
-    .btn-storefront {
-        display: none; /* Hide storefront button on mobile if too cluttered */
+    .btn-storefront span {
+        display: none;
     }
-
     .admin-content {
-        padding: var(--spacing-3); /* Reduced padding */
-    }
-
-    .overview-grid {
-        grid-template-columns: 1fr; /* Force single column for overview cards */
-        gap: var(--spacing-3);
-    }
-
-    .admin-form {
-        max-width: 100%; /* Allow form to take full width */
-    }
-
-    .form-group-admin input,
-    .form-group-admin select,
-    .form-group-admin textarea {
-        font-size: 0.85rem; /* Smaller font for form inputs */
-    }
-
-    .admin-table {
-        font-size: 0.8rem; /* Smaller table font */
-    }
-    .admin-table th, .admin-table td {
-        padding: 10px var(--spacing-2); /* Reduced padding */
-    }
-    .table-image {
-        width: 36px; /* Smaller images in tables */
-        height: 36px;
-    }
-
-    .sidebar-brand {
-        height: 60px; /* Smaller brand height */
-    }
-    .sidebar-brand h2 {
-        font-size: 1.1rem;
-    }
-    .sidebar-nav {
         padding: var(--spacing-2);
     }
-    .sidebar-nav a {
-        padding: 10px 12px;
+    .overview-grid {
+        grid-template-columns: 1fr;
+    }
+    .flex-between {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-2);
+    }
+    input.admin-filter-control {
+        width: 100%;
+    }
+    .admin-topbar h1 {
+        display: -webkit-box;
+        -webkit-line-clamp: 1;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    .admin-card .stat {
+        font-size: 1.5rem;
+    }
+
+    /* Table to Card Specifics */
+    .admin-table thead, .desktop-table-row {
+        display: none; /* Hide original table headers and rows on mobile */
+    }
+
+    .mobile-card {
+        display: block; /* Show mobile cards */
+        background: var(--admin-card);
+        border: 1px solid var(--admin-border);
+        border-radius: var(--radius-lg);
+        margin-bottom: var(--spacing-3);
+        padding: var(--spacing-3);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .mobile-card .card-header {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: var(--spacing-2);
+        padding-bottom: var(--spacing-2);
+        border-bottom: 1px solid var(--admin-border);
+    }
+    .mobile-card .card-header img {
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: var(--radius-md);
+    }
+    .mobile-card .card-header h3 {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--admin-text-main);
+        margin: 0;
+    }
+    .mobile-card .card-header .price {
+        font-size: 0.9rem;
+        color: var(--admin-text-muted);
+        font-weight: 500;
+    }
+
+    .mobile-card .card-body {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-1);
+        margin-bottom: var(--spacing-2);
+    }
+    .mobile-card .card-item {
+        display: flex;
+        justify-content: space-between;
         font-size: 0.85rem;
     }
-    .sidebar-footer {
+    .mobile-card .card-item .label {
+        font-weight: 600;
+        color: var(--admin-text-muted);
+    }
+    .mobile-card .card-item span:not(.label) {
+        color: var(--admin-text-main);
+        text-align: right;
+    }
+
+    .mobile-card .card-actions {
+        display: flex;
+        gap: var(--spacing-2);
+        flex-wrap: wrap;
+        margin-top: var(--spacing-2);
+        padding-top: var(--spacing-2);
+        border-top: 1px solid var(--admin-border);
+    }
+    .mobile-card .card-actions .btn-admin {
+        flex: 1;
+        font-size: 0.85rem;
+        padding: 8px 12px;
+    }
+
+    /* Order Card Specifics */
+    .order-card .card-header {
+        justify-content: space-between;
+    }
+    .order-card .card-header .customer-info {
+        text-align: center;
+        flex-grow: 1;
+    }
+    .order-card .card-header .order-id,
+    .order-card .card-header .total-price {
+        white-space: nowrap;
+    }
+    .order-card .card-item form {
+        width: 100%;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    .order-card .card-item form select,
+    .order-card .card-item form button {
+        flex: 1;
+    }
+    
+    /* Customer Card Specifics */
+    .customer-card .card-header {
+        justify-content: space-between;
+    }
+    .customer-card .card-header .customer-info h3 {
+        font-size: 1rem;
+    }
+    .customer-card .card-header .customer-info p {
+        font-size: 0.85rem;
+        color: var(--admin-text-muted);
+    }
+    
+    /* Dashboard Specific Card Layouts */
+    .desktop-view-only {
+        display: none;
+    }
+
+    .mobile-card-list {
+        display: block;
+    }
+
+    .mobile-card-list .mobile-card {
+        margin-bottom: var(--spacing-2);
         padding: var(--spacing-2);
     }
-    .user-info span {
+
+    .mobile-card-list .mobile-card .card-header img {
+        width: 40px;
+        height: 40px;
+    }
+    .mobile-card-list .mobile-card .card-header h3 {
+        font-size: 0.9rem;
+    }
+    .mobile-card-list .mobile-card .product-info {
+        flex-grow: 1;
+    }
+
+    .mobile-card-list .mobile-card .card-header .sales-count,
+    .mobile-card-list .mobile-card .card-header .stock-count,
+    .mobile-card-list .mobile-card .card-header .email {
         font-size: 0.8rem;
-    }
-    .user-info small {
-        font-size: 0.7rem;
+        color: var(--admin-text-muted);
     }
 }
 
-/* Tablet: 2 columns, sidebar visible */
-@media (min-width: 769px) and (max-width: 1024px) {
-    .admin-main {
-        margin-left: 200px; /* Slightly narrower sidebar for tablet */
+@media (min-width: 1025px) {
+    .mobile-card {
+        display: none; /* Hide mobile cards on desktop */
     }
-
-    .admin-sidebar {
-        width: 200px; /* Reduced sidebar width */
+    .desktop-table-row {
+        display: table-row; /* Show original table rows on desktop */
     }
-
-    .admin-content {
-        padding: var(--spacing-3); /* Adjusted padding */
+    .desktop-view-only {
+        display: block; /* Show desktop-only elements */
     }
-
-    .overview-grid {
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Adjusted min width for cards */
-    }
-    
-    .admin-table th, .admin-table td {
-        padding: 12px var(--spacing-2); /* Reduced padding */
-    }
-
-    .form-grid {
-        grid-template-columns: 1fr; /* Single column for form fields */
-    }
-    
-    .admin-form {
-        max-width: 100%; /* Allow form to take full width */
+    .mobile-card-list {
+        display: none; /* Hide mobile-card-list on desktop */
     }
 }
-
-/* Desktop: Unchanged, default styles apply */
-/* Default styles: */
-/* .admin-sidebar { width: 260px; } */
-/* .admin-main { margin-left: 260px; } */
-/* .overview-grid { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); } */
-/* .form-grid { grid-template-columns: 1fr 1fr; } */
-/* .admin-table th, .admin-table td { padding: 16px var(--spacing-3); } */
-/* .admin-form { max-width: 700px; } */
-    

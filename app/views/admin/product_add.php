@@ -11,9 +11,9 @@
         <p style="opacity: 0.8; font-size: 0.9rem;">Fill in the details to create a new premium listing.</p>
     </div>
 
-    <form action="/php/Webdev/public/superadmin/product_add" method="POST" enctype="multipart/form-data" style="padding: 40px;">
+    <form action="/php/Webdev/public/superadmin/product_add" method="POST" enctype="multipart/form-data" class="product-form">
         
-        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 40px;">
+        <div class="admin-grid-2-1">
             <!-- Left Side: Basic Info -->
             <div style="display: flex; flex-direction: column; gap: 25px;">
                 <div class="form-group-admin">
@@ -21,7 +21,7 @@
                     <input type="text" name="name" required placeholder="e.g. Nike Air Max Phantom" style="font-size: 1.1rem; font-weight: 600; padding: 15px; border-radius: 12px;">
                 </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div class="admin-grid-1-1">
                     <div class="form-group-admin">
                         <label style="text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.75rem; color: var(--admin-text-muted);">Price (₱)</label>
                         <input type="number" step="0.01" name="price" required placeholder="0.00" style="font-size: 1.1rem; font-weight: 700; color: var(--admin-accent); padding: 15px; border-radius: 12px;">
@@ -72,16 +72,16 @@
         <hr style="margin: 40px 0; border: none; border-top: 1px solid var(--admin-border);">
 
         <!-- Inventory & Categories -->
-        <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 40px;">
+        <div class="admin-grid-2-1">
             <div>
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
                     <label style="text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.75rem; color: var(--admin-text-muted); margin: 0;">Initial Inventory (per size)</label>
                     <div style="display: flex; gap: 10px; align-items: center;">
                         <input type="number" id="fill-all-input" placeholder="All" style="width: 60px; padding: 5px 10px; border-radius: 8px; border: 1px solid var(--admin-border); font-size: 0.85rem; font-weight: 600;">
                         <button type="button" onclick="fillAllInventory()" style="background: var(--admin-bg-soft); border: 1px solid var(--admin-border); padding: 5px 12px; border-radius: 8px; font-size: 0.75rem; font-weight: 700; cursor: pointer; color: var(--admin-text-main); transition: all 0.2s;" onmouseover="this.style.background='#e2e8f0'" onmouseout="this.style.background='var(--admin-bg-soft)'">Fill All</button>
                     </div>
                 </div>
-                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
+                <div class="admin-grid-3">
                     <?php for($i=7; $i<=12; $i++): ?>
                         <div style="background: var(--admin-bg-soft); padding: 15px; border-radius: 12px; border: 1px solid var(--admin-border); display: flex; align-items: center; justify-content: space-between;">
                             <span style="font-weight: 700; color: var(--admin-text-main);">US <?= $i ?></span>
@@ -117,7 +117,7 @@
             </div>
         </div>
 
-        <div style="margin-top: 50px; display: flex; gap: 15px;">
+        <div class="form-actions">
             <button type="submit" class="btn-admin btn-admin-primary" style="flex-grow: 2; padding: 18px; font-size: 1rem; border-radius: 14px; box-shadow: 0 10px 20px rgba(37, 99, 235, 0.2);">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                 Publish Product Listing
@@ -128,3 +128,12 @@
         </div>
     </form>
 </div>
+
+<style>
+.product-form { padding: 40px; }
+.form-actions { margin-top: 50px; display: flex; gap: 15px; }
+@media (max-width: 600px) {
+    .product-form { padding: 20px; }
+    .form-actions { flex-direction: column; }
+}
+</style>
