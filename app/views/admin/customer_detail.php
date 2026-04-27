@@ -8,51 +8,53 @@
 <style>
 .customer-profile-layout {
     display: grid; 
-    grid-template-columns: 350px 1fr; 
+    grid-template-columns: minmax(300px, 350px) 1fr; 
     gap: var(--spacing-4);
     align-items: start;
+}
+
+@media (max-width: 1200px) {
+    .customer-profile-layout {
+        grid-template-columns: 300px 1fr;
+    }
 }
 
 @media (max-width: 1024px) {
     .customer-profile-layout {
         grid-template-columns: 1fr;
     }
-    
-    .customer-sidebar {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: var(--spacing-4);
-    }
 }
 
-@media (max-width: 768px) {
-    .customer-sidebar {
-        grid-template-columns: 1fr;
-    }
+.break-word {
+    word-break: break-all;
+    overflow-wrap: break-word;
+    white-space: normal;
 }
 
-.security-grid {
-    display: grid; 
-    grid-template-columns: 1fr; 
-    gap: 15px;
-}
-
-@media (min-width: 1400px) {
-    .security-grid {
-        grid-template-columns: 1fr 1fr;
-    }
+.security-answer-box {
+    font-family: monospace; 
+    background: white; 
+    padding: 8px 12px; 
+    border-radius: 8px; 
+    border: 1px solid var(--admin-border); 
+    display: block; 
+    width: 100%;
+    box-sizing: border-box;
+    color: var(--admin-accent); 
+    font-weight: 600;
+    word-break: break-all;
 }
 </style>
 
 <div class="customer-profile-layout">
     <!-- Sidebar: Profile Overview -->
     <div class="customer-sidebar" style="display: flex; flex-direction: column; gap: var(--spacing-4);">
-        <div class="admin-card" style="text-align: center; padding: 40px 20px;">
+        <div class="admin-card profile-card" style="text-align: center; padding: 40px 20px;">
             <div style="width: 100px; height: 100px; background: var(--admin-accent-soft); color: var(--admin-accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; font-weight: 800; margin: 0 auto 20px; border: 4px solid white; box-shadow: var(--shadow-md);">
                 <?= strtoupper(substr($data['customer']['name'], 0, 1)) ?>
             </div>
-            <h2 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 5px;"><?= htmlspecialchars($data['customer']['name']) ?></h2>
-            <p style="color: var(--admin-text-muted); font-size: 0.9rem; margin-bottom: 25px;"><?= htmlspecialchars($data['customer']['email']) ?></p>
+            <h2 class="break-word" style="font-size: 1.5rem; font-weight: 800; margin-bottom: 5px; line-height: 1.2;"><?= htmlspecialchars($data['customer']['name']) ?></h2>
+            <p class="break-word" style="color: var(--admin-text-muted); font-size: 0.9rem; margin-bottom: 25px;"><?= htmlspecialchars($data['customer']['email']) ?></p>
             
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 25px;">
                 <div style="background: var(--admin-bg-soft); padding: 15px; border-radius: 12px; border: 1px solid var(--admin-border);">
@@ -78,12 +80,12 @@
             <?php endif; ?>
         </div>
 
-        <div class="admin-card">
+        <div class="admin-card profile-card">
             <h3 style="font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--admin-text-muted); margin-bottom: 20px;">Activity Information</h3>
             <div style="display: flex; flex-direction: column; gap: 15px;">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <span style="font-size: 0.85rem; color: var(--admin-text-muted);">Last Activity</span>
-                    <span style="font-size: 0.85rem; font-weight: 600;"><?= $data['customer']['last_login'] ? date('M d, H:i', strtotime($data['customer']['last_login'])) : 'Never' ?></span>
+                <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px;">
+                    <span style="font-size: 0.85rem; color: var(--admin-text-muted); white-space: nowrap;">Last Activity</span>
+                    <span style="font-size: 0.85rem; font-weight: 600; text-align: right;"><?= $data['customer']['last_login'] ? date('M d, H:i', strtotime($data['customer']['last_login'])) : 'Never' ?></span>
                 </div>
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <span style="font-size: 0.85rem; color: var(--admin-text-muted);">Total Orders</span>
@@ -94,7 +96,7 @@
     </div>
 
     <!-- Main Content: Details & History -->
-    <div style="display: flex; flex-direction: column; gap: var(--spacing-4);">
+    <div style="display: flex; flex-direction: column; gap: var(--spacing-4); min-width: 0;">
         <!-- Security Questions -->
         <div class="admin-card">
             <h3 style="font-size: 1.1rem; font-weight: 800; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
@@ -104,11 +106,11 @@
             <div style="display: grid; grid-template-columns: 1fr; gap: 15px;">
                 <?php for($i=1; $i<=3; $i++): ?>
                     <?php if($data['customer']["security_q$i"]): ?>
-                    <div style="background: var(--admin-bg-soft); padding: 18px; border-radius: 16px; border: 1px solid var(--admin-border);">
+                    <div style="background: var(--admin-bg-soft); padding: 18px; border-radius: 16px; border: 1px solid var(--admin-border); min-width: 0;">
                         <div style="font-size: 0.75rem; font-weight: 700; color: var(--admin-text-muted); text-transform: uppercase; margin-bottom: 8px;">Question <?= $i ?></div>
-                        <div style="font-weight: 700; margin-bottom: 10px; color: var(--admin-text-main);"><?= htmlspecialchars($data['customer']["security_q$i"]) ?></div>
+                        <div class="break-word" style="font-weight: 700; margin-bottom: 10px; color: var(--admin-text-main);"><?= htmlspecialchars($data['customer']["security_q$i"]) ?></div>
                         <div style="font-size: 0.75rem; font-weight: 700; color: var(--admin-text-muted); text-transform: uppercase; margin-bottom: 4px;">Stored Answer</div>
-                        <div style="font-family: monospace; background: white; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--admin-border); display: inline-block; color: var(--admin-accent); font-weight: 600;">
+                        <div class="security-answer-box">
                             <?= htmlspecialchars($data['customer']["security_a$i"]) ?>
                         </div>
                     </div>

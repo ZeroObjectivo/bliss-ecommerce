@@ -74,6 +74,7 @@
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+    width: 100%;
     overflow-x: hidden; /* Strictly prevent horizontal scroll */
 }
 
@@ -245,12 +246,9 @@
     top: 0;
     z-index: 90;
     width: 100%;
+    max-width: 100%;
     box-sizing: border-box;
-    gap: var(--spacing-4);
-}
-
-[data-theme="dark"] .admin-topbar {
-    background: rgba(24, 24, 27, 0.8);
+    left: 0;
 }
 
 .topbar-left {
@@ -274,28 +272,18 @@
     white-space: nowrap;
 }
 
-.topbar-brand .badge {
-    background: var(--admin-accent);
-    color: #fff;
-    font-size: 0.55rem;
-    padding: 2px 5px;
-    border-radius: 4px;
-    letter-spacing: 0.05em;
-    font-weight: 700;
-}
-
 .topbar-title {
     font-size: 1rem;
     font-weight: 600;
     color: var(--admin-text-main);
     text-align: center;
-    flex: 1.5;
     margin: 0;
     letter-spacing: -0.01em;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    padding: 0 10px;
+    padding: 0 20px;
+    flex: 2;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -307,6 +295,16 @@
     gap: 12px;
     justify-content: flex-end;
     flex: 1;
+}
+
+@media (min-width: 1025px) {
+    .topbar-title {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        width: auto;
+        max-width: 40%;
+    }
 }
 
 .theme-toggle-btn {
@@ -421,6 +419,46 @@
     padding: var(--spacing-4);
     flex-grow: 1;
     width: 100%;
+    box-sizing: border-box;
+}
+
+/* --- Responsive Content Padding --- */
+@media (max-width: 1024px) {
+    .admin-content {
+        padding: var(--spacing-3);
+    }
+}
+
+@media (max-width: 768px) {
+    .admin-content {
+        padding: var(--spacing-2);
+    }
+}
+
+/* --- Mobile Full-Width Refinement --- */
+@media (max-width: 768px) {
+    .admin-content {
+        padding: var(--spacing-2);
+    }
+
+    /* Force all major containers and cards to span full width */
+    .admin-card,
+    .admin-form,
+    .container,
+    [class*="-container"] {
+        max-width: 100% !important;
+        width: 100% !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+    }
+
+    /* Ensure forms inside these containers also stretch */
+    .admin-form {
+        border-left: none;
+        border-right: none;
+    }
 }
 
 /* Cards & Overview */
@@ -622,6 +660,29 @@ select.admin-filter-control {
 input.admin-filter-control {
     width: 320px;
     cursor: text;
+}
+
+/* Profile Card Specifics */
+.profile-card {
+    width: 100%;
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
+@media (min-width: 1025px) {
+    .profile-card {
+        max-width: 400px;
+        margin-left: 0; /* Keep to the side on desktop sidebar */
+    }
+}
+
+@media (max-width: 768px) {
+    .profile-card {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        border-radius: 0 !important;
+    }
 }
 
 /* Status Badges */
