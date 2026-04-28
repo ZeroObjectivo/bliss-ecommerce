@@ -21,8 +21,9 @@
 
 .avatar-wrapper {
     position: relative;
-    width: 100px;
-    height: 100px;
+    width: 100%;
+    max-width: 100px;
+    aspect-ratio: 1 / 1;
     margin: 0 auto 1rem;
 }
 
@@ -31,6 +32,7 @@
     height: 100%;
     border-radius: 50%;
     object-fit: cover;
+    display: block;
 }
 
 .avatar-placeholder {
@@ -101,6 +103,71 @@
     margin-top: 1rem;
     border-top: 1px solid #f1f5f9;
     padding-top: 1rem !important;
+}
+
+/* Security Warning Banner */
+.security-warning-banner {
+    background: #fff7ed;
+    border: 1px solid #ffedd5;
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: var(--spacing-6);
+    display: flex;
+    gap: 15px;
+    align-items: start;
+}
+
+.security-warning-icon {
+    background: #f97316;
+    color: white;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.security-warning-text h4 {
+    color: #9a3412;
+    font-weight: 800;
+    font-size: 0.95rem;
+    margin-bottom: 4px;
+}
+
+.security-warning-text p {
+    color: #c2410c;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    margin: 0;
+}
+
+/* Security Question Group */
+.security-question-group {
+    background: #f8fafc;
+    padding: 20px;
+    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.security-question-group label {
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 0 !important;
+    display: block;
+}
+
+.security-question-group select,
+.security-question-group input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    background: white;
 }
 
 /* Main Content */
@@ -550,6 +617,72 @@
 .alert-success { background: #dcfce7; color: #166534; }
 .alert-error { background: #fee2e2; color: #991b1b; }
 
+/* Collapsible Sections */
+.collapsible-section {
+    border: 1px solid #f1f5f9;
+    border-radius: 1.5rem;
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.collapsible-header {
+    padding: 1.5rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    background: white;
+    user-select: none;
+    transition: background 0.2s;
+}
+
+.collapsible-header:hover {
+    background: #f8fafc;
+}
+
+.collapsible-header h3 {
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    font-size: 0.85rem !important;
+}
+
+.collapsible-header .chevron {
+    transition: transform 0.3s ease;
+    color: #64748b;
+}
+
+.collapsible-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0, 1, 0, 1);
+    opacity: 0;
+    padding: 0 2rem;
+}
+
+.collapsible-section.active {
+    border-color: #e2e8f0;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.collapsible-section.active .collapsible-header {
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.collapsible-section.active .collapsible-body {
+    max-height: 2000px;
+    opacity: 1;
+    padding: 2rem;
+    transition: all 0.3s cubic-bezier(1, 0, 1, 0);
+}
+
+.collapsible-section.active .chevron {
+    transform: rotate(180deg);
+    color: #000;
+}
+
 /* Profile Picture Section (Main Content) */
 .profile-picture-edit-card {
     display: flex;
@@ -655,6 +788,15 @@
 }
 
 @media (max-width: 768px) {
+    /* Override global container for full-width mobile profile */
+    .page-content > .container {
+        max-width: 100% !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+
     .profile-layout {
         display: block; /* Switch from grid to block for stacking */
     }
@@ -699,11 +841,83 @@
     }
 
     .profile-content {
-        padding: 1rem;
-        width: 100%;
+        padding: 1rem 0; /* Vertical padding, no horizontal */
+        width: 100% !important;
+        background: transparent; /* Let inner cards handle background */
+        border: none;
+        box-shadow: none;
         overflow: visible !important;
         height: auto !important;
         min-height: auto !important;
+    }
+
+    .profile-picture-edit-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
+        padding: 2rem 1.5rem;
+        margin-left: 0;
+        margin-right: 0;
+        width: 100%;
+        gap: 1.5rem;
+    }
+
+    .picture-actions {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+    }
+
+    .picture-tip {
+        margin-bottom: 1.25rem;
+        font-size: 0.9rem;
+    }
+
+    .security-warning-banner {
+        flex-direction: column;
+        gap: 12px;
+        padding: 16px;
+    }
+
+    .security-question-group {
+        padding: 16px;
+        gap: 8px;
+    }
+
+    .profile-content .btn, 
+    .profile-content .btn-primary,
+    .profile-content .btn-secondary,
+    .profile-content .btn-outline {
+        width: 100% !important;
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        padding: 1rem !important;
+        margin-top: 0.5rem;
+    }
+
+    .collapsible-section {
+        border-radius: 0 !important;
+        border-left: none !important;
+        border-right: none !important;
+        margin-bottom: 0.5rem !important; /* Tighter spacing between cards */
+    }
+
+    .collapsible-header {
+        padding: 1.25rem 1rem !important;
+    }
+
+    .collapsible-body {
+        padding: 0 1rem !important;
+    }
+
+    .collapsible-section.active .collapsible-body {
+        padding: 1.5rem 1rem !important;
     }
 
     .profile-section h3 {

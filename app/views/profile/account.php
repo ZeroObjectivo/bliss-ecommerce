@@ -44,13 +44,13 @@
         <!-- Main Content -->
         <main class="profile-content">
             <?php if(!$data['has_security']): ?>
-                <div class="security-warning-banner" style="background: #fff7ed; border: 1px solid #ffedd5; border-radius: 16px; padding: 20px; margin-bottom: var(--spacing-6); display: flex; gap: 15px; align-items: start;">
-                    <div style="background: #f97316; color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                <div class="security-warning-banner">
+                    <div class="security-warning-icon">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
                     </div>
-                    <div>
-                        <h4 style="color: #9a3412; font-weight: 800; font-size: 0.95rem; margin-bottom: 4px;">Security Action Required</h4>
-                        <p style="color: #c2410c; font-size: 0.85rem; line-height: 1.5; margin: 0;">You haven't set up your security questions. These are required to recover your account if you forget your password. Please set them below.</p>
+                    <div class="security-warning-text">
+                        <h4>Security Action Required</h4>
+                        <p>You haven't set up your security questions. These are required to recover your account if you forget your password. Please set them below.</p>
                     </div>
                 </div>
             <?php endif; ?>
@@ -163,15 +163,15 @@
                         ?>
                         <div style="display: flex; flex-direction: column; gap: 20px;">
                             <?php for($i=1; $i<=3; $i++): ?>
-                                <div class="form-group" style="background: #f8fafc; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0;">
-                                    <label style="font-weight: 700; color: #0f172a; margin-bottom: 10px; display: block;">Question <?= $i ?></label>
-                                    <select name="security_question_<?= $i ?>" required style="width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 10px; background: white; margin-bottom: 12px;">
+                                <div class="form-group security-question-group">
+                                    <label>Question <?= $i ?></label>
+                                    <select name="security_question_<?= $i ?>" required>
                                         <option value="" disabled <?= empty($data['user']["security_q$i"]) ? 'selected' : '' ?>>Select a question</option>
                                         <?php foreach($questions as $q): ?>
                                             <option value="<?= htmlspecialchars($q) ?>" <?= ($data['user']["security_q$i"] == $q) ? 'selected' : '' ?>><?= htmlspecialchars($q) ?></option>
                                         <?php endforeach; ?>
                                     </select>
-                                    <input type="text" name="security_answer_<?= $i ?>" required value="<?= htmlspecialchars($data['user']["security_a$i"] ?? '') ?>" placeholder="Your answer" style="width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 10px;">
+                                    <input type="text" name="security_answer_<?= $i ?>" required value="<?= htmlspecialchars($data['user']["security_a$i"] ?? '') ?>" placeholder="Your answer">
                                 </div>
                             <?php endfor; ?>
                         </div>
@@ -459,74 +459,24 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+
+    // Mobile Navigation Toggle
+    const mobileTrigger = document.getElementById('mobile-profile-trigger');
+    const sidebar = document.getElementById('profile-sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+
+    if (mobileTrigger && sidebar && overlay) {
+        mobileTrigger.addEventListener('click', () => {
+            sidebar.classList.add('open');
+            overlay.classList.add('active');
+        });
+
+        overlay.addEventListener('click', () => {
+            sidebar.classList.remove('open');
+            overlay.classList.remove('active');
+        });
+    }
 });
 </script>
-
-<style>
-.collapsible-section {
-    border: 1px solid #f1f5f9;
-    border-radius: 1.5rem;
-    margin-bottom: 1.5rem;
-    overflow: hidden;
-    transition: all 0.3s ease;
-    background: white;
-}
-
-.collapsible-header {
-    padding: 1.5rem 2rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    cursor: pointer;
-    background: white;
-    user-select: none;
-    transition: background 0.2s;
-}
-
-.collapsible-header:hover {
-    background: #f8fafc;
-}
-
-.collapsible-header h3 {
-    margin: 0 !important;
-    padding: 0 !important;
-    border: none !important;
-    font-size: 0.85rem !important;
-}
-
-.collapsible-header .chevron {
-    transition: transform 0.3s ease;
-    color: #64748b;
-}
-
-.collapsible-body {
-    max-height: 0;
-    overflow: hidden;
-    transition: all 0.3s cubic-bezier(0, 1, 0, 1);
-    opacity: 0;
-    padding: 0 2rem;
-}
-
-.collapsible-section.active {
-    border-color: #e2e8f0;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-}
-
-.collapsible-section.active .collapsible-header {
-    border-bottom: 1px solid #f1f5f9;
-}
-
-.collapsible-section.active .collapsible-body {
-    max-height: 2000px; /* Large enough to fit content */
-    opacity: 1;
-    padding: 2rem;
-    transition: all 0.3s cubic-bezier(1, 0, 1, 0);
-}
-
-.collapsible-section.active .chevron {
-    transform: rotate(180deg);
-    color: #000;
-}
-</style>
 
 <link rel="stylesheet" href="/php/Webdev/public/css/profile.css">

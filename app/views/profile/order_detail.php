@@ -157,4 +157,25 @@
     </div>
 </div>
 
+<script>
+// Mobile Navigation Toggle
+document.addEventListener('DOMContentLoaded', function() {
+    const mobileTrigger = document.getElementById('mobile-profile-trigger');
+    const sidebar = document.getElementById('profile-sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+
+    if (mobileTrigger && sidebar && overlay) {
+        mobileTrigger.addEventListener('click', () => {
+            sidebar.classList.add('open');
+            overlay.classList.add('active');
+        });
+
+        overlay.addEventListener('click', () => {
+            sidebar.classList.remove('open');
+            overlay.classList.remove('active');
+        });
+    }
+});
+</script>
+
 <link rel="stylesheet" href="/php/Webdev/public/css/profile.css">

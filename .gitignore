@@ -9,3 +9,7 @@ Thumbs.db
 
 /public/uploads/profiles/*
 !/public/uploads/profiles/.gitkeep
+
+# Core Configuration
+app/core/Database.php
+
