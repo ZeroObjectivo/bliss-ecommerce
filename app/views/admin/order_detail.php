@@ -133,7 +133,172 @@
 
 <style>
 .order-detail-body { padding: 40px; }
+.order-detail-body {
+    --order-summary-columns: minmax(0, 2.4fr) minmax(90px, 1fr) minmax(70px, 0.7fr) minmax(110px, 1fr);
+    --order-summary-gap: 16px;
+    --order-summary-row-space: 16px;
+    --order-summary-cell-space: 16px;
+}
+.order-detail-body .table-container {
+    box-sizing: border-box;
+    padding: 0;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+}
+.order-detail-body .admin-table {
+    box-sizing: border-box;
+    min-width: 0;
+    width: 100%;
+    max-width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    table-layout: fixed;
+}
+.order-detail-body .admin-table thead,
+.order-detail-body .admin-table tbody {
+    display: block;
+    width: 100%;
+}
+.order-detail-body .admin-table thead tr,
+.order-detail-body .admin-table tbody tr {
+    display: grid;
+    grid-template-columns: var(--order-summary-columns);
+    gap: var(--order-summary-gap);
+    align-items: start;
+    width: 100%;
+}
+.order-detail-body .admin-table thead tr {
+    margin-bottom: 8px;
+}
+.order-detail-body .admin-table td,
+.order-detail-body .admin-table th {
+    box-sizing: border-box;
+    max-width: 100%;
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-top: var(--order-summary-cell-space);
+    padding-bottom: var(--order-summary-cell-space);
+    line-height: 1.6;
+    vertical-align: top;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    word-wrap: break-word;
+    hyphens: auto;
+}
+.order-detail-body .admin-table tbody tr {
+    margin-bottom: var(--order-summary-row-space);
+}
+.order-detail-body .admin-table tbody tr:last-child {
+    margin-bottom: 0;
+}
+.order-detail-body,
+.order-detail-body div,
+.order-detail-body span,
+.order-detail-body p,
+.order-detail-body h2,
+.order-detail-body h3,
+.order-detail-body td,
+.order-detail-body th {
+    min-width: 0;
+    overflow-wrap: break-word;
+    word-break: break-word;
+}
+.order-detail-body .admin-table td:first-child > div {
+    display: grid !important;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: var(--order-summary-gap);
+    align-items: start;
+    width: 100%;
+    max-width: 100%;
+}
+.order-detail-body .admin-table td:first-child > div > * {
+    min-width: 0;
+}
+.order-detail-body .admin-table td > * {
+    min-width: 0;
+    max-width: 100%;
+}
+.order-detail-body .admin-table img {
+    max-width: 100%;
+    display: block;
+}
+.order-detail-body .table-container > div:last-child {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+}
 @media (max-width: 600px) {
     .order-detail-body { padding: 20px; }
+    .order-detail-body {
+        --order-summary-columns: minmax(0, 1fr);
+        --order-summary-gap: 12px;
+        --order-summary-row-space: 12px;
+        --order-summary-cell-space: 14px;
+    }
+    .order-detail-body .table-container { padding: 0; }
+    .order-detail-body .admin-table thead tr,
+    .order-detail-body .admin-table tbody tr {
+        gap: var(--order-summary-gap);
+    }
+    .order-detail-body .admin-table tbody tr {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .order-detail-body .admin-table td,
+    .order-detail-body .admin-table th {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--order-summary-gap);
+        padding-left: 12px;
+        padding-right: 12px;
+        padding-top: 12px;
+        padding-bottom: 12px;
+        text-align: left !important;
+    }
+    .order-detail-body .admin-table tbody td::before {
+        flex: 0 0 auto;
+        width: auto;
+        min-width: 0;
+        max-width: 100%;
+        font-size: 0.78rem;
+        font-weight: 700;
+        line-height: 1.4;
+        color: var(--admin-text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        content: "";
+    }
+    .order-detail-body .admin-table tbody td:nth-child(1)::before { content: "Product"; }
+    .order-detail-body .admin-table tbody td:nth-child(2)::before { content: "Price"; }
+    .order-detail-body .admin-table tbody td:nth-child(3)::before { content: "Qty"; }
+    .order-detail-body .admin-table tbody td:nth-child(4)::before { content: "Subtotal"; }
+    .order-detail-body .admin-table td:first-child {
+        align-items: flex-start;
+    }
+    .order-detail-body .admin-table td > div,
+    .order-detail-body .admin-table td > span,
+    .order-detail-body .admin-table td > strong,
+    .order-detail-body .admin-table td > b {
+        flex: 1 1 auto;
+        min-width: 0;
+        max-width: 100%;
+        width: 100%;
+    }
+    .order-detail-body .admin-table td:first-child > div {
+        grid-template-columns: 54px minmax(0, 1fr);
+        gap: var(--order-summary-gap);
+        flex: 1 1 auto;
+    }
+    .order-detail-body .table-container > div:last-child {
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+    }
 }
 </style>

@@ -1,4 +1,4 @@
-<div class="flex-between" style="margin-bottom: var(--spacing-3);">
+<div class="products-header" style="margin-bottom: var(--spacing-3);">
     <h2 style="font-size: 1.25rem;">Product Inventory</h2>
     <a href="/php/Webdev/public/superadmin/product_add" class="btn-admin btn-admin-primary">Add Product</a>
 </div>
@@ -123,3 +123,33 @@
         </tbody>
     </table>
 </div>
+
+<style>
+.products-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+.products-header h2 {
+    margin: 0;
+}
+.products-header .btn-admin {
+    width: auto;
+    padding: 10px 16px;
+    white-space: nowrap;
+    flex: 0 0 auto;
+}
+@media (max-width: 600px) {
+    .products-header {
+        width: 100%;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+    .products-header .btn-admin {
+        margin-left: auto;
+        align-self: flex-end;
+    }
+}
+</style>

@@ -11,7 +11,7 @@
         <p style="opacity: 0.8; font-size: 0.9rem;">Fill in the details to create a new premium listing.</p>
     </div>
 
-    <form action="/php/Webdev/public/superadmin/product_add" method="POST" enctype="multipart/form-data" class="product-form">
+    <form action="/php/Webdev/public/superadmin/product_add" method="POST" enctype="multipart/form-data" class="product-form" id="productAddForm">
         
         <div class="admin-grid-2-1">
             <!-- Left Side: Basic Info -->
@@ -28,7 +28,15 @@
                     </div>
                     <div class="form-group-admin">
                         <label style="text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.75rem; color: var(--admin-text-muted);">Brand</label>
-                        <input type="text" name="brand" value="Nike" required style="padding: 15px; border-radius: 12px; font-weight: 600;">
+                        <select id="brandSelect" required style="padding: 15px; border-radius: 12px; font-weight: 600;">
+                            <option value="Nike" selected>Nike</option>
+                            <option value="Adidas">Adidas</option>
+                            <option value="New Balance">New Balance</option>
+                            <option value="Puma">Puma</option>
+                            <option value="Others">Others</option>
+                        </select>
+                        <input type="hidden" name="brand" id="brandValue" value="Nike">
+                        <input type="text" id="customBrand" placeholder="Enter brand name" style="margin-top: 10px; padding: 15px; border-radius: 12px; font-weight: 600;">
                     </div>
                 </div>
 
@@ -92,6 +100,63 @@
             </div>
 
             <script>
+            function toggleBrandInput() {
+                const brandSelect = document.getElementById('brandSelect');
+                const brandOtherInput = document.getElementById('customBrand');
+                const brandValue = document.getElementById('brandValue');
+                const isOthers = brandSelect.value === 'Others';
+
+                brandOtherInput.style.display = isOthers ? 'block' : 'none';
+                brandOtherInput.required = isOthers;
+                brandSelect.setCustomValidity('');
+                brandOtherInput.setCustomValidity('');
+
+                if (isOthers) {
+                    brandValue.value = brandOtherInput.value.trim();
+                } else {
+                    brandOtherInput.value = '';
+                    brandValue.value = brandSelect.value;
+                }
+            }
+
+            document.getElementById('brandSelect').addEventListener('change', toggleBrandInput);
+
+            document.getElementById('customBrand').addEventListener('input', function() {
+                document.getElementById('brandValue').value = this.value.trim();
+            });
+
+            document.getElementById('productAddForm').addEventListener('submit', function(event) {
+                const brandSelect = document.getElementById('brandSelect');
+                const customBrandInput = document.getElementById('customBrand');
+                const brandValue = document.getElementById('brandValue');
+                const selectedBrand = brandSelect.value.trim();
+
+                brandSelect.setCustomValidity('');
+                customBrandInput.setCustomValidity('');
+
+                if (!selectedBrand) {
+                    brandSelect.setCustomValidity('Please select a brand.');
+                    brandSelect.reportValidity();
+                    event.preventDefault();
+                    return;
+                }
+
+                if (selectedBrand === 'Others') {
+                    const customBrand = customBrandInput.value.trim();
+                    if (!customBrand) {
+                        customBrandInput.setCustomValidity('Please enter a custom brand.');
+                        customBrandInput.reportValidity();
+                        customBrandInput.focus();
+                        event.preventDefault();
+                        return;
+                    }
+                    brandValue.value = customBrand;
+                    return;
+                }
+
+                brandValue.value = selectedBrand;
+            });
+
             function fillAllInventory() {
                 const val = document.getElementById('fill-all-input').value;
                 if (val === '') return;
@@ -99,6 +164,8 @@
                     input.value = val;
                 });
             }
+
+            toggleBrandInput();
             </script>
 
             <div>
@@ -113,7 +180,6 @@
                     </option>
                     <?php endforeach; ?>
                 </select>
-                <p style="margin-top: 10px; font-size: 0.8rem; color: var(--admin-text-muted);">Hold Ctrl (or Cmd) to select multiple.</p>
             </div>
         </div>
 
@@ -132,6 +198,15 @@
 <style>
 .product-form { padding: 40px; }
 .form-actions { margin-top: 50px; display: flex; gap: 15px; }
+#brandSelect,
+#customBrand {
+    width: 100%;
+    box-sizing: border-box;
+}
+#customBrand {
+    display: none;
+    margin-top: 10px;
+}
 @media (max-width: 600px) {
     .product-form { padding: 20px; }
     .form-actions { flex-direction: column; }
