@@ -139,8 +139,22 @@ class Admin extends Controller {
         $this->view('templates/admin_footer');
     }
 
-    public function orders() {
+    public function orders($action = null) {
         $orderModel = $this->model('OrderModel');
+
+        if ($action === 'search') {
+            $query = isset($_GET['q']) ? trim($_GET['q']) : '';
+            $query = filter_var($query, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+
+            $orders = $query !== ''
+                ? $orderModel->searchOrders($query)
+                : $orderModel->getAllOrders();
+
+            $data = ['orders' => $orders];
+            $this->view('admin/partials/order_rows', $data);
+            exit;
+        }
+
         $allOrders = $orderModel->getAllOrders();
 
         $pending = array_values(array_filter($allOrders, fn($o) => ($o['status'] == 'pending' || $o['status'] == 'processing')));

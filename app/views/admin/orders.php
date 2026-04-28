@@ -13,10 +13,15 @@
             </select>
         </div>
         <div class="admin-search-container">
-            <input type="text" id="order-search" placeholder="Search Order #..." 
-                   class="admin-filter-control"
-                   onkeyup="filterOrders()"
-                   style="width: 100%; max-width: 200px;">
+            <div class="orders-search">
+                <input type="text" id="order-search" placeholder="Search orders..." class="admin-filter-control">
+                <button type="button" class="btn-admin btn-admin-primary orders-search-button" aria-label="Search orders">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <circle cx="11" cy="11" r="7"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                </button>
+            </div>
         </div>
     </div>
 </div>
@@ -32,13 +37,11 @@
     </div>
 </div>
 
-<!-- Table Templates (reusable helper for tabs) -->
-<?php 
+<?php
 function renderOrderTable($orders, $tabId, $display = 'none') {
-    $isEmpty = empty($orders);
 ?>
 <div id="content-<?= $tabId ?>" class="table-container order-tab-content" style="display: <?= $display ?>;">
-    <table class="admin-table">
+    <table class="admin-table orders-table">
         <thead>
             <tr>
                 <th>Order #</th>
@@ -50,108 +53,22 @@ function renderOrderTable($orders, $tabId, $display = 'none') {
             </tr>
         </thead>
         <tbody id="tbody-<?= $tabId ?>">
-            <?php if($isEmpty): ?>
-                <tr><td colspan="6" style="text-align:center; padding: 3rem; color: var(--admin-text-muted);">No orders found.</td></tr>
-            <?php else: ?>
-                <?php foreach($orders as $o): ?>
-                <tr class="order-row desktop-table-row" data-date="<?= strtotime($o['created_at']) ?>" data-price="<?= $o['total_price'] ?>">
-                    <td style="font-weight: 700; color: var(--admin-accent);">#<?= $o['id'] ?></td>
-                    <td>
-                        <div style="font-weight: 600; color: var(--admin-text-main);"><?= htmlspecialchars($o['user_name']) ?></div>
-                        <div style="font-size: 0.75rem; color: var(--admin-text-muted);"><?= htmlspecialchars($o['user_email']) ?></div>
-                    </td>
-                    <td style="color: var(--admin-text-muted); font-size: 0.85rem;"><?= date('M d, Y', strtotime($o['created_at'])) ?></td>
-                    <td style="font-weight: 700;">₱<?= number_format($o['total_price'], 2) ?></td>
-                    <td>
-                        <?php if($o['status'] == 'delivered' || $o['status'] == 'completed' || $o['status'] == 'cancelled'): ?>
-                            <?php 
-                                $isSuccess = ($o['status'] == 'delivered' || $o['status'] == 'completed');
-                                $bg = $isSuccess ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)';
-                                $fg = $isSuccess ? 'var(--admin-success)' : 'var(--admin-danger)';
-                            ?>
-                            <span class="badge" style="background: <?= $bg ?>; color: <?= $fg ?>; padding: 6px 12px;">
-                                <?= ucfirst($o['status']) ?>
-                            </span>
-                        <?php else: ?>
-                            <form method="POST" action="/php/Webdev/public/admin/order_update" style="margin:0; display:flex; gap:8px;">
-                                <input type="hidden" name="order_id" value="<?= $o['id'] ?>">
-                                <select name="status" class="admin-filter-control" style="padding: 4px 28px 4px 8px; font-size: 0.8rem; background-position: right 6px center;">
-                                    <option value="pending" <?= $o['status'] == 'pending' ? 'selected' : '' ?>>Pending</option>
-                                    <option value="processing" <?= $o['status'] == 'processing' ? 'selected' : '' ?>>Payment Confirmed</option>
-                                    <option value="shipped" <?= $o['status'] == 'shipped' ? 'selected' : '' ?>>Shipped</option>
-                                    <option value="delivered" <?= $o['status'] == 'delivered' ? 'selected' : '' ?>>Delivered</option>
-                                    <option value="completed" <?= $o['status'] == 'completed' ? 'selected' : '' ?>>Completed</option>
-                                    <option value="cancelled" <?= $o['status'] == 'cancelled' ? 'selected' : '' ?>>Cancelled</option>
-                                </select>
-                                <button type="submit" class="btn-admin btn-admin-primary" style="padding: 4px 10px; font-size: 0.75rem;">Save</button>
-                            </form>
-                        <?php endif; ?>
-                    </td>
-                    <td>
-                        <a href="/php/Webdev/public/admin/order_detail/<?= $o['id'] ?>" class="btn-admin" style="background: var(--admin-card); border: 1px solid var(--admin-border); color: var(--admin-text-main); padding: 6px 12px; font-size: 0.8rem;">Details</a>
-                    </td>
-                </tr>
-                <div class="mobile-card order-card" data-date="<?= strtotime($o['created_at']) ?>" data-price="<?= $o['total_price'] ?>">
-                    <div class="card-header">
-                        <div class="order-id" style="font-weight: 700; color: var(--admin-accent);">#<?= $o['id'] ?></div>
-                        <div class="customer-info">
-                            <div style="font-weight: 600; color: var(--admin-text-main);"><?= htmlspecialchars($o['user_name']) ?></div>
-                            <div style="font-size: 0.75rem; color: var(--admin-text-muted);"><?= htmlspecialchars($o['user_email']) ?></div>
-                        </div>
-                        <div class="total-price" style="font-weight: 700;">₱<?= number_format($o['total_price'], 2) ?></div>
-                    </div>
-                    <div class="card-body">
-                        <div class="card-item">
-                            <span class="label">Date:</span>
-                            <span style="color: var(--admin-text-muted); font-size: 0.85rem;"><?= date('M d, Y', strtotime($o['created_at'])) ?></span>
-                        </div>
-                        <div class="card-item">
-                            <span class="label">Status:</span>
-                            <span>
-                                <?php if($o['status'] == 'delivered' || $o['status'] == 'completed' || $o['status'] == 'cancelled'): ?>
-                                    <?php 
-                                        $isSuccess = ($o['status'] == 'delivered' || $o['status'] == 'completed');
-                                        $bg = $isSuccess ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)';
-                                        $fg = $isSuccess ? 'var(--admin-success)' : 'var(--admin-danger)';
-                                    ?>
-                                    <span class="badge" style="background: <?= $bg ?>; color: <?= $fg ?>; padding: 6px 12px;">
-                                        <?= ucfirst($o['status']) ?>
-                                    </span>
-                                <?php else: ?>
-                                    <form method="POST" action="/php/Webdev/public/admin/order_update" style="margin:0; display:flex; gap:8px;">
-                                        <input type="hidden" name="order_id" value="<?= $o['id'] ?>">
-                                        <select name="status" class="admin-filter-control" style="padding: 4px 28px 4px 8px; font-size: 0.8rem; background-position: right 6px center;">
-                                            <option value="pending" <?= $o['status'] == 'pending' ? 'selected' : '' ?>>Pending</option>
-                                            <option value="processing" <?= $o['status'] == 'processing' ? 'selected' : '' ?>>Payment Confirmed</option>
-                                            <option value="shipped" <?= $o['status'] == 'shipped' ? 'selected' : '' ?>>Shipped</option>
-                                            <option value="delivered" <?= $o['status'] == 'delivered' ? 'selected' : '' ?>>Delivered</option>
-                                            <option value="completed" <?= $o['status'] == 'completed' ? 'selected' : '' ?>>Completed</option>
-                                            <option value="cancelled" <?= $o['status'] == 'cancelled' ? 'selected' : '' ?>>Cancelled</option>
-                                        </select>
-                                        <button type="submit" class="btn-admin btn-admin-primary" style="padding: 4px 10px; font-size: 0.75rem;">Save</button>
-                                    </form>
-                                <?php endif; ?>
-                            </span>
-                        </div>
-                    </div>
-                    <div class="card-actions">
-                        <a href="/php/Webdev/public/admin/order_detail/<?= $o['id'] ?>" class="btn-admin" style="background: var(--admin-card); border: 1px solid var(--admin-border); color: var(--admin-text-main);">Details</a>
-                    </div>
-                </div>
-                <?php endforeach; ?>
-            <?php endif; ?>
+            <?php
+            $data = ['orders' => $orders];
+            require '../app/views/admin/partials/order_rows.php';
+            ?>
         </tbody>
     </table>
 </div>
 <?php } ?>
 
-<?php 
-    renderOrderTable($data['all'], 'all', 'block');
-    renderOrderTable($data['pending'], 'pending');
-    renderOrderTable($data['shipped'], 'shipped');
-    renderOrderTable($data['delivered'], 'delivered');
-    renderOrderTable($data['completed'], 'completed');
-    renderOrderTable($data['cancelled'], 'cancelled');
+<?php
+renderOrderTable($data['all'], 'all', 'block');
+renderOrderTable($data['pending'], 'pending');
+renderOrderTable($data['shipped'], 'shipped');
+renderOrderTable($data['delivered'], 'delivered');
+renderOrderTable($data['completed'], 'completed');
+renderOrderTable($data['cancelled'], 'cancelled');
 ?>
 
 <script>
@@ -173,19 +90,10 @@ function switchAdminTab(tab) {
         activeBtn.style.color = 'var(--admin-accent)';
         activeBtn.style.boxShadow = 'var(--shadow-sm)';
     }
+
     if (content) {
         content.style.display = 'block';
     }
-}
-
-function filterOrders() {
-    const query = document.getElementById('order-search').value.toLowerCase();
-    const rows = document.querySelectorAll('.order-row');
-    
-    rows.forEach(row => {
-        const text = row.textContent.toLowerCase();
-        row.style.display = text.includes(query) ? '' : 'none';
-    });
 }
 
 function sortOrders() {
@@ -195,7 +103,7 @@ function sortOrders() {
     tabContents.forEach(tbodyId => {
         const tbody = document.getElementById(tbodyId);
         if (!tbody) return;
-        
+
         const rows = Array.from(tbody.querySelectorAll('.order-row'));
         if (rows.length === 0) return;
 
@@ -204,9 +112,66 @@ function sortOrders() {
             if (sortBy === 'oldest') return a.dataset.date - b.dataset.date;
             if (sortBy === 'price-high') return b.dataset.price - a.dataset.price;
             if (sortBy === 'price-low') return a.dataset.price - b.dataset.price;
+            return 0;
         });
 
         rows.forEach(row => tbody.appendChild(row));
     });
 }
+
+async function searchOrders() {
+    const searchInput = document.getElementById('order-search');
+    const searchButton = document.querySelector('.orders-search .btn-admin');
+    const activeTab = document.querySelector('.order-tab-content[style*="display: block"]');
+    const tbody = activeTab ? activeTab.querySelector('tbody') : null;
+
+    if (!searchInput || !searchButton || !tbody) return;
+
+    const query = searchInput.value.trim();
+    const originalContent = searchButton.innerHTML;
+
+    searchButton.disabled = true;
+    searchButton.textContent = 'Searching...';
+
+    try {
+        const response = await fetch(`/php/Webdev/public/admin/orders/search?q=${encodeURIComponent(query)}`, {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`Search request failed: ${response.status}`);
+        }
+
+        tbody.innerHTML = await response.text();
+    } catch (error) {
+        console.error('Order search failed:', error);
+    } finally {
+        searchButton.disabled = false;
+        searchButton.innerHTML = originalContent;
+    }
+}
+
+(function () {
+    const searchInput = document.getElementById('order-search');
+    const searchButton = document.querySelector('.orders-search .btn-admin');
+
+    if (!searchInput || !searchButton || searchButton.dataset.searchBound === 'true') return;
+
+    const triggerSearch = function (e) {
+        if (e) e.preventDefault();
+        searchOrders();
+    };
+
+    searchButton.addEventListener('click', triggerSearch);
+    searchInput.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') {
+            triggerSearch(e);
+        }
+    });
+
+    searchButton.dataset.searchBound = 'true';
+})();
 </script>

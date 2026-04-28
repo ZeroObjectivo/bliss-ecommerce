@@ -16,6 +16,24 @@ class OrderModel {
         return $this->db->resultSet();
     }
 
+    public function searchOrders($keyword) {
+        $textKeyword = trim($keyword);
+        $idKeyword = ltrim($textKeyword, '#');
+
+        $this->db->query("
+            SELECT orders.*, users.name as user_name, users.email as user_email
+            FROM orders
+            JOIN users ON orders.user_id = users.id
+            WHERE CAST(orders.id AS CHAR) LIKE :id_keyword
+               OR users.name LIKE :text_keyword
+               OR users.email LIKE :text_keyword
+            ORDER BY orders.created_at DESC
+        ");
+        $this->db->bind(':id_keyword', '%' . $idKeyword . '%');
+        $this->db->bind(':text_keyword', '%' . $textKeyword . '%');
+        return $this->db->resultSet();
+    }
+
     public function archiveOrder($id) {
         $this->db->query("UPDATE orders SET is_archived = 1 WHERE id = :id");
         $this->db->bind(':id', $id);

@@ -781,6 +781,65 @@ input.admin-filter-control {
     cursor: text;
 }
 
+.orders-search {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+}
+
+.orders-search .admin-filter-control {
+    flex: 1 1 auto;
+    min-width: 0;
+    max-width: 100%;
+}
+
+.orders-search .btn-admin {
+    flex: 0 0 auto;
+    white-space: nowrap;
+}
+
+.orders-search-button {
+    width: 44px;
+    min-width: 44px;
+    height: 44px;
+    padding: 0;
+    border-radius: 12px;
+}
+
+.orders-search-button svg {
+    flex-shrink: 0;
+}
+
+.orders-empty-cell {
+    padding: 3rem 1.5rem !important;
+    text-align: center;
+    background: var(--admin-card);
+}
+
+.orders-empty-state {
+    max-width: 320px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    align-items: center;
+}
+
+.orders-empty-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--admin-text-main);
+}
+
+.orders-empty-text {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: var(--admin-text-muted);
+}
+
 /* Profile Card Specifics */
 .profile-card {
     width: 100%;
@@ -801,6 +860,30 @@ input.admin-filter-control {
         max-width: 100% !important;
         margin: 0 !important;
         border-radius: 0 !important;
+    }
+
+    .orders-search {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .orders-search .admin-filter-control,
+    .orders-search .btn-admin {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .orders-search-button {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .orders-empty-cell {
+        padding: 2rem 1rem !important;
+    }
+
+    .orders-empty-state {
+        max-width: 100%;
     }
 }
 
@@ -1044,6 +1127,10 @@ input.admin-filter-control {
     .admin-table thead,
     .desktop-table-row {
         display: none; /* Hide original table headers and rows on mobile */
+    }
+
+    .orders-table thead {
+        display: table-header-group;
     }
 
     .admin-table {
