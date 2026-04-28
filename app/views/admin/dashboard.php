@@ -45,7 +45,7 @@
 <div class="admin-card" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border: none; margin-bottom: var(--spacing-4);">
     <h3 style="color: white; margin-bottom: var(--spacing-3); font-size: 0.9rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; text-transform: uppercase; letter-spacing: 0.025em;">Management Console</h3>
     
-    <div class="quick-actions-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
+    <div class="quick-actions-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
         <?php if ($_SESSION['admin_role'] === 'superadmin'): ?>
         <a href="/php/Webdev/public/superadmin/product_add" class="quick-action-btn dark">
             <div class="qa-icon" style="background: rgba(255,255,255,0.1); color: white;">
@@ -101,7 +101,7 @@
                             <tr><td colspan="4" style="text-align:center; padding: 2rem; color: var(--admin-text-muted);">No orders yet.</td></tr>
                         <?php else: ?>
                             <?php foreach($data['recent_orders'] as $order): ?>
-                            <tr>
+                            <tr class="desktop-table-row">
                                 <td style="font-weight: 600; color: var(--admin-accent);">#<?= $order['id'] ?></td>
                                 <td style="font-weight: 500;"><?= htmlspecialchars($order['user_name']) ?></td>
                                 <td>

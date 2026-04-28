@@ -62,6 +62,21 @@
     transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
 }
 
+html,
+body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+img,
+svg,
+canvas,
+video,
+iframe {
+    max-width: 100%;
+}
+
 .admin-body {
     background-color: var(--admin-bg);
     color: var(--admin-text-main);
@@ -75,6 +90,7 @@
     flex-direction: column;
     min-height: 100vh;
     width: 100%;
+    max-width: 100%;
     overflow-x: hidden; /* Strictly prevent horizontal scroll */
 }
 
@@ -228,8 +244,10 @@
     flex-direction: column;
     min-width: 0;
     width: 100%;
+    max-width: 100%;
     position: relative;
     background-color: var(--admin-bg);
+    overflow-x: hidden;
 }
 
 .admin-topbar {
@@ -419,7 +437,10 @@
     padding: var(--spacing-4);
     flex-grow: 1;
     width: 100%;
+    max-width: 100%;
+    min-width: 0;
     box-sizing: border-box;
+    overflow-x: hidden;
 }
 
 /* --- Responsive Content Padding --- */
@@ -437,6 +458,23 @@
 
 /* --- Mobile Full-Width Refinement --- */
 @media (max-width: 768px) {
+    *,
+    *::before,
+    *::after {
+        box-sizing: border-box;
+    }
+
+    html,
+    body,
+    .admin-body,
+    .admin-layout,
+    .admin-main,
+    .admin-content {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+
     .admin-content {
         padding: var(--spacing-2);
     }
@@ -444,20 +482,95 @@
     /* Force all major containers and cards to span full width */
     .admin-card,
     .admin-form,
-    .container,
-    [class*="-container"] {
+    .table-container,
+    .profile-card,
+    .overview-grid,
+    .dashboard-main-grid,
+    .revenue-grid,
+    .quick-actions-grid,
+    .mobile-card-list,
+    .admin-grid-2-1,
+    .admin-grid-1-1,
+    .admin-grid-3 {
         max-width: 100% !important;
         width: 100% !important;
         margin-left: 0 !important;
         margin-right: 0 !important;
-        border-radius: 0 !important;
-        box-shadow: none !important;
     }
 
-    /* Ensure forms inside these containers also stretch */
-    .admin-form {
-        border-left: none;
-        border-right: none;
+    .overview-grid,
+    .dashboard-main-grid,
+    .revenue-grid,
+    .quick-actions-grid,
+    .admin-grid-2-1,
+    .admin-grid-1-1,
+    .admin-grid-3,
+    .mobile-card-list {
+        grid-template-columns: 1fr !important;
+        display: grid;
+        gap: var(--spacing-2);
+        width: 100%;
+        min-width: 0;
+    }
+
+    .admin-card,
+    .mobile-card,
+    .table-container,
+    .admin-form,
+    .profile-card {
+        min-width: 0;
+        max-width: 100%;
+        overflow-wrap: break-word;
+    }
+
+    .stat-card,
+    .mobile-card .card-header,
+    .mobile-card .card-body,
+    .mobile-card .card-actions,
+    .quick-action-btn,
+    .topbar-left,
+    .topbar-actions {
+        min-width: 0;
+    }
+
+    .stat-card,
+    .quick-action-btn,
+    .mobile-card .card-header,
+    .mobile-card .card-item,
+    .mobile-card .card-actions {
+        flex-wrap: wrap;
+    }
+
+    .mobile-card .card-header > *,
+    .mobile-card .card-body > *,
+    .mobile-card .card-actions > * {
+        min-width: 0;
+        max-width: 100%;
+    }
+
+    .mobile-card .card-item {
+        gap: 8px;
+    }
+
+    .mobile-card .card-item span:not(.label),
+    .order-card .card-header .customer-info,
+    .customer-card .card-header .customer-info,
+    .mobile-card-list .mobile-card .product-info,
+    .stat-info {
+        min-width: 0;
+        overflow-wrap: break-word;
+        word-break: break-word;
+    }
+
+    .info-tooltip {
+        left: auto;
+        right: 0;
+        transform: translateY(10px);
+        max-width: min(160px, calc(100vw - 32px));
+    }
+
+    .info-tooltip-container:hover .info-tooltip {
+        transform: translateY(0);
     }
 }
 
@@ -498,7 +611,12 @@
     border: 1px solid var(--admin-border);
     border-radius: var(--radius-lg);
     overflow-x: auto;
+    overflow-y: hidden;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
     box-shadow: var(--shadow-sm);
+    -webkit-overflow-scrolling: touch;
 }
 
 .admin-table {
@@ -659,6 +777,7 @@ select.admin-filter-control {
 
 input.admin-filter-control {
     width: 320px;
+    max-width: 100%;
     cursor: text;
 }
 
@@ -711,6 +830,7 @@ input.admin-filter-control {
     display: flex;
     align-items: center;
     gap: 20px;
+    min-width: 0;
 }
 
 .stat-icon {
@@ -839,6 +959,7 @@ input.admin-filter-control {
     .admin-main {
         padding-left: 260px; /* Offset for fixed sidebar */
         width: 100%;
+        max-width: 100%;
         margin-left: 0;
     }
 
@@ -920,8 +1041,13 @@ input.admin-filter-control {
     }
 
     /* Table to Card Specifics */
-    .admin-table thead, .desktop-table-row {
+    .admin-table thead,
+    .desktop-table-row {
         display: none; /* Hide original table headers and rows on mobile */
+    }
+
+    .admin-table {
+        min-width: 0;
     }
 
     .mobile-card {
@@ -1004,7 +1130,7 @@ input.admin-filter-control {
     }
     .order-card .card-header .order-id,
     .order-card .card-header .total-price {
-        white-space: nowrap;
+        white-space: normal;
     }
     .order-card .card-item form {
         width: 100%;
@@ -1059,6 +1185,12 @@ input.admin-filter-control {
     .mobile-card-list .mobile-card .card-header .email {
         font-size: 0.8rem;
         color: var(--admin-text-muted);
+    }
+
+    .desktop-view-only {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
     }
 }
 
