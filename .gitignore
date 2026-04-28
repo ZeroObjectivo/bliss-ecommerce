@@ -10,6 +10,8 @@ Thumbs.db
 /public/uploads/profiles/*
 !/public/uploads/profiles/.gitkeep
 
+codex-cli-account-switcher/
+
 # Core Configuration
 app/core/Database.php
 

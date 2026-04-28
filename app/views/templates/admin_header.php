@@ -13,6 +13,7 @@
         (function() {
             const savedTheme = localStorage.getItem('admin-theme') || 'light';
             document.documentElement.setAttribute('data-theme', savedTheme);
+            if (savedTheme === 'dark') document.documentElement.classList.add('dark-mode');
         })();
     </script>
 </head>
@@ -81,7 +82,7 @@
 
     <!-- Main Content Area -->
     <main class="admin-main">
-        <header class="admin-topbar">
+        <header class="admin-header">
             <div class="topbar-left">
                 <div class="topbar-brand">
                     BLISS <span class="badge">admin</span>
@@ -142,6 +143,7 @@
                 const newTheme = currentTheme === 'light' ? 'dark' : 'light';
                 
                 document.documentElement.setAttribute('data-theme', newTheme);
+                document.documentElement.classList.toggle('dark-mode', newTheme === 'dark');
                 localStorage.setItem('admin-theme', newTheme);
                 updateIcons(newTheme);
             });

@@ -2,6 +2,7 @@
 :root {
     --admin-bg: #f8fafc;
     --admin-sidebar: #ffffff;
+    --admin-sidebar-rgb: 255, 255, 255;
     --admin-card: #ffffff;
     --admin-bg-soft: #f1f5f9;
     --admin-text-main: #0f172a;
@@ -26,9 +27,11 @@
     --radius-lg: 12px;
 }
 
-[data-theme="dark"] {
+[data-theme="dark"],
+.dark-mode {
     --admin-bg: #111111;
     --admin-sidebar: #18181b;
+    --admin-sidebar-rgb: 24, 24, 27;
     --admin-card: #18181b;
     --admin-bg-soft: #27272a;
     --admin-text-main: #fafafa;
@@ -250,13 +253,13 @@ iframe {
     overflow-x: hidden;
 }
 
-.admin-topbar {
+.admin-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 0 var(--spacing-4);
     border-bottom: 1px solid var(--admin-border);
-    background: rgba(var(--admin-sidebar-rgb, 255, 255, 255), 0.8);
+    background: rgba(var(--admin-sidebar-rgb), 0.8);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     height: 70px;
@@ -288,6 +291,51 @@ iframe {
     text-decoration: none;
     text-transform: uppercase;
     white-space: nowrap;
+}
+
+.topbar-brand .badge {
+    background: var(--admin-accent-soft);
+    color: var(--admin-accent);
+    font-size: 0.65rem;
+    padding: 2px 8px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    font-weight: 700;
+}
+
+[data-theme="dark"] .admin-header,
+.dark-mode .admin-header {
+    border-bottom-color: var(--admin-border);
+}
+
+[data-theme="dark"] .sidebar-toggle,
+.dark-mode .sidebar-toggle,
+[data-theme="dark"] .theme-toggle-btn,
+.dark-mode .theme-toggle-btn {
+    color: var(--admin-text-main);
+    background: var(--admin-bg-soft);
+    border: 1px solid var(--admin-border);
+}
+
+[data-theme="dark"] .sidebar-toggle:hover,
+.dark-mode .sidebar-toggle:hover,
+[data-theme="dark"] .theme-toggle-btn:hover,
+.dark-mode .theme-toggle-btn:hover {
+    background: var(--admin-border);
+    color: var(--admin-text-main);
+}
+
+[data-theme="dark"] .btn-storefront,
+.dark-mode .btn-storefront {
+    background: var(--admin-bg-soft);
+    color: var(--admin-text-main);
+    border-color: var(--admin-border);
+}
+
+[data-theme="dark"] .btn-storefront:hover,
+.dark-mode .btn-storefront:hover {
+    background: var(--admin-border);
+    border-color: var(--admin-text-muted);
 }
 
 .topbar-title {
@@ -373,7 +421,7 @@ iframe {
 }
 
 @media (max-width: 768px) {
-    .admin-topbar {
+    .admin-header {
         height: auto;
         padding: var(--spacing-4);
         flex-direction: column;
@@ -1019,10 +1067,16 @@ input.admin-filter-control {
     bottom: 0;
     left: 0;
     height: 3px;
-    background: rgba(255, 255, 255, 0.5);
+    background: rgba(var(--admin-sidebar-rgb), 0.5);
     width: 100%;
     transform-origin: left;
     animation: alertProgress 3s linear forwards;
+}
+
+/* Inbox Badge Overrides */
+.sidebar-nav a span[style*="color: #000"],
+.sidebar-nav a span[style*="color: black"] {
+    color: var(--admin-bg) !important; /* Use theme background for high contrast on green badge */
 }
 
 .alert-close-btn {
@@ -1131,7 +1185,7 @@ input.admin-filter-control {
         justify-content: space-between;
         align-items: center;
     }
-    .admin-topbar h1 {
+    .admin-header h1 {
         font-size: 0.95rem;
     }
     .btn-storefront span {
@@ -1151,7 +1205,7 @@ input.admin-filter-control {
     input.admin-filter-control {
         width: 100%;
     }
-    .admin-topbar h1 {
+    .admin-header h1 {
         display: -webkit-box;
         -webkit-line-clamp: 1;
         -webkit-box-orient: vertical;
