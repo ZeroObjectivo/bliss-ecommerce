@@ -168,3 +168,232 @@
     startPicker.addEventListener('input', updateGradient);
     endPicker.addEventListener('input', updateGradient);
 </script>
+
+<style>
+.admin-card form {
+    --fallback-form-gap: 24px;
+    --fallback-section-gap: 32px;
+    --fallback-field-space: 10px;
+    --fallback-heading-size: 0.95rem;
+    --fallback-label-size: 0.85rem;
+    --fallback-micro-label-size: 0.75rem;
+    --fallback-input-size: 0.95rem;
+    --fallback-body-line: 1.5;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    overflow-x: hidden;
+}
+
+.admin-card[style*="overflow: hidden"] {
+    overflow: visible !important;
+}
+
+.admin-card form,
+.admin-card form .form-group-admin,
+.admin-card form .form-group-admin input,
+.admin-card form .form-group-admin select,
+.admin-card form .form-group-admin textarea {
+    position: relative;
+}
+
+.admin-card form .form-group-admin {
+    z-index: 1;
+}
+
+.admin-card form .form-group-admin:focus-within {
+    z-index: 5;
+}
+
+.admin-card form .form-group-admin select,
+.admin-card form .form-group-admin input,
+.admin-card form .form-group-admin textarea {
+    z-index: 2;
+}
+
+.admin-card form > div[style*="grid-template-columns: 1fr 1fr"] {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)) !important;
+    gap: var(--fallback-section-gap) !important;
+    align-items: start;
+}
+
+.admin-card form > div[style*="grid-template-columns: 1fr 1fr"] > div[style*="display: flex"] {
+    min-width: 0;
+}
+
+.admin-card form > div[style*="grid-template-columns: 1fr 1fr"] > * {
+    min-width: 0;
+}
+
+.admin-card form div[style*="grid-template-columns: 1fr 1fr; gap: 20px"] {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)) !important;
+    gap: var(--fallback-form-gap) !important;
+    align-items: start;
+}
+
+.admin-card form div[style*="grid-template-columns: 1fr 1fr; gap: 20px"] > * {
+    min-width: 0;
+}
+
+.admin-card form div[style*="display: flex; flex-direction: column; gap: 25px;"] {
+    min-width: 0;
+    gap: var(--fallback-form-gap) !important;
+}
+
+.admin-card form div[style*="background: var(--admin-bg-soft); padding: 20px; border-radius: 16px; border: 1px solid var(--admin-border);"],
+.admin-card form div[style*="background: var(--admin-bg-soft); padding: 15px; border-radius: 16px; border: 1px solid var(--admin-border);"] {
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.admin-card form .form-group-admin,
+.admin-card form .form-group-admin input,
+.admin-card form .form-group-admin select,
+.admin-card form .form-group-admin textarea {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+.admin-card form .form-group-admin {
+    overflow: visible;
+    display: flex;
+    flex-direction: column;
+    gap: var(--fallback-field-space);
+}
+
+.admin-card form *,
+.admin-card form > * {
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+.admin-card > div[style*="padding: 35px"] h2 {
+    line-height: 1.15;
+}
+
+.admin-card > div[style*="padding: 35px"] p {
+    line-height: var(--fallback-body-line);
+}
+
+.admin-card form h3 {
+    font-size: var(--fallback-heading-size) !important;
+    font-weight: 800 !important;
+    line-height: 1.2;
+    margin: 0;
+}
+
+.admin-card form .form-group-admin label {
+    font-size: var(--fallback-label-size) !important;
+    font-weight: 700 !important;
+    line-height: 1.35;
+    margin: 0 !important;
+}
+
+.admin-card form label[style*="text-transform: uppercase"],
+.admin-card form small[style*="text-transform: uppercase"] {
+    letter-spacing: 0.05em !important;
+}
+
+.admin-card form small {
+    font-size: var(--fallback-micro-label-size) !important;
+    font-weight: 700 !important;
+    line-height: 1.3;
+}
+
+.admin-card form input,
+.admin-card form select,
+.admin-card form textarea {
+    font-size: var(--fallback-input-size) !important;
+    font-weight: 500;
+    line-height: var(--fallback-body-line);
+}
+
+.admin-card form textarea {
+    line-height: 1.6;
+}
+
+.admin-card form .btn-admin {
+    font-size: 0.95rem !important;
+    line-height: 1.2;
+}
+
+.admin-card form div[style*="border-left: 4px solid"] {
+    margin-bottom: 0 !important;
+}
+
+.admin-card form .form-group-admin[style*="margin-bottom: 20px;"],
+.admin-card form .form-group-admin[style*="margin-bottom: 15px;"],
+.admin-card form .form-group-admin[style*="margin: 0;"] {
+    margin-bottom: 0 !important;
+}
+
+@media (max-width: 768px) {
+    .admin-card form {
+        --fallback-form-gap: 20px;
+        --fallback-section-gap: 24px;
+        --fallback-input-size: 0.92rem;
+        padding: 24px !important;
+    }
+
+    .admin-card form > div[style*="grid-template-columns: 1fr 1fr"],
+    .admin-card form div[style*="grid-template-columns: 1fr 1fr; gap: 20px"] {
+        grid-template-columns: 1fr !important;
+    }
+
+    .admin-card form div[style*="display: flex; gap: 15px; align-items: center; margin-bottom: 15px;"],
+    .admin-card form div[style*="margin-top: 50px; display: flex; gap: 15px;"] {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+    }
+
+    .admin-card form div[style*="margin-top: 50px; display: flex; gap: 15px;"] > * {
+        width: 100%;
+    }
+
+    .admin-card > div[style*="padding: 35px"] {
+        padding: 28px !important;
+    }
+
+    .admin-card > div[style*="padding: 35px"] h2 {
+        font-size: 1.45rem !important;
+    }
+
+    .admin-card > div[style*="padding: 35px"] p {
+        font-size: 0.9rem !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .admin-card form {
+        --fallback-form-gap: 18px;
+        --fallback-section-gap: 20px;
+        --fallback-field-space: 8px;
+        --fallback-heading-size: 0.9rem;
+        --fallback-label-size: 0.8rem;
+        --fallback-micro-label-size: 0.72rem;
+        --fallback-input-size: 0.9rem;
+        padding: 20px !important;
+    }
+
+    .admin-card > div[style*="padding: 35px"] {
+        padding: 24px 20px !important;
+    }
+
+    .admin-card > div[style*="padding: 35px"] h2 {
+        font-size: 1.3rem !important;
+    }
+
+    .admin-card > div[style*="padding: 35px"] p {
+        font-size: 0.88rem !important;
+        line-height: 1.5;
+    }
+}
+</style>
