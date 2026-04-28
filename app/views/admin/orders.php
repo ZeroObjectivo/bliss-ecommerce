@@ -54,7 +54,11 @@ function renderOrderTable($orders, $tabId, $display = 'none') {
         </thead>
         <tbody id="tbody-<?= $tabId ?>">
             <?php
-            $data = ['orders' => $orders];
+            $data = [
+                'orders' => $orders,
+                'query' => '',
+                'status' => $tabId
+            ];
             require '../app/views/admin/partials/order_rows.php';
             ?>
         </tbody>
@@ -72,7 +76,13 @@ renderOrderTable($data['cancelled'], 'cancelled');
 ?>
 
 <script>
+const orderFilters = {
+    status: 'all',
+    query: ''
+};
+
 function switchAdminTab(tab) {
+    orderFilters.status = tab;
     document.querySelectorAll('.order-tab-content').forEach(el => el.style.display = 'none');
     document.querySelectorAll('.admin-tabs .btn-admin').forEach(el => {
         el.classList.remove('active');
@@ -94,6 +104,8 @@ function switchAdminTab(tab) {
     if (content) {
         content.style.display = 'block';
     }
+
+    applyOrderFilters();
 }
 
 function sortOrders() {
@@ -119,22 +131,27 @@ function sortOrders() {
     });
 }
 
-async function searchOrders() {
+async function applyOrderFilters() {
     const searchInput = document.getElementById('order-search');
     const searchButton = document.querySelector('.orders-search .btn-admin');
-    const activeTab = document.querySelector('.order-tab-content[style*="display: block"]');
+    const activeTab = document.getElementById('content-' + orderFilters.status);
     const tbody = activeTab ? activeTab.querySelector('tbody') : null;
 
     if (!searchInput || !searchButton || !tbody) return;
 
-    const query = searchInput.value.trim();
+    orderFilters.query = searchInput.value.trim();
     const originalContent = searchButton.innerHTML;
 
     searchButton.disabled = true;
     searchButton.textContent = 'Searching...';
 
     try {
-        const response = await fetch(`/php/Webdev/public/admin/orders/search?q=${encodeURIComponent(query)}`, {
+        const params = new URLSearchParams({
+            q: orderFilters.query,
+            status: orderFilters.status
+        });
+
+        const response = await fetch(`/php/Webdev/public/admin/orders/search?${params.toString()}`, {
             method: 'GET',
             headers: {
                 'X-Requested-With': 'XMLHttpRequest'
@@ -162,7 +179,8 @@ async function searchOrders() {
 
     const triggerSearch = function (e) {
         if (e) e.preventDefault();
-        searchOrders();
+        orderFilters.query = searchInput.value.trim();
+        applyOrderFilters();
     };
 
     searchButton.addEventListener('click', triggerSearch);

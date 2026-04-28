@@ -1,5 +1,21 @@
 <?php
 class Admin extends Controller {
+    private function filterOrdersByStatus($orders, $status) {
+        $status = strtolower($status);
+
+        if ($status === 'all' || $status === '') {
+            return $orders;
+        }
+
+        return array_values(array_filter($orders, function ($order) use ($status) {
+            if ($status === 'pending') {
+                return $order['status'] === 'pending' || $order['status'] === 'processing';
+            }
+
+            return $order['status'] === $status;
+        }));
+    }
+
     public function __construct() {
         // Auto-bridge customer session to admin session if user is admin/superadmin
         if (!isset($_SESSION['admin_id']) && isset($_SESSION['user_id']) && isset($_SESSION['user_role'])) {
@@ -144,13 +160,19 @@ class Admin extends Controller {
 
         if ($action === 'search') {
             $query = isset($_GET['q']) ? trim($_GET['q']) : '';
+            $status = isset($_GET['status']) ? trim($_GET['status']) : 'all';
             $query = filter_var($query, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+            $status = filter_var($status, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
             $orders = $query !== ''
-                ? $orderModel->searchOrders($query)
-                : $orderModel->getAllOrders();
+                ? $orderModel->searchOrders($query, $status)
+                : $this->filterOrdersByStatus($orderModel->getAllOrders(), $status);
 
-            $data = ['orders' => $orders];
+            $data = [
+                'orders' => $orders,
+                'query' => $query,
+                'status' => $status
+            ];
             $this->view('admin/partials/order_rows', $data);
             exit;
         }

@@ -16,21 +16,33 @@ class OrderModel {
         return $this->db->resultSet();
     }
 
-    public function searchOrders($keyword) {
+    public function searchOrders($keyword, $status = 'all') {
         $textKeyword = trim($keyword);
         $idKeyword = ltrim($textKeyword, '#');
+        $status = strtolower(trim($status));
+
+        $where = "WHERE (CAST(orders.id AS CHAR) LIKE :id_keyword
+               OR users.name LIKE :text_keyword
+               OR users.email LIKE :text_keyword)";
+
+        if ($status === 'pending') {
+            $where .= " AND (orders.status = 'pending' OR orders.status = 'processing')";
+        } elseif ($status !== 'all' && $status !== '') {
+            $where .= " AND orders.status = :status";
+        }
 
         $this->db->query("
             SELECT orders.*, users.name as user_name, users.email as user_email
             FROM orders
             JOIN users ON orders.user_id = users.id
-            WHERE CAST(orders.id AS CHAR) LIKE :id_keyword
-               OR users.name LIKE :text_keyword
-               OR users.email LIKE :text_keyword
+            {$where}
             ORDER BY orders.created_at DESC
         ");
         $this->db->bind(':id_keyword', '%' . $idKeyword . '%');
         $this->db->bind(':text_keyword', '%' . $textKeyword . '%');
+        if ($status !== 'all' && $status !== '' && $status !== 'pending') {
+            $this->db->bind(':status', $status);
+        }
         return $this->db->resultSet();
     }
 

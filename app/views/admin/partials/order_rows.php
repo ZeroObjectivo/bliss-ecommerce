@@ -1,9 +1,37 @@
+<?php
+$status = isset($data['status']) ? strtolower(trim((string) $data['status'])) : 'all';
+$query = isset($data['query']) ? trim((string) $data['query']) : '';
+
+$statusLabelMap = [
+    'all' => 'orders',
+    'pending' => 'pending orders',
+    'shipped' => 'shipped orders',
+    'delivered' => 'delivered orders',
+    'completed' => 'completed orders',
+    'cancelled' => 'cancelled orders',
+];
+
+$subject = $statusLabelMap[$status] ?? 'orders';
+$queryLabel = $query !== '' ? "'" . htmlspecialchars($query, ENT_QUOTES, 'UTF-8') . "'" : '';
+?>
 <?php if (empty($data['orders'])): ?>
     <tr>
         <td colspan="6" class="orders-empty-cell">
             <div class="orders-empty-state">
-                <div class="orders-empty-title">No results found</div>
-                <div class="orders-empty-text">Try a different order number or customer name.</div>
+                <div class="orders-empty-title">
+                    <?php if ($query !== ''): ?>
+                        No <?= $subject ?> found matching <?= $queryLabel ?>
+                    <?php else: ?>
+                        No <?= $subject ?> found
+                    <?php endif; ?>
+                </div>
+                <div class="orders-empty-text">
+                    <?php if ($query !== ''): ?>
+                        Try a different order number, customer name, or email.
+                    <?php else: ?>
+                        Adjust the selected filter or check back later.
+                    <?php endif; ?>
+                </div>
             </div>
         </td>
     </tr>
