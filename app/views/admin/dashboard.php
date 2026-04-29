@@ -162,28 +162,15 @@
                 <h3 style="color: var(--admin-text-main); font-size: 0.9rem; margin: 0;">Top Selling Products</h3>
             </div>
             <div style="padding: 15px;">
-                <div class="desktop-view-only" style="display: flex; flex-direction: column; gap: 12px;">
+                <div class="top-selling-grid">
                     <?php foreach($data['top_selling'] as $item): ?>
-                        <div style="display: flex; align-items: center; gap: 12px;">
-                            <img src="<?= htmlspecialchars($item['image_main']) ?>" style="width: 36px; height: 36px; object-fit: cover; border-radius: 6px;">
-                            <div style="flex-grow: 1;">
-                                <div style="font-size: 0.8rem; font-weight: 600; color: var(--admin-text-main); line-height: 1.2;"><?= htmlspecialchars($item['name']) ?></div>
-                                <div style="font-size: 0.7rem; color: var(--admin-text-muted);"><?= $item['sales_count'] ?> sales</div>
+                        <article class="top-selling-card">
+                            <img src="<?= htmlspecialchars($item['image_main']) ?>" alt="<?= htmlspecialchars($item['name']) ?>" class="top-selling-image">
+                            <div class="top-selling-content">
+                                <div class="top-selling-title"><?= htmlspecialchars($item['name']) ?></div>
+                                <div class="top-selling-meta"><?= $item['sales_count'] ?> sales</div>
                             </div>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
-                <div class="mobile-card-list">
-                    <?php foreach($data['top_selling'] as $item): ?>
-                    <div class="mobile-card">
-                        <div class="card-header">
-                            <img src="<?= htmlspecialchars($item['image_main']) ?>" class="table-image" alt="Product">
-                            <div class="product-info">
-                                <h3><?= htmlspecialchars($item['name']) ?></h3>
-                                <p class="sales-count"><?= $item['sales_count'] ?> sales</p>
-                            </div>
-                        </div>
-                    </div>
+                        </article>
                     <?php endforeach; ?>
                 </div>
             </div>
@@ -381,6 +368,69 @@
     font-weight: 600;
 }
 
+.top-selling-grid {
+    display: grid;
+    gap: 14px;
+    position: relative;
+    z-index: 1;
+}
+
+.top-selling-card {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px;
+    background: var(--admin-bg-soft);
+    border: 1px solid var(--admin-border);
+    border-radius: 12px;
+    min-width: 0;
+    overflow: visible;
+}
+
+.top-selling-image {
+    position: relative;
+    z-index: 1;
+    width: 52px;
+    min-width: 52px;
+    max-width: 52px;
+    height: 52px;
+    aspect-ratio: 1;
+    object-fit: cover;
+    border-radius: 10px;
+    flex-shrink: 0;
+}
+
+.top-selling-content {
+    position: relative;
+    z-index: 2;
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.top-selling-title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--admin-text-main);
+    line-height: 1.3;
+    min-width: 0;
+    margin: 0;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+.top-selling-meta {
+    font-size: 0.72rem;
+    color: var(--admin-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 0;
+}
+
 /* Tooltip Styles */
 .info-tooltip-container {
     position: relative;
@@ -434,6 +484,38 @@
     
     .revenue-grid {
         grid-template-columns: 1fr;
+    }
+
+    .top-selling-grid {
+        gap: 12px;
+    }
+
+    .top-selling-card {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 12px;
+    }
+
+    .top-selling-image {
+        width: 100%;
+        min-width: 0;
+        max-width: 100%;
+        height: auto;
+        max-height: 180px;
+    }
+
+    .top-selling-content {
+        width: 100%;
+    }
+
+    .top-selling-title {
+        font-size: 0.8rem;
+        line-height: 1.4;
+    }
+
+    .top-selling-meta {
+        font-size: 0.68rem;
     }
 }
 </style>
