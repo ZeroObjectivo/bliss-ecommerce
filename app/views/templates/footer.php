@@ -10,6 +10,7 @@
             <h4>Shop</h4>
             <a href="/php/Webdev/public/catalog?filter=new">New Arrivals</a>
             <a href="/php/Webdev/public/catalog?filter=best">Best Sellers</a>
+            <a href="/php/Webdev/public/about">About Us</a>
         </div>
         <div class="footer-col">
             <h4>Support</h4>

@@ -17,6 +17,7 @@
     <link rel="stylesheet" href="/php/Webdev/public/css/help.css">
     <link rel="stylesheet" href="/php/Webdev/public/css/contact.css">
     <link rel="stylesheet" href="/php/Webdev/public/css/shipping_returns.css">
+    <link rel="stylesheet" href="/php/Webdev/public/css/about.css">
 </head>
 
 <script src="/php/Webdev/public/js/mobile-menu.js"></script>
