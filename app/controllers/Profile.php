@@ -343,17 +343,34 @@ class Profile extends Controller {
             $order = $orderModel->getOrderById($order_id);
 
             if ($order && $order['user_id'] == $_SESSION['user_id'] && ($order['status'] == 'delivered' || $order['status'] == 'completed')) {
-                $image_base64 = null;
-                if (isset($_FILES['return_image']) && $_FILES['return_image']['error'] == 0) {
-                    $file_type = $_FILES['return_image']['type'];
-                    $allowed_types = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-                    if (in_array($file_type, $allowed_types)) {
-                        $image_data = file_get_contents($_FILES['return_image']['tmp_name']);
-                        $image_base64 = 'data:' . $file_type . ';base64,' . base64_encode($image_data);
+                $images_base64 = [];
+                if (isset($_FILES['return_images']) && is_array($_FILES['return_images']['name'])) {
+                    $file_count = count($_FILES['return_images']['name']);
+                    
+                    // First, filter out any upload errors and collect valid images
+                    for ($i = 0; $i < $file_count; $i++) {
+                        if ($_FILES['return_images']['error'][$i] == 0) {
+                            $file_type = $_FILES['return_images']['type'][$i];
+                            $allowed_types = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+                            if (in_array($file_type, $allowed_types)) {
+                                $image_data = file_get_contents($_FILES['return_images']['tmp_name'][$i]);
+                                $images_base64[] = 'data:' . $file_type . ';base64,' . base64_encode($image_data);
+                            }
+                        }
                     }
+
+                    // Enforce minimum 3 images
+                    if (count($images_base64) < 3) {
+                        header("Location: /php/Webdev/public/profile/order_details/" . $order_id . "?error=min_3_images_required");
+                        exit;
+                    }
+                } else {
+                    header("Location: /php/Webdev/public/profile/order_details/" . $order_id . "?error=min_3_images_required");
+                    exit;
                 }
 
-                if ($orderModel->requestReturn($order_id, $reason, $image_base64)) {
+                $image_data_str = json_encode($images_base64);
+                if ($orderModel->requestReturn($order_id, $reason, $image_data_str)) {
                     header("Location: /php/Webdev/public/profile/order_details/" . $order_id . "?success=return_requested");
                     exit;
                 }

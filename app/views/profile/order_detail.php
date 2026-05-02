@@ -32,6 +32,22 @@
 
         <!-- Main Content -->
         <main class="profile-content">
+            <?php if(isset($_GET['success']) && $_GET['success'] == 'return_requested'): ?>
+                <div style="background: #ecfdf5; border: 1px solid #10b981; color: #065f46; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; font-size: 0.9rem;">
+                    Return request submitted successfully. Our team will review it shortly.
+                </div>
+            <?php endif; ?>
+
+            <?php if(isset($_GET['error'])): ?>
+                <div style="background: #fef2f2; border: 1px solid #ef4444; color: #991b1b; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; font-size: 0.9rem;">
+                    <?php 
+                        if($_GET['error'] == 'min_3_images_required') echo 'At least 3 images are required for return/refund requests.';
+                        elseif($_GET['error'] == 'invalid_images') echo 'One or more images were invalid. Please try again.';
+                        else echo 'Failed to submit return request. Please try again.';
+                    ?>
+                </div>
+            <?php endif; ?>
+
             <section class="profile-section">
                 <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; border-bottom: 1px solid #f1f5f9; padding-bottom: 1rem;">
                     <div style="display: flex; align-items: center; gap: 1rem;">
@@ -70,8 +86,19 @@
                                     <div class="milestone-date"><?= date('M d, Y', strtotime($data['order']['return_requested_at'])) ?></div>
                                     
                                     <?php if(!empty($data['order']['return_image_base64'])): ?>
-                                        <div style="margin-top: 1rem;">
-                                            <img src="<?= $data['order']['return_image_base64'] ?>" alt="Product Evidence" style="width: 100%; max-width: 150px; border-radius: 12px; border: 1px solid #e2e8f0; cursor: zoom-in;" onclick="openImageViewer(this.src)">
+                                        <div style="margin-top: 1rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 8px;">
+                                            <?php 
+                                                $images = json_decode($data['order']['return_image_base64'], true);
+                                                if (json_last_error() === JSON_ERROR_NONE && is_array($images)):
+                                                    foreach ($images as $img):
+                                            ?>
+                                                <img src="<?= $img ?>" alt="Product Evidence" style="width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 8px; border: 1px solid #e2e8f0; cursor: zoom-in;" onclick="openImageViewer(this.src)">
+                                            <?php 
+                                                    endforeach;
+                                                else:
+                                            ?>
+                                                <img src="<?= $data['order']['return_image_base64'] ?>" alt="Product Evidence" style="width: 100%; max-width: 150px; border-radius: 12px; border: 1px solid #e2e8f0; cursor: zoom-in;" onclick="openImageViewer(this.src)">
+                                            <?php endif; ?>
                                         </div>
                                     <?php endif; ?>
 
@@ -292,14 +319,18 @@
             </div>
 
             <div class="form-group" style="margin-bottom: 1.5rem;">
-                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Product Image (Optional)</label>
-                <input type="file" name="return_image" accept="image/*" style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 8px; font-family: inherit;">
-                <p style="font-size: 0.75rem; color: #64748b; margin-top: 0.5rem;">Upload a photo of the product you received to help us process your request faster.</p>
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Product Evidence (Required, Min 3 Images)</label>
+                <input type="file" name="return_images[]" accept="image/*" multiple required style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 8px; font-family: inherit;">
+                <p style="font-size: 0.75rem; color: #64748b; margin-top: 0.5rem;">Please upload at least 3 photos of the product (e.g., tags, damage, or wrong item) to help us process your request.</p>
             </div>
 
             <div class="form-group" style="margin-bottom: 1.5rem;">
                 <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Additional Message (Optional)</label>
                 <textarea name="message" rows="4" style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 8px; font-family: inherit; resize: vertical;" placeholder="Tell us more about the issue..."></textarea>
+            </div>
+
+            <div id="return-error-msg" style="display: none; color: #ef4444; font-size: 0.85rem; margin-bottom: 1rem; padding: 0.75rem; background: #fef2f2; border-radius: 8px; border: 1px solid #fee2e2;">
+                Please upload at least 3 images to proceed.
             </div>
 
             <div style="margin-top: 2rem; display: flex; gap: 1rem;">
@@ -311,6 +342,18 @@
 </div>
 
 <script>
+document.querySelector('form[action*="request_return"]').addEventListener('submit', function(e) {
+    const fileInput = this.querySelector('input[name="return_images[]"]');
+    const errorMsg = document.getElementById('return-error-msg');
+    
+    if (fileInput.files.length < 3) {
+        e.preventDefault();
+        errorMsg.style.display = 'block';
+        fileInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    } else {
+        errorMsg.style.display = 'none';
+    }
+});
 function openReturnModal() {
     document.getElementById('returnModal').classList.add('active');
     document.body.style.overflow = 'hidden';
