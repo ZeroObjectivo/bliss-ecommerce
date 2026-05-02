@@ -91,13 +91,15 @@
                                                 $images = json_decode($data['order']['return_image_base64'], true);
                                                 if (json_last_error() === JSON_ERROR_NONE && is_array($images)):
                                                     foreach ($images as $img):
+                                                        $src = (strpos($img, 'data:image') === 0) ? $img : '/php/Webdev/public/' . $img;
                                             ?>
-                                                <img src="<?= $img ?>" alt="Product Evidence" style="width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 8px; border: 1px solid #e2e8f0; cursor: zoom-in;" onclick="openImageViewer(this.src)">
+                                                <img src="<?= $src ?>" alt="Product Evidence" style="width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 8px; border: 1px solid #e2e8f0; cursor: zoom-in;" onclick="openImageViewer(this.src)">
                                             <?php 
                                                     endforeach;
                                                 else:
+                                                    $src = (strpos($data['order']['return_image_base64'], 'data:image') === 0) ? $data['order']['return_image_base64'] : '/php/Webdev/public/' . $data['order']['return_image_base64'];
                                             ?>
-                                                <img src="<?= $data['order']['return_image_base64'] ?>" alt="Product Evidence" style="width: 100%; max-width: 150px; border-radius: 12px; border: 1px solid #e2e8f0; cursor: zoom-in;" onclick="openImageViewer(this.src)">
+                                                <img src="<?= $src ?>" alt="Product Evidence" style="width: 100%; max-width: 150px; border-radius: 12px; border: 1px solid #e2e8f0; cursor: zoom-in;" onclick="openImageViewer(this.src)">
                                             <?php endif; ?>
                                         </div>
                                     <?php endif; ?>
@@ -319,9 +321,9 @@
             </div>
 
             <div class="form-group" style="margin-bottom: 1.5rem;">
-                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Product Evidence (Required, Min 3 Images)</label>
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Product Evidence (Required, 3-5 Images)</label>
                 <input type="file" name="return_images[]" accept="image/*" multiple required style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 8px; font-family: inherit;">
-                <p style="font-size: 0.75rem; color: #64748b; margin-top: 0.5rem;">Please upload at least 3 photos of the product (e.g., tags, damage, or wrong item) to help us process your request.</p>
+                <p style="font-size: 0.75rem; color: #64748b; margin-top: 0.5rem;">Please upload 3 to 5 photos of the product (e.g., tags, damage, or wrong item) to help us process your request.</p>
             </div>
 
             <div class="form-group" style="margin-bottom: 1.5rem;">
@@ -330,7 +332,7 @@
             </div>
 
             <div id="return-error-msg" style="display: none; color: #ef4444; font-size: 0.85rem; margin-bottom: 1rem; padding: 0.75rem; background: #fef2f2; border-radius: 8px; border: 1px solid #fee2e2;">
-                Please upload at least 3 images to proceed.
+                Please upload between 3 and 5 images to proceed.
             </div>
 
             <div style="margin-top: 2rem; display: flex; gap: 1rem;">
@@ -346,9 +348,10 @@ document.querySelector('form[action*="request_return"]').addEventListener('submi
     const fileInput = this.querySelector('input[name="return_images[]"]');
     const errorMsg = document.getElementById('return-error-msg');
     
-    if (fileInput.files.length < 3) {
+    if (fileInput.files.length < 3 || fileInput.files.length > 5) {
         e.preventDefault();
         errorMsg.style.display = 'block';
+        errorMsg.textContent = fileInput.files.length < 3 ? 'Please upload at least 3 images to proceed.' : 'Maximum 5 images allowed.';
         fileInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
     } else {
         errorMsg.style.display = 'none';

@@ -343,25 +343,49 @@ class Profile extends Controller {
             $order = $orderModel->getOrderById($order_id);
 
             if ($order && $order['user_id'] == $_SESSION['user_id'] && ($order['status'] == 'delivered' || $order['status'] == 'completed')) {
-                $images_base64 = [];
+                $image_paths = [];
+                $target_dir = "uploads/returns/";
+                
+                if (!is_dir($target_dir)) {
+                    mkdir($target_dir, 0777, true);
+                }
+
                 if (isset($_FILES['return_images']) && is_array($_FILES['return_images']['name'])) {
                     $file_count = count($_FILES['return_images']['name']);
                     
-                    // First, filter out any upload errors and collect valid images
                     for ($i = 0; $i < $file_count; $i++) {
                         if ($_FILES['return_images']['error'][$i] == 0) {
                             $file_type = $_FILES['return_images']['type'][$i];
                             $allowed_types = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+                            
                             if (in_array($file_type, $allowed_types)) {
-                                $image_data = file_get_contents($_FILES['return_images']['tmp_name'][$i]);
-                                $images_base64[] = 'data:' . $file_type . ';base64,' . base64_encode($image_data);
+                                $file_ext = strtolower(pathinfo($_FILES['return_images']['name'][$i], PATHINFO_EXTENSION));
+                                $new_name = time() . "_" . $order_id . "_" . $i . "." . $file_ext;
+                                $target_file = $target_dir . $new_name;
+                                
+                                if (move_uploaded_file($_FILES['return_images']['tmp_name'][$i], $target_file)) {
+                                    $image_paths[] = $target_file;
+                                }
                             }
                         }
                     }
 
-                    // Enforce minimum 3 images
-                    if (count($images_base64) < 3) {
+                    // Enforce minimum 3 and maximum 5 images
+                    $final_count = count($image_paths);
+                    if ($final_count < 3) {
+                        // Clean up any uploaded files if validation fails
+                        foreach ($image_paths as $path) {
+                            if (file_exists($path)) unlink($path);
+                        }
                         header("Location: /php/Webdev/public/profile/order_details/" . $order_id . "?error=min_3_images_required");
+                        exit;
+                    }
+                    if ($final_count > 5) {
+                        // Clean up
+                        foreach ($image_paths as $path) {
+                            if (file_exists($path)) unlink($path);
+                        }
+                        header("Location: /php/Webdev/public/profile/order_details/" . $order_id . "?error=max_5_images_exceeded");
                         exit;
                     }
                 } else {
@@ -369,10 +393,15 @@ class Profile extends Controller {
                     exit;
                 }
 
-                $image_data_str = json_encode($images_base64);
+                $image_data_str = json_encode($image_paths);
                 if ($orderModel->requestReturn($order_id, $reason, $image_data_str)) {
                     header("Location: /php/Webdev/public/profile/order_details/" . $order_id . "?success=return_requested");
                     exit;
+                } else {
+                    // Clean up files if DB update fails
+                    foreach ($image_paths as $path) {
+                        if (file_exists($path)) unlink($path);
+                    }
                 }
             }
         }

@@ -2,18 +2,31 @@
 class Admin extends Controller {
     private function filterOrdersByStatus($orders, $status) {
         $status = strtolower($status);
+        $returnStatuses = ['Return Requested', 'Return Approved', 'Return Rejected', 'Refunded'];
 
         if ($status === 'all' || $status === '') {
-            return $orders;
+            return array_values(array_filter($orders, fn($o) => !in_array($o['status'], $returnStatuses)));
         }
 
-        return array_values(array_filter($orders, function ($order) use ($status) {
+        return array_values(array_filter($orders, function ($order) use ($status, $returnStatuses) {
             if ($status === 'pending') {
                 return $order['status'] === 'pending' || $order['status'] === 'processing';
             }
 
             if ($status === 'returns') {
-                return in_array($order['status'], ['Return Requested', 'Return Approved', 'Return Rejected', 'Refunded']);
+                return in_array($order['status'], $returnStatuses);
+            }
+
+            if ($status === 'returns_pending') {
+                return $order['status'] === 'Return Requested';
+            }
+
+            if ($status === 'returns_approved') {
+                return $order['status'] === 'Return Approved';
+            }
+
+            if ($status === 'returns_resolved') {
+                return in_array($order['status'], ['Refunded', 'Return Rejected']);
             }
 
             return $order['status'] === $status;
@@ -189,16 +202,25 @@ class Admin extends Controller {
         $completed = array_values(array_filter($allOrders, fn($o) => $o['status'] == 'completed'));
         $cancelled = array_values(array_filter($allOrders, fn($o) => $o['status'] == 'cancelled'));
         $returns = array_values(array_filter($allOrders, fn($o) => in_array($o['status'], ['Return Requested', 'Return Approved', 'Return Rejected', 'Refunded'])));
+        $standardOrders = array_values(array_filter($allOrders, fn($o) => !in_array($o['status'], ['Return Requested', 'Return Approved', 'Return Rejected', 'Refunded'])));
+
+        // Returns granular filters
+        $returns_pending = array_values(array_filter($returns, fn($o) => $o['status'] == 'Return Requested'));
+        $returns_approved = array_values(array_filter($returns, fn($o) => $o['status'] == 'Return Approved'));
+        $returns_resolved = array_values(array_filter($returns, fn($o) => in_array($o['status'], ['Refunded', 'Return Rejected'])));
 
         $data = [
             'title' => 'Order Management',
-            'all' => $allOrders,
+            'all' => $standardOrders,
             'pending' => $pending,
             'shipped' => $shipped,
             'delivered' => $delivered,
             'completed' => $completed,
             'cancelled' => $cancelled,
-            'returns' => $returns
+            'returns' => $returns,
+            'returns_pending' => $returns_pending,
+            'returns_approved' => $returns_approved,
+            'returns_resolved' => $returns_resolved
         ];
         $this->view('templates/admin_header', $data);
         $this->view('admin/orders', $data);

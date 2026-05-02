@@ -27,6 +27,16 @@ class OrderModel {
 
         if ($status === 'pending') {
             $where .= " AND (orders.status = 'pending' OR orders.status = 'processing')";
+        } elseif ($status === 'returns') {
+            $where .= " AND orders.status IN ('Return Requested', 'Return Approved', 'Return Rejected', 'Refunded')";
+        } elseif ($status === 'returns_pending') {
+            $where .= " AND orders.status = 'Return Requested'";
+        } elseif ($status === 'returns_approved') {
+            $where .= " AND orders.status = 'Return Approved'";
+        } elseif ($status === 'returns_resolved') {
+            $where .= " AND orders.status IN ('Refunded', 'Return Rejected')";
+        } elseif ($status === 'all' || $status === '') {
+            $where .= " AND orders.status NOT IN ('Return Requested', 'Return Approved', 'Return Rejected', 'Refunded')";
         } elseif ($status !== 'all' && $status !== '') {
             $where .= " AND orders.status = :status";
         }

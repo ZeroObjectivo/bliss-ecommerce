@@ -79,13 +79,15 @@
                                         $images = json_decode($data['order']['return_image_base64'], true);
                                         if (json_last_error() === JSON_ERROR_NONE && is_array($images)):
                                             foreach ($images as $img):
+                                                $src = (strpos($img, 'data:image') === 0) ? $img : '/php/Webdev/public/' . $img;
                                     ?>
-                                        <img src="<?= $img ?>" alt="Return Evidence" style="width: 100%; height: 100px; object-fit: cover; border-radius: 8px; border: 1px solid var(--admin-border); cursor: zoom-in;" onclick="openImageViewer(this.src)">
+                                        <img src="<?= $src ?>" alt="Return Evidence" style="width: 100%; height: 100px; object-fit: cover; border-radius: 8px; border: 1px solid var(--admin-border); cursor: zoom-in;" onclick="openImageViewer(this.src)">
                                     <?php 
                                             endforeach;
                                         else:
+                                            $src = (strpos($data['order']['return_image_base64'], 'data:image') === 0) ? $data['order']['return_image_base64'] : '/php/Webdev/public/' . $data['order']['return_image_base64'];
                                     ?>
-                                        <img src="<?= $data['order']['return_image_base64'] ?>" alt="Return Evidence" style="width: 100%; max-height: 200px; object-fit: contain; border-radius: 8px; border: 1px solid var(--admin-border); cursor: zoom-in;" onclick="openImageViewer(this.src)">
+                                        <img src="<?= $src ?>" alt="Return Evidence" style="width: 100%; max-height: 200px; object-fit: contain; border-radius: 8px; border: 1px solid var(--admin-border); cursor: zoom-in;" onclick="openImageViewer(this.src)">
                                     <?php endif; ?>
                                 </div>
                             <?php endif; ?>
