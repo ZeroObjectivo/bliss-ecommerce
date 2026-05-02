@@ -100,7 +100,7 @@ class MessageModel {
             }
         }
 
-        $autoReplyText = "Hi! We've received your message. Our support team will review it and get back to you within 24–48 hours. Thank you for your patience.";
+        $autoReplyText = "Hi! This is an automated confirmation that we’ve received your message. Our support team is currently reviewing your inquiry and will get back to you within 24–48 hours. Thank you for your patience and understanding.";
         
         // Use Admin ID 1 as the default support sender
         if ($this->addReply($message_id, 1, $autoReplyText, 'active')) {
