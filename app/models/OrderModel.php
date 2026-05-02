@@ -71,8 +71,21 @@ class OrderModel {
     }
 
     public function updateStatus($order_id, $status) {
-        $this->db->query("UPDATE orders SET status = :status WHERE id = :id");
+        $timestampField = '';
+        if ($status == 'Return Approved') $timestampField = ', return_approved_at = CURRENT_TIMESTAMP';
+        elseif ($status == 'Refunded') $timestampField = ', refunded_at = CURRENT_TIMESTAMP';
+        elseif ($status == 'Return Rejected') $timestampField = ', return_rejected_at = CURRENT_TIMESTAMP';
+
+        $this->db->query("UPDATE orders SET status = :status {$timestampField} WHERE id = :id");
         $this->db->bind(':status', $status);
+        $this->db->bind(':id', $order_id);
+        return $this->db->execute();
+    }
+
+    public function requestReturn($order_id, $reason, $image_base64 = null) {
+        $this->db->query("UPDATE orders SET status = 'Return Requested', return_reason = :reason, return_image_base64 = :image, return_requested_at = CURRENT_TIMESTAMP WHERE id = :id");
+        $this->db->bind(':reason', $reason);
+        $this->db->bind(':image', $image_base64);
         $this->db->bind(':id', $order_id);
         return $this->db->execute();
     }

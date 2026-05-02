@@ -41,20 +41,122 @@
                         <h3 style="margin: 0; border: none; padding: 0;">Order #<?= $data['order']['id'] ?></h3>
                     </div>
                     <?php 
-                        $badgeClass = $data['order']['status'];
-                        if ($badgeClass == 'completed') $badgeClass = 'delivered'; // use same green theme
+                        $status = $data['order']['status'];
+                        $badgeClass = strtolower(str_replace(' ', '-', $status));
+                        
+                        $statusText = $status;
+                        if ($status == 'processing') $statusText = 'Payment Confirmed';
+                        
+                        // Keep delivery/completed consistent green
+                        if ($status == 'completed') $badgeClass = 'delivered'; 
+
+                        $isReturn = in_array($status, ['Return Requested', 'Return Approved', 'Return Rejected', 'Refunded']);
                     ?>
-                    <span class="status-badge <?= $badgeClass ?>"><?= $data['order']['status'] == 'processing' ? 'Payment Confirmed' : ucfirst($data['order']['status']) ?></span>
+                    <span class="status-badge <?= $badgeClass ?>"><?= ucfirst($statusText) ?></span>
                 </div>
+
+                <!-- Return Tracking Hub -->
+                <?php if($isReturn): ?>
+                    <div class="return-status-hub">
+                        <h4 class="hub-title">Return Tracking</h4>
+                        <div class="milestones-grid">
+                            <!-- Milestone 1: Requested -->
+                            <div class="milestone-card active completed success">
+                                <div class="milestone-badge">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                                </div>
+                                <div class="milestone-info">
+                                    <h6>Return Requested</h6>
+                                    <div class="milestone-date"><?= date('M d, Y', strtotime($data['order']['return_requested_at'])) ?></div>
+                                    
+                                    <?php if(!empty($data['order']['return_image_base64'])): ?>
+                                        <div style="margin-top: 1rem;">
+                                            <img src="<?= $data['order']['return_image_base64'] ?>" alt="Product Evidence" style="width: 100%; max-width: 150px; border-radius: 12px; border: 1px solid #e2e8f0; cursor: zoom-in;" onclick="openImageViewer(this.src)">
+                                        </div>
+                                    <?php endif; ?>
+
+                                    <div class="reason-tag">
+                                        <label>Reason</label>
+                                        <p><?= htmlspecialchars($data['order']['return_reason']) ?></p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Milestone 2: Decision -->
+                            <?php 
+                                $decisionMade = $data['order']['return_approved_at'] || $data['order']['return_rejected_at'];
+                                $isRejected = $data['order']['status'] == 'Return Rejected';
+                                $decisionClass = $decisionMade ? ($isRejected ? 'active error' : 'active success') : '';
+                                $decisionIcon = $isRejected ? 'x-circle' : 'check-circle';
+                            ?>
+                            <div class="milestone-card <?= $decisionClass ?>">
+                                <div class="milestone-badge">
+                                    <?php if($isRejected): ?>
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+                                    <?php else: ?>
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                                    <?php endif; ?>
+                                </div>
+                                <div class="milestone-info">
+                                    <h6><?= $isRejected ? 'Request Rejected' : 'Review Decision' ?></h6>
+                                    <?php if($decisionMade): ?>
+                                        <div class="milestone-date"><?= date('M d, Y', strtotime($isRejected ? $data['order']['return_rejected_at'] : $data['order']['return_approved_at'])) ?></div>
+                                        <div class="milestone-content">
+                                            <?= $isRejected ? 'Request was not accepted.' : 'Your return has been approved.' ?>
+                                        </div>
+                                    <?php else: ?>
+                                        <div class="milestone-content">Pending review by our team.</div>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+
+                            <!-- Milestone 3: Outcome -->
+                            <?php 
+                                $isRefunded = $data['order']['status'] == 'Refunded';
+                                $outcomeClass = $isRefunded ? 'active success' : '';
+                                if ($isRejected) $outcomeClass = 'error'; // ghosted error
+                            ?>
+                            <div class="milestone-card <?= $outcomeClass ?>">
+                                <div class="milestone-badge">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                                </div>
+                                <div class="milestone-info">
+                                    <h6>Refund Status</h6>
+                                    <?php if($isRefunded): ?>
+                                        <div class="milestone-date"><?= date('M d, Y', strtotime($data['order']['refunded_at'])) ?></div>
+                                        <div class="milestone-content">Refund of ₱<?= number_format($data['order']['total_price'], 2) ?> completed.</div>
+                                    <?php else: ?>
+                                        <div class="milestone-content">
+                                            <?= $isRejected ? 'No refund will be issued.' : 'Waiting for approval.' ?>
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <?php endif; ?>
 
                 <!-- Progress Bar -->
                 <div class="order-progress-container">
                     <?php 
                         $status = $data['order']['status'];
                         $steps = ['pending', 'processing', 'shipped', 'delivered', 'completed'];
+                        
+                        // If it's a return, we might want to hide the progress bar or show a different one
+                        // For now, if it's completed or delivered, keep showing it.
+                        
                         $current_step = array_search($status, $steps);
-                        if ($status == 'cancelled') $current_step = -1;
+                        if ($status == 'cancelled' || $isReturn) {
+                            if ($status == 'Return Requested' || $status == 'Return Approved' || $status == 'Refunded') {
+                                // Keep showing progress up to delivered/completed if it was reached
+                                if ($data['order']['status'] == 'Refunded') $current_step = 4;
+                                else $current_step = 4; // usually reached completed
+                            } else {
+                                $current_step = -1;
+                            }
+                        }
                     ?>
+                    <?php if(!$isReturn || $status == 'Refunded'): ?>
                     <div class="progress-track">
                         <div class="progress-line">
                             <div class="progress-line-fill" style="width: <?= $current_step >= 0 ? ($current_step / (count($steps)-1) * 100) : 0 ?>%;"></div>
@@ -83,6 +185,7 @@
                             </div>
                         <?php endforeach; ?>
                     </div>
+                    <?php endif; ?>
                 </div>
 
                 <div class="order-details-grid">
@@ -150,6 +253,14 @@
                                 <p style="font-size: 0.85rem; color: #065f46; margin-bottom: 0;">Thank you for shopping with us! This transaction is complete.</p>
                             </div>
                         <?php endif; ?>
+
+                        <?php if(($data['order']['status'] == 'delivered' || $data['order']['status'] == 'completed') && !$isReturn): ?>
+                            <div class="action-card" style="background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.5rem; text-align: center; margin-top: 1.5rem;">
+                                <h4 style="margin-top: 0; margin-bottom: 0.5rem;">Need to Return?</h4>
+                                <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 1.25rem;">If there's an issue with your items, you can request a return or refund.</p>
+                                <button type="button" class="btn-outline" style="width: 100%;" onclick="openReturnModal()">Request Return / Refund</button>
+                            </div>
+                        <?php endif; ?>
                     </div>
                 </div>
             </section>
@@ -157,7 +268,59 @@
     </div>
 </div>
 
+<!-- Return Request Modal -->
+<div id="returnModal" class="modal">
+    <div class="modal-content glass-card" style="max-width: 500px;">
+        <div class="modal-header">
+            <h3>Request Return / Refund</h3>
+            <button class="close-modal" onclick="closeReturnModal()">&times;</button>
+        </div>
+        <form action="/php/Webdev/public/profile/request_return" method="POST" class="address-form" enctype="multipart/form-data">
+            <input type="hidden" name="order_id" value="<?= $data['order']['id'] ?>">
+            
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Reason for Return</label>
+                <select name="reason" required style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 8px; font-family: inherit;">
+                    <option value="">Select a reason...</option>
+                    <option value="Wrong Size">Wrong Size</option>
+                    <option value="Damaged Item">Damaged Item</option>
+                    <option value="Defective Product">Defective Product</option>
+                    <option value="Not as Described">Not as Described</option>
+                    <option value="Changed My Mind">Changed My Mind</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Product Image (Optional)</label>
+                <input type="file" name="return_image" accept="image/*" style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 8px; font-family: inherit;">
+                <p style="font-size: 0.75rem; color: #64748b; margin-top: 0.5rem;">Upload a photo of the product you received to help us process your request faster.</p>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Additional Message (Optional)</label>
+                <textarea name="message" rows="4" style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 8px; font-family: inherit; resize: vertical;" placeholder="Tell us more about the issue..."></textarea>
+            </div>
+
+            <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+                <button type="button" class="btn-outline" style="flex: 1;" onclick="closeReturnModal()">Cancel</button>
+                <button type="submit" class="btn-primary" style="flex: 1;">Submit Request</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
+function openReturnModal() {
+    document.getElementById('returnModal').classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeReturnModal() {
+    document.getElementById('returnModal').classList.remove('active');
+    document.body.style.overflow = 'auto';
+}
+
 // Mobile Navigation Toggle
 document.addEventListener('DOMContentLoaded', function() {
     const mobileTrigger = document.getElementById('mobile-profile-trigger');
@@ -179,3 +342,27 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <link rel="stylesheet" href="/php/Webdev/public/css/profile.css">
+
+<!-- Image Viewer Modal -->
+<div id="imageViewerModal" class="modal" onclick="closeImageViewer()">
+    <div class="modal-content glass-card" style="max-width: 90vw; max-height: 90vh; padding: 15px; display: flex; align-items: center; justify-content: center; position: relative;" onclick="event.stopPropagation()">
+        <button class="close-modal" style="position: absolute; top: 10px; right: 10px; z-index: 100; background: #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.1);" onclick="closeImageViewer()">&times;</button>
+        <img id="viewerImage" src="" style="max-width: 100%; max-height: 80vh; border-radius: 12px; object-fit: contain;">
+    </div>
+</div>
+
+<script>
+function openImageViewer(src) {
+    const modal = document.getElementById('imageViewerModal');
+    const img = document.getElementById('viewerImage');
+    img.src = src;
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeImageViewer() {
+    const modal = document.getElementById('imageViewerModal');
+    modal.classList.remove('active');
+    document.body.style.overflow = 'auto';
+}
+</script>

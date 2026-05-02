@@ -64,10 +64,34 @@
                 <div style="background: var(--admin-bg-soft); border: 1px solid var(--admin-border); border-radius: 16px; padding: 25px; height: 100%;">
                     <h3 style="font-size: 0.9rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: var(--admin-text-muted); margin-bottom: 20px;">Order Status</h3>
                     
-                    <?php if($data['order']['status'] == 'delivered' || $data['order']['status'] == 'completed' || $data['order']['status'] == 'cancelled'): ?>
+                    <?php 
+                        $isReturnProcess = in_array($data['order']['status'], ['Return Requested', 'Return Approved', 'Return Rejected', 'Refunded']);
+                        $terminalStatuses = ['completed', 'cancelled', 'Refunded', 'Return Rejected'];
+                    ?>
+
+                    <?php if($isReturnProcess): ?>
+                        <div style="background: rgba(249, 115, 22, 0.05); border: 1px solid rgba(249, 115, 22, 0.2); border-radius: 12px; padding: 15px; margin-bottom: 20px;">
+                            <label style="display: block; font-size: 0.75rem; font-weight: 800; color: #f97316; text-transform: uppercase; margin-bottom: 8px;">Return Details</label>
+                            
+                            <?php if(!empty($data['order']['return_image_base64'])): ?>
+                                <div style="margin-bottom: 15px;">
+                                    <img src="<?= $data['order']['return_image_base64'] ?>" alt="Return Evidence" style="width: 100%; max-height: 200px; object-fit: contain; border-radius: 8px; border: 1px solid var(--admin-border); cursor: zoom-in;" onclick="openImageViewer(this.src)">
+                                </div>
+                            <?php endif; ?>
+
+                            <div style="font-size: 0.9rem; color: var(--admin-text-main); font-weight: 600; line-height: 1.4;">
+                                <span style="color: var(--admin-text-muted); font-size: 0.75rem;">REASON:</span> <?= htmlspecialchars($data['order']['return_reason']) ?>
+                            </div>
+                            <div style="font-size: 0.75rem; color: var(--admin-text-muted); margin-top: 8px;">
+                                Requested on <?= date('M d, Y', strtotime($data['order']['return_requested_at'])) ?>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+
+                    <?php if(in_array($data['order']['status'], $terminalStatuses)): ?>
                         <div style="text-align: center; padding: 20px; background: var(--admin-card); border-radius: 12px; border: 1px dashed var(--admin-border);">
                             <div style="font-size: 0.85rem; font-weight: 700; color: var(--admin-text-muted); text-transform: uppercase; margin-bottom: 10px;">Terminal State</div>
-                            <span class="badge" style="background: <?= ($data['order']['status'] == 'delivered' || $data['order']['status'] == 'completed') ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)' ?>; color: <?= ($data['order']['status'] == 'delivered' || $data['order']['status'] == 'completed') ? 'var(--admin-success)' : 'var(--admin-danger)' ?>; padding: 8px 20px; font-size: 0.9rem;">
+                            <span class="badge" style="background: <?= in_array($data['order']['status'], ['completed', 'Refunded']) ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)' ?>; color: <?= in_array($data['order']['status'], ['completed', 'Refunded']) ? 'var(--admin-success)' : 'var(--admin-danger)' ?>; padding: 8px 20px; font-size: 0.9rem;">
                                 <?= ucfirst($data['order']['status']) ?>
                             </span>
                             <p style="font-size: 0.8rem; color: var(--admin-text-muted); margin-top: 15px; line-height: 1.4;">This order is finalized and can no longer be updated.</p>
@@ -76,12 +100,19 @@
                         <form action="/php/Webdev/public/admin/order_update" method="POST" style="display: flex; flex-direction: column; gap: 15px;">
                             <input type="hidden" name="order_id" value="<?= $data['order']['id'] ?>">
                             <select name="status" style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--admin-border); background: var(--admin-card); color: var(--admin-text-main); font-family: inherit; font-weight: 600;">
-                                <option value="pending" <?= $data['order']['status'] == 'pending' ? 'selected' : '' ?>>Pending</option>
-                                <option value="processing" <?= $data['order']['status'] == 'processing' ? 'selected' : '' ?>>Processing</option>
-                                <option value="shipped" <?= $data['order']['status'] == 'shipped' ? 'selected' : '' ?>>Shipped</option>
-                                <option value="delivered" <?= $data['order']['status'] == 'delivered' ? 'selected' : '' ?>>Delivered</option>
-                                <option value="completed" <?= $data['order']['status'] == 'completed' ? 'selected' : '' ?>>Completed</option>
-                                <option value="cancelled" <?= $data['order']['status'] == 'cancelled' ? 'selected' : '' ?>>Cancelled</option>
+                                <?php if(!$isReturnProcess): ?>
+                                    <option value="pending" <?= $data['order']['status'] == 'pending' ? 'selected' : '' ?>>Pending</option>
+                                    <option value="processing" <?= $data['order']['status'] == 'processing' ? 'selected' : '' ?>>Processing</option>
+                                    <option value="shipped" <?= $data['order']['status'] == 'shipped' ? 'selected' : '' ?>>Shipped</option>
+                                    <option value="delivered" <?= $data['order']['status'] == 'delivered' ? 'selected' : '' ?>>Delivered</option>
+                                    <option value="completed" <?= $data['order']['status'] == 'completed' ? 'selected' : '' ?>>Completed</option>
+                                    <option value="cancelled" <?= $data['order']['status'] == 'cancelled' ? 'selected' : '' ?>>Cancelled</option>
+                                <?php else: ?>
+                                    <option value="Return Requested" <?= $data['order']['status'] == 'Return Requested' ? 'selected' : '' ?>>Return Requested</option>
+                                    <option value="Return Approved" <?= $data['order']['status'] == 'Return Approved' ? 'selected' : '' ?>>Approve Return</option>
+                                    <option value="Return Rejected" <?= $data['order']['status'] == 'Return Rejected' ? 'selected' : '' ?>>Reject Return</option>
+                                    <option value="Refunded" <?= $data['order']['status'] == 'Refunded' ? 'selected' : '' ?>>Mark as Refunded</option>
+                                <?php endif; ?>
                             </select>
                             <button type="submit" class="btn-admin btn-admin-primary" style="padding: 15px; border-radius: 10px; font-weight: 700;">Update Status</button>
                         </form>
@@ -130,6 +161,35 @@
         </div>
     </div>
 </div>
+
+<!-- Image Viewer Modal -->
+<div id="imageViewerModal" class="modal" onclick="closeImageViewer()" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); align-items: center; justify-content: center; z-index: 10000; padding: 20px;">
+    <div class="modal-content" style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.2); max-width: 90vw; max-height: 90vh; padding: 10px; display: flex; align-items: center; justify-content: center; position: relative; border-radius: 20px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);" onclick="event.stopPropagation()">
+        <button class="close-modal" style="position: absolute; top: -15px; right: -15px; z-index: 10; background: #fff; border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 1.5rem; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.2);" onclick="closeImageViewer()">&times;</button>
+        <img id="viewerImage" src="" style="max-width: 100%; max-height: 80vh; border-radius: 12px; object-fit: contain;">
+    </div>
+</div>
+
+<script>
+function openImageViewer(src) {
+    const modal = document.getElementById('imageViewerModal');
+    const img = document.getElementById('viewerImage');
+    img.src = src;
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+
+function closeImageViewer() {
+    const modal = document.getElementById('imageViewerModal');
+    modal.style.display = 'none';
+    document.body.style.overflow = 'auto';
+}
+
+// Ensure closing on escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeImageViewer();
+});
+</script>
 
 <style>
 .order-detail-body { padding: 40px; }

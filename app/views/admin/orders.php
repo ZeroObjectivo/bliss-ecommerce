@@ -34,6 +34,7 @@
         <button class="btn-admin" id="tab-delivered" onclick="switchAdminTab('delivered')" style="background: transparent; color: var(--admin-text-muted); border: none; white-space: nowrap;">Delivered (<?= count($data['delivered']) ?>)</button>
         <button class="btn-admin" id="tab-completed" onclick="switchAdminTab('completed')" style="background: transparent; color: var(--admin-text-muted); border: none; white-space: nowrap;">Completed (<?= count($data['completed']) ?>)</button>
         <button class="btn-admin" id="tab-cancelled" onclick="switchAdminTab('cancelled')" style="background: transparent; color: var(--admin-text-muted); border: none; white-space: nowrap;">Cancelled (<?= count($data['cancelled']) ?>)</button>
+        <button class="btn-admin" id="tab-returns" onclick="switchAdminTab('returns')" style="background: transparent; color: var(--admin-text-muted); border: none; white-space: nowrap;">Returns (<?= count($data['returns']) ?>)</button>
     </div>
 </div>
 
@@ -73,6 +74,7 @@ renderOrderTable($data['shipped'], 'shipped');
 renderOrderTable($data['delivered'], 'delivered');
 renderOrderTable($data['completed'], 'completed');
 renderOrderTable($data['cancelled'], 'cancelled');
+renderOrderTable($data['returns'], 'returns');
 ?>
 
 <script>
@@ -110,7 +112,7 @@ function switchAdminTab(tab) {
 
 function sortOrders() {
     const sortBy = document.getElementById('order-sort').value;
-    const tabContents = ['tbody-all', 'tbody-pending', 'tbody-shipped', 'tbody-delivered', 'tbody-completed', 'tbody-cancelled'];
+    const tabContents = ['tbody-all', 'tbody-pending', 'tbody-shipped', 'tbody-delivered', 'tbody-completed', 'tbody-cancelled', 'tbody-returns'];
 
     tabContents.forEach(tbodyId => {
         const tbody = document.getElementById(tbodyId);

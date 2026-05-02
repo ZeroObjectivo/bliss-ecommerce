@@ -274,6 +274,7 @@ class Profile extends Controller {
         $delivered = array_values(array_filter($allOrders, fn($o) => $o['status'] == 'delivered'));
         $completed = array_values(array_filter($allOrders, fn($o) => $o['status'] == 'completed'));
         $cancelled = array_values(array_filter($allOrders, fn($o) => $o['status'] == 'cancelled'));
+        $returns = array_values(array_filter($allOrders, fn($o) => in_array($o['status'], ['Return Requested', 'Return Approved', 'Return Rejected', 'Refunded'])));
 
         $data = [
             'title' => 'My Orders',
@@ -282,7 +283,8 @@ class Profile extends Controller {
             'shipped' => $shipped,
             'delivered' => $delivered,
             'completed' => $completed,
-            'cancelled' => $cancelled
+            'cancelled' => $cancelled,
+            'returns' => $returns
         ];
 
         $this->view('templates/header', $data);
@@ -330,6 +332,34 @@ class Profile extends Controller {
             }
         }
         header("Location: /php/Webdev/public/profile/orders?error=confirmation_failed");
+        exit;
+    }
+
+    public function request_return() {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['order_id']) && isset($_POST['reason'])) {
+            $order_id = $_POST['order_id'];
+            $reason = trim($_POST['reason']);
+            $orderModel = $this->model('OrderModel');
+            $order = $orderModel->getOrderById($order_id);
+
+            if ($order && $order['user_id'] == $_SESSION['user_id'] && ($order['status'] == 'delivered' || $order['status'] == 'completed')) {
+                $image_base64 = null;
+                if (isset($_FILES['return_image']) && $_FILES['return_image']['error'] == 0) {
+                    $file_type = $_FILES['return_image']['type'];
+                    $allowed_types = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+                    if (in_array($file_type, $allowed_types)) {
+                        $image_data = file_get_contents($_FILES['return_image']['tmp_name']);
+                        $image_base64 = 'data:' . $file_type . ';base64,' . base64_encode($image_data);
+                    }
+                }
+
+                if ($orderModel->requestReturn($order_id, $reason, $image_base64)) {
+                    header("Location: /php/Webdev/public/profile/order_details/" . $order_id . "?success=return_requested");
+                    exit;
+                }
+            }
+        }
+        header("Location: /php/Webdev/public/profile/orders?error=return_failed");
         exit;
     }
 

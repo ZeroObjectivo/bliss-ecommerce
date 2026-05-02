@@ -12,6 +12,10 @@ class Admin extends Controller {
                 return $order['status'] === 'pending' || $order['status'] === 'processing';
             }
 
+            if ($status === 'returns') {
+                return in_array($order['status'], ['Return Requested', 'Return Approved', 'Return Rejected', 'Refunded']);
+            }
+
             return $order['status'] === $status;
         }));
     }
@@ -64,7 +68,7 @@ class Admin extends Controller {
                     }
                 }
             }
-            if ($o['status'] == 'pending' || $o['status'] == 'processing') {
+            if ($o['status'] == 'pending' || $o['status'] == 'processing' || $o['status'] == 'Return Requested') {
                 $pendingCount++;
             }
         }
@@ -184,6 +188,7 @@ class Admin extends Controller {
         $delivered = array_values(array_filter($allOrders, fn($o) => $o['status'] == 'delivered'));
         $completed = array_values(array_filter($allOrders, fn($o) => $o['status'] == 'completed'));
         $cancelled = array_values(array_filter($allOrders, fn($o) => $o['status'] == 'cancelled'));
+        $returns = array_values(array_filter($allOrders, fn($o) => in_array($o['status'], ['Return Requested', 'Return Approved', 'Return Rejected', 'Refunded'])));
 
         $data = [
             'title' => 'Order Management',
@@ -192,7 +197,8 @@ class Admin extends Controller {
             'shipped' => $shipped,
             'delivered' => $delivered,
             'completed' => $completed,
-            'cancelled' => $cancelled
+            'cancelled' => $cancelled,
+            'returns' => $returns
         ];
         $this->view('templates/admin_header', $data);
         $this->view('admin/orders', $data);
@@ -222,17 +228,22 @@ class Admin extends Controller {
             $status = $_POST['status'];
             $order_id = $_POST['order_id'];
 
-            // Server-side safety: Don't allow updates if order is already terminal or delivered
+            // Server-side safety: Don't allow updates if order is already terminal
             $currentOrder = $orderModel->getOrderById($order_id);
-            if ($currentOrder && ($currentOrder['status'] == 'delivered' || $currentOrder['status'] == 'completed' || $currentOrder['status'] == 'cancelled')) {
+            $terminalStatuses = ['completed', 'cancelled', 'Refunded', 'Return Rejected'];
+            
+            // Allow updates if it's currently a return request or being approved
+            $isReturnProcess = in_array($currentOrder['status'], ['Return Requested', 'Return Approved']);
+
+            if ($currentOrder && in_array($currentOrder['status'], $terminalStatuses) && !$isReturnProcess) {
                 header("Location: /php/Webdev/public/admin/orders?error=order_finalized");
                 exit;
             }
 
             $orderModel->updateStatus($order_id, $status);
             
-            // Auto-archive if completed or cancelled, unarchive otherwise
-            if ($status == 'completed' || $status == 'cancelled') {
+            // Auto-archive if completed, cancelled, refunded or return rejected
+            if (in_array($status, ['completed', 'cancelled', 'Refunded', 'Return Rejected'])) {
                 $orderModel->archiveOrder($order_id);
             } else {
                 $orderModel->unarchiveOrder($order_id);

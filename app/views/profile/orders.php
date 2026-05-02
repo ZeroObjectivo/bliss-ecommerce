@@ -41,6 +41,7 @@
                     <button class="tab-btn" onclick="showTab('delivered')">Delivered (<?= count($data['delivered']) ?>)</button>
                     <button class="tab-btn" onclick="showTab('completed')">Completed (<?= count($data['completed']) ?>)</button>
                     <button class="tab-btn" onclick="showTab('cancelled')">Cancelled (<?= count($data['cancelled']) ?>)</button>
+                    <button class="tab-btn" onclick="showTab('returns')">Returns (<?= count($data['returns']) ?>)</button>
                 </div>
 
                 <!-- Pending Tab -->
@@ -145,6 +146,33 @@
                                 <div class="order-header">
                                     <span>Order #<?= $order['id'] ?></span>
                                     <span class="status-badge cancelled">Cancelled</span>
+                                </div>
+                                <div class="order-body">
+                                    <div>
+                                        <p>Placed on: <?= date('M d, Y', strtotime($order['created_at'])) ?></p>
+                                        <p class="order-total">Total: ₱<?= number_format($order['total_price'], 2) ?></p>
+                                    </div>
+                                    <a href="/php/Webdev/public/profile/order_details/<?= $order['id'] ?>" class="btn-outline">View Details</a>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </div>
+
+                <!-- Returns Tab -->
+                <div id="returns" class="tab-content">
+                    <?php if(empty($data['returns'])): ?>
+                        <div class="empty-state">No return requests.</div>
+                    <?php else: ?>
+                        <?php foreach($data['returns'] as $order): ?>
+                            <?php 
+                                $status = $order['status'];
+                                $badgeClass = strtolower(str_replace(' ', '-', $status));
+                            ?>
+                            <div class="order-card">
+                                <div class="order-header">
+                                    <span>Order #<?= $order['id'] ?></span>
+                                    <span class="status-badge <?= $badgeClass ?>"><?= $status ?></span>
                                 </div>
                                 <div class="order-body">
                                     <div>

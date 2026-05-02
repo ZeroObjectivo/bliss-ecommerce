@@ -46,9 +46,13 @@ $queryLabel = $query !== '' ? "'" . htmlspecialchars($query, ENT_QUOTES, 'UTF-8'
             <td style="color: var(--admin-text-muted); font-size: 0.85rem;"><?= date('M d, Y', strtotime($o['created_at'])) ?></td>
             <td style="font-weight: 700;">₱<?= number_format($o['total_price'], 2) ?></td>
             <td>
-                <?php if ($o['status'] == 'delivered' || $o['status'] == 'completed' || $o['status'] == 'cancelled'): ?>
+                <?php 
+                $terminalStatuses = ['completed', 'cancelled', 'Refunded', 'Return Rejected'];
+                $isReturnProcess = in_array($o['status'], ['Return Requested', 'Return Approved', 'Return Rejected', 'Refunded']);
+                ?>
+                <?php if (in_array($o['status'], $terminalStatuses)): ?>
                     <?php
-                        $isSuccess = ($o['status'] == 'delivered' || $o['status'] == 'completed');
+                        $isSuccess = ($o['status'] == 'completed' || $o['status'] == 'Refunded');
                         $bg = $isSuccess ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)';
                         $fg = $isSuccess ? 'var(--admin-success)' : 'var(--admin-danger)';
                     ?>
@@ -59,12 +63,19 @@ $queryLabel = $query !== '' ? "'" . htmlspecialchars($query, ENT_QUOTES, 'UTF-8'
                     <form method="POST" action="/php/Webdev/public/admin/order_update" style="margin:0; display:flex; gap:8px;">
                         <input type="hidden" name="order_id" value="<?= (int) $o['id'] ?>">
                         <select name="status" class="admin-filter-control" style="padding: 4px 28px 4px 8px; font-size: 0.8rem; background-position: right 6px center;">
-                            <option value="pending" <?= $o['status'] == 'pending' ? 'selected' : '' ?>>Pending</option>
-                            <option value="processing" <?= $o['status'] == 'processing' ? 'selected' : '' ?>>Payment Confirmed</option>
-                            <option value="shipped" <?= $o['status'] == 'shipped' ? 'selected' : '' ?>>Shipped</option>
-                            <option value="delivered" <?= $o['status'] == 'delivered' ? 'selected' : '' ?>>Delivered</option>
-                            <option value="completed" <?= $o['status'] == 'completed' ? 'selected' : '' ?>>Completed</option>
-                            <option value="cancelled" <?= $o['status'] == 'cancelled' ? 'selected' : '' ?>>Cancelled</option>
+                            <?php if(!$isReturnProcess): ?>
+                                <option value="pending" <?= $o['status'] == 'pending' ? 'selected' : '' ?>>Pending</option>
+                                <option value="processing" <?= $o['status'] == 'processing' ? 'selected' : '' ?>>Payment Confirmed</option>
+                                <option value="shipped" <?= $o['status'] == 'shipped' ? 'selected' : '' ?>>Shipped</option>
+                                <option value="delivered" <?= $o['status'] == 'delivered' ? 'selected' : '' ?>>Delivered</option>
+                                <option value="completed" <?= $o['status'] == 'completed' ? 'selected' : '' ?>>Completed</option>
+                                <option value="cancelled" <?= $o['status'] == 'cancelled' ? 'selected' : '' ?>>Cancelled</option>
+                            <?php else: ?>
+                                <option value="Return Requested" <?= $o['status'] == 'Return Requested' ? 'selected' : '' ?>>Return Requested</option>
+                                <option value="Return Approved" <?= $o['status'] == 'Return Approved' ? 'selected' : '' ?>>Approve Return</option>
+                                <option value="Return Rejected" <?= $o['status'] == 'Return Rejected' ? 'selected' : '' ?>>Reject Return</option>
+                                <option value="Refunded" <?= $o['status'] == 'Refunded' ? 'selected' : '' ?>>Mark as Refunded</option>
+                            <?php endif; ?>
                         </select>
                         <button type="submit" class="btn-admin btn-admin-primary" style="padding: 4px 10px; font-size: 0.75rem;">Save</button>
                     </form>
