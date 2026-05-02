@@ -330,8 +330,15 @@ class Profile extends Controller {
             $sender_id = $_SESSION['user_id'];
 
             if ($messageModel->addReply($id, $sender_id, $reply, 'active')) {
+                $autoReply = $messageModel->addAutoReply($id);
                 if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
-                    echo json_encode(['success' => true, 'message' => 'reply_sent', 'reply_text' => $reply, 'created_at' => date('Y-m-d H:i:s')]);
+                    echo json_encode([
+                        'success' => true, 
+                        'message' => 'reply_sent', 
+                        'reply_text' => $reply, 
+                        'created_at' => date('Y-m-d H:i:s'),
+                        'auto_reply' => $autoReply
+                    ]);
                     exit;
                 }
                 header("Location: /php/Webdev/public/profile/inbox?success=reply_sent");

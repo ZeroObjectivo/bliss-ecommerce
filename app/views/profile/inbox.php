@@ -401,6 +401,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 window.showToast('Your concern has been submitted successfully.');
                 if (document.querySelector('.empty-state-messenger')) { location.reload(); return; }
                 appendTicketToSidebar(data.ticket);
+
+                // Handle Auto-reply for new ticket
+                if (data.auto_reply) {
+                    setTimeout(() => {
+                        const thread = document.getElementById('chat-thread-container');
+                        if (thread && document.getElementById('reply-ticket-id').value == data.ticket.id) {
+                            const div = document.createElement('div');
+                            div.className = 'msg-group support';
+                            div.innerHTML = `<div class="bubble">${data.auto_reply.reply_text.replace(/\n/g, '<br>')}</div><span class="msg-time">Support • JUST NOW</span>`;
+                            thread.appendChild(div);
+                            thread.scrollTop = thread.scrollHeight;
+                        }
+                    }, 1000);
+                }
             } else window.showToast('Failed to submit your concern. Please try again.', 'error');
         })
         .catch(err => {
@@ -434,6 +448,22 @@ document.addEventListener('DOMContentLoaded', () => {
                     activeItem.querySelector('.status-dot').className = 'status-dot active';
                     activeItem.dataset.status = 'active';
                 }
+
+                // Handle Auto-reply
+                if (data.auto_reply) {
+                    setTimeout(() => {
+                        const currentTicketId = document.getElementById('reply-ticket-id').value;
+                        if (currentTicketId == data.auto_reply.message_id) {
+                            const thread = document.getElementById('chat-thread-container');
+                            const div = document.createElement('div');
+                            div.className = 'msg-group support';
+                            div.innerHTML = `<div class="bubble">${data.auto_reply.reply_text.replace(/\n/g, '<br>')}</div><span class="msg-time">Support • JUST NOW</span>`;
+                            thread.appendChild(div);
+                            thread.scrollTop = thread.scrollHeight;
+                        }
+                    }, 1000);
+                }
+
                 window.showToast('Your reply has been sent successfully.');
             } else window.showToast('Failed to send your reply. Please try again.', 'error');
         })

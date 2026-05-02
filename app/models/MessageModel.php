@@ -84,6 +84,38 @@ class MessageModel {
         return false;
     }
 
+    public function addAutoReply($message_id) {
+        // Check the last message in the thread
+        $this->db->query("SELECT sender_id FROM message_replies WHERE message_id = :message_id ORDER BY created_at DESC LIMIT 1");
+        $this->db->bind(':message_id', $message_id);
+        $lastReply = $this->db->single();
+
+        // If the last reply exists and was from an admin/support, don't send another auto-reply
+        if ($lastReply && $lastReply['sender_id'] !== null) {
+            $this->db->query("SELECT role FROM users WHERE id = :sender_id");
+            $this->db->bind(':sender_id', $lastReply['sender_id']);
+            $user = $this->db->single();
+            if ($user && ($user['role'] === 'admin' || $user['role'] === 'superadmin')) {
+                return false;
+            }
+        }
+
+        $autoReplyText = "Hi! We've received your message. Our support team will review it and get back to you within 24–48 hours. Thank you for your patience.";
+        
+        // Use Admin ID 1 as the default support sender
+        if ($this->addReply($message_id, 1, $autoReplyText, 'active')) {
+            // Get the inserted reply for UI feedback
+            $replyId = $this->db->lastInsertId();
+            $this->db->query("SELECT r.*, COALESCE(u.name, 'Support') as sender_name, COALESCE(u.role, 'admin') as sender_role 
+                             FROM message_replies r 
+                             LEFT JOIN users u ON r.sender_id = u.id 
+                             WHERE r.id = :id");
+            $this->db->bind(':id', $replyId);
+            return $this->db->single();
+        }
+        return false;
+    }
+
     public function getReplies($message_id) {
         $this->db->query("SELECT r.*, COALESCE(u.name, 'Guest') as sender_name, COALESCE(u.role, 'user') as sender_role
                          FROM message_replies r

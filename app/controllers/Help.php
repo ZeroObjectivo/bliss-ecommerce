@@ -128,6 +128,7 @@ class Help extends Controller {
 
             $insertedId = $messageModel->createMessage($data);
             if ($insertedId) {
+                $autoReply = $messageModel->addAutoReply($insertedId);
                 $newMessage = $messageModel->getMessageById($insertedId);
                 if (isset($_POST['redirect']) && $_POST['redirect'] === 'profile/inbox' || (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest')) {
                     echo json_encode([
@@ -135,6 +136,7 @@ class Help extends Controller {
                         'message' => 'message_sent', 
                         'ticket' => $newMessage,
                         'ticket_number' => $newMessage['ticket_number'],
+                        'auto_reply' => $autoReply,
                         'is_logged_in' => isset($_SESSION['user_id'])
                     ]);
                     exit;
