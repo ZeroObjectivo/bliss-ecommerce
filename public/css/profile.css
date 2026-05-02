@@ -787,7 +787,7 @@
     color: #64748b;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
     /* Override global container for full-width mobile profile */
     .page-content > .container {
         max-width: 100% !important;

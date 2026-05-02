@@ -275,7 +275,7 @@ function showUserTicket(msg, el) {
     const detail = document.getElementById('ticket-detail-view');
     detail.style.display = 'flex';
     
-    if (window.innerWidth <= 768) {
+    if (window.innerWidth <= 1024) {
         toggleMessengerSidebar(false);
         // Explicitly ensure the view parent is active
         const messengerView = document.querySelector('.messenger-view');
@@ -371,7 +371,7 @@ function filterUserInbox(tab) {
     });
     document.getElementById('no-ticket-selected').style.display = 'flex';
     document.getElementById('ticket-detail-view').style.display = 'none';
-    if (window.innerWidth <= 768) toggleMessengerSidebar(true);
+    if (window.innerWidth <= 1024) toggleMessengerSidebar(true);
 }
 
 function appendTicketToSidebar(ticket) {
