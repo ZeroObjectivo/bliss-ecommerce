@@ -126,6 +126,33 @@ html.about-snap {
     color: var(--text-primary);
 }
 
+.team-category-title {
+    width: 100%;
+    text-align: center;
+    font-size: 1.1rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-6);
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.team-category-title::before,
+.team-category-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #e2e8f0, transparent);
+}
+
+.team-group {
+    width: 100%;
+    margin-bottom: var(--spacing-10);
+}
+
 /* Values Section */
 .values-grid {
     display: grid;
