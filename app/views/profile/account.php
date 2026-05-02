@@ -72,13 +72,19 @@
                         </div>
                         <div class="picture-actions">
                             <p class="picture-tip">Upload a high-quality image to personalize your account. (Max: 5MB)</p>
-                            <form action="/php/Webdev/public/profile/update_avatar" method="POST" enctype="multipart/form-data">
-                                <label for="profile_picture_main" class="btn btn-secondary btn-sm" style="cursor: pointer;">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-                                    Change Picture
-                                </label>
-                                <input type="file" name="profile_picture" id="profile_picture_main" hidden>
-                            </form>
+                            <div style="display: flex; gap: 10px; align-items: center;">
+                                <form action="/php/Webdev/public/profile/update_avatar" method="POST" enctype="multipart/form-data" id="avatar-form">
+                                    <label for="profile_picture_main" class="btn btn-secondary btn-sm" style="cursor: pointer;">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                                        Change Picture
+                                    </label>
+                                    <input type="file" name="profile_picture" id="profile_picture_main" hidden>
+                                </form>
+                                <button type="button" id="remove-avatar-btn" class="btn btn-outline btn-sm" style="display: <?= $data['user']['profile_picture'] ? 'flex' : 'none' ?>; align-items: center; border-color: #fee2e2; color: #dc2626;">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                                    Remove Photo
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -414,6 +420,12 @@ document.getElementById('apply-crop-btn')?.addEventListener('click', function() 
                     ph.replaceWith(img);
                 });
 
+                // Show remove button if it was hidden
+                const removeBtn = document.getElementById('remove-avatar-btn');
+                if (removeBtn) {
+                    removeBtn.style.display = 'flex';
+                }
+
                 window.showToast('Profile picture updated successfully!');
                 closeCropModal();
             } else {
@@ -429,6 +441,61 @@ document.getElementById('apply-crop-btn')?.addEventListener('click', function() 
             btn.innerText = originalText;
         });
     }, 'image/png');
+});
+
+// Remove Avatar Logic
+document.getElementById('remove-avatar-btn')?.addEventListener('click', function() {
+    if (!confirm('Are you sure you want to remove your profile picture?')) return;
+    
+    const btn = this;
+    const originalContent = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerText = 'Removing...';
+    
+    fetch('/php/Webdev/public/profile/remove_avatar_ajax', {
+        method: 'POST',
+        headers: { 
+            'X-Requested-With': 'XMLHttpRequest',
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            // Update main preview to placeholder
+            const mainWrapper = document.querySelector('.avatar-wrapper-main');
+            if (mainWrapper) {
+                mainWrapper.innerHTML = `<div class="avatar-placeholder-main">${data.initial}</div>`;
+            }
+            
+            // Update sidebar preview to placeholder
+            const sidebarWrapper = document.querySelector('.avatar-wrapper');
+            if (sidebarWrapper) {
+                const formHTML = sidebarWrapper.querySelector('form').outerHTML;
+                sidebarWrapper.innerHTML = `<div class="avatar-placeholder">${data.initial}</div>` + formHTML;
+                
+                // Re-bind sidebar input since we replaced innerHTML
+                document.getElementById('profile_picture')?.addEventListener('change', function(e) {
+                    if (this.files && this.files[0]) initCropper(this.files[0]);
+                    this.value = '';
+                });
+            }
+
+            // Hide remove button
+            btn.style.display = 'none';
+            window.showToast('Profile picture removed successfully.');
+        } else {
+            window.showToast(data.error || 'Failed to remove picture.', 'error');
+            btn.innerHTML = originalContent;
+            btn.disabled = false;
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        window.showToast('An unexpected error occurred.', 'error');
+        btn.innerHTML = originalContent;
+        btn.disabled = false;
+    });
 });
 
 function openEditAddressModal(id, street, city, province, postalCode, category) {

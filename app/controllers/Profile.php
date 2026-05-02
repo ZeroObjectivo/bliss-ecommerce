@@ -109,6 +109,14 @@ class Profile extends Controller {
                 exit;
             }
 
+            $userModel = $this->model('UserModel');
+            $user = $userModel->getUserById($_SESSION['user_id']);
+
+            // Delete old picture if it exists
+            if (!empty($user['profile_picture']) && file_exists($user['profile_picture'])) {
+                unlink($user['profile_picture']);
+            }
+
             $target_dir = "uploads/profiles/";
             if (!is_dir($target_dir)) {
                 mkdir($target_dir, 0777, true);
@@ -119,7 +127,6 @@ class Profile extends Controller {
             $target_file = $target_dir . $new_name;
 
             if (move_uploaded_file($file['tmp_name'], $target_file)) {
-                $userModel = $this->model('UserModel');
                 $userModel->updateProfilePicture($_SESSION['user_id'], $target_file);
                 $_SESSION['user_picture'] = $target_file;
                 
@@ -130,6 +137,33 @@ class Profile extends Controller {
                 ]);
             } else {
                 echo json_encode(['success' => false, 'error' => 'Failed to save uploaded image.']);
+            }
+            exit;
+        }
+    }
+
+    public function remove_avatar_ajax() {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $userModel = $this->model('UserModel');
+            $user = $userModel->getUserById($_SESSION['user_id']);
+
+            if (!empty($user['profile_picture'])) {
+                if (file_exists($user['profile_picture'])) {
+                    unlink($user['profile_picture']);
+                }
+                
+                if ($userModel->removeProfilePicture($_SESSION['user_id'])) {
+                    $_SESSION['user_picture'] = null;
+                    echo json_encode([
+                        'success' => true,
+                        'message' => 'Profile picture removed successfully.',
+                        'initial' => strtoupper(substr($user['name'], 0, 1))
+                    ]);
+                } else {
+                    echo json_encode(['success' => false, 'error' => 'Database update failed.']);
+                }
+            } else {
+                echo json_encode(['success' => false, 'error' => 'No profile picture to remove.']);
             }
             exit;
         }

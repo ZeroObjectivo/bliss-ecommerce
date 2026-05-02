@@ -71,6 +71,12 @@ class UserModel {
         return $this->db->execute();
     }
 
+    public function removeProfilePicture($id) {
+        $this->db->query("UPDATE users SET profile_picture = NULL WHERE id = :id");
+        $this->db->bind(':id', $id);
+        return $this->db->execute();
+    }
+
     public function getAddresses($userId) {
         $this->db->query("SELECT * FROM user_addresses WHERE user_id = :user_id ORDER BY is_default DESC, created_at DESC");
         $this->db->bind(':user_id', $userId);
